@@ -1,0 +1,42 @@
+#wrap3d{
+  width:100%;
+  height:600px;
+}
+.card-wrap{
+  position:relative;
+  display: flex;
+  width:100%;
+  min-height: 80vh;
+  height:auto;
+  justify-content: space-around;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+fieldset > legend{
+  color:#875e29;
+  font-weight: bold;
+  font-size:1.7rem;
+}
+
+.viewArtifactsBtn{width:100% !important;}
+.card-header{
+  width:100%;
+  height: 200px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+@media (min-width: 992px) {
+  .viewArtifactsBtn{width:19% !important;}
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .viewArtifactsBtn{width:19% !important;}
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  .viewArtifactsBtn{width:19% !important;}
+}

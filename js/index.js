@@ -1,0 +1,1 @@
+currentPageActiveLink('index.php');
