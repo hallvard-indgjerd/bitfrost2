@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div id="output"></div>
+  </body>
+  <script src="workfile/modeling/list_lund.js" charset="utf-8"></script>
+  <script type="text/javascript">
+    let div = document.getElementById('output');
+    Object.keys(list).forEach(function (key){
+      let query = "update complete_collection set name = '"+key+"', nexus_filename = '"+list[key]["NEXUS_FILENAME"]+"', inventory = '"+list[key]["INVENTORY"]+"' where unique_id = '"+key.split("_")[0]+"';<br />";
+      div.innerHTML += query;
+    });
+
+  </script>
+</html>
