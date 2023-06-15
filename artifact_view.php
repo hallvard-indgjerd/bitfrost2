@@ -31,19 +31,20 @@
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Artifact</h2>
             <div class="divSection mb-5">
               <div class="alert" id="status"></div>
+              <p id="description"></p>
               <div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="main-section">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#mainSection" aria-expanded="true" aria-controls="mainSection">Main data</button>
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mainSection" aria-expanded="true" aria-controls="mainSection">Main data</button>
                   </h2>
-                  <div id="mainSection" class="accordion-collapse collapse show" aria-labelledby="main-section">
+                  <div id="mainSection" class="accordion-collapse collapse" aria-labelledby="main-section">
                     <div class="accordion-body">
                       <ul class="list-group list-group-flush">
+                        <li class="list-group-item"></li>
                         <li class="list-group-item"><span>Category class</span><span id="category_class"></span></li>
                         <li class="list-group-item"><span>Category specification</span><span id="category_specs"></span></li>
                         <li class="list-group-item"><span>Material / technique</span><span id="material"></span></li>
                         <li class="list-group-item"><span>Typology</span><span id="tipology"></span></li>
-                        <li class="list-group-item"><span>Description</span><span id="description"></span></li>
                         <li class="list-group-item"><span>Notes</span><span id="notes"></span></li>
                       </ul>
                     </div>
@@ -67,15 +68,14 @@
                 </div>
               </div>
             </div>
-            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Model</h2>
-            <div class="divSection mb-5">
-
-            </div>
+            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Model informations</h2>
+            <div class="divSection mb-5"></div>
           </div>
           <div class="col-md-8">
-            <div id="3dhop" class="tdhop">
-
-            </div>
+            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">3d Object</h2>
+            <div id="3dhop" class="tdhop"></div>
+            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Media gallery</h2>
+            <div class="divSection mb-5"></div>
           </div>
         </div>
       </div>
