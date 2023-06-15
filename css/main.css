@@ -1,8 +1,9 @@
-.bg-adc-light{background:#f0eee5;}
-.bg-adc-dark{background:#875e29;}
+.bg-adc-light, .accordion-button.collapsed{background:#f0eee5;}
+.bg-adc-dark{background-color:#875e29;}
 .txt-adc-light{color:#f0eee5;}
 .txt-adc-dark{color:#875e29;}
-
+.btn-adc-dark{background-color: #875e29; border:1px solid #875e29; color:#f0eee5;}
+.btn-adc-dark:hover, .btn-adc-dark:active{background-color: #755123 !important; border:1px solid #755123 !important; color:#f0eee5 !important;}
 html, body{position:relative; font-family: 'Titillium Web', sans-serif;padding:0; margin:0;}
 label[for]{cursor: pointer;}
 a{text-decoration:none;transition: all 0.25s linear;}
@@ -29,6 +30,12 @@ body > nav > #linkWrap > span.titleSection{display: block; padding: 5px 20px; te
 body > nav > #linkWrap > a{color:#fff; padding:5px 20px; border-bottom: 1px solid rgba(0,0,0,.3);}
 
 .form-sm{width:360px;}
+
+/* bootstrap hack */
+.custom-tooltip {
+  --bs-tooltip-bg: var(--bs-white);
+  --bs-tooltip-color: var(--bs-black);
+}
 
 @media (min-width: 576px) {
 }

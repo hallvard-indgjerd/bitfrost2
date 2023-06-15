@@ -47,7 +47,7 @@ $("[name=chronoPeriodEnd]").on("change", function(){
   $("[name=chronoYearStart],[name=chronoYearEnd]").attr({"max":end})
   $("[name=chronoYearEnd]").val(end);
 })
-$("[name=chronoYearStart],[name=chronoYearEnd]").attr({"max":getData()['y']})
+$("[name=chronoYearStart],[name=chronoYearEnd]").attr({"max":getDate()['y']})
 $("[name=chronoYearStart]").on("change", function(){
   let v = $(this).val();
   if($("[name=chronoYearEnd]").val() && $("[name=chronoYearEnd]").val() < v){$("[name=chronoYearEnd]").val(v)}
@@ -102,42 +102,7 @@ function setMapView(ll,zoom){
   $("[name=lon]").val(ll[1]);
 }
 
-function buildGallery(){
-  ajaxSettings.url=API+"model.php";
-  ajaxSettings.data={trigger:'buildGallery'};
-  $.ajax(ajaxSettings)
-  .done(function(data) {
-    console.log(data);
-    data.forEach((item, i) => {
-      let div = $("<div/>",{class:'card m-1 viewArtifactsBtn'}).data("item",item.id).appendTo(".card-wrap");
-      $("<div/>", {class:'card-header'})
-      .css({"background-image":"url('img/model/256/"+item.name+".png')"})
-      .appendTo(div);
-      let body = $("<div/>",{class:'card-body'}).appendTo(div);
-      $("<h3/>",{class:'card-title ms-3 txt-adc-dark fw-bold'}).text(item.name).appendTo(body);
-      $("<p/>",{class:'col-10 ms-3'}).html('<span class="placeholder col-7 d-block"></span><span class="placeholder col-4 my-2 d-block"></span><span class="placeholder col-4"></span><span class="placeholder col-6"></span><span class="placeholder col-12"></span>').appendTo(body);
-      $("<button/>",{class:'btn btn-primary ms-3'}).text('view').appendTo(body);
-      let collectBtn = $("<button/>",{class:'btn btn-primary ms-3 addItemBtn', id: 'addItem'+item.id}).text('collect').appendTo(body);
-      let uncollectBtn = $("<button/>",{class:'btn btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('remove').appendTo(body);
-      uncollectBtn.hide();
-      collectBtn.on('click',function(){
-        items.push(item.id);
-        $(this).hide();
-        uncollectBtn.show();
-        countItems();
-      })
-      uncollectBtn.on('click',function(){
-        let idx = items.findIndex(i => i === item.id);
-        items.splice(idx, 1);
-        $(this).hide();
-        collectBtn.show();
-        countItems();
-      })
-    })
-  })
-}
 
-function countItems(){$("#collectedItems").val("collected items: "+items.length)}
 $("[name=material_class]").on('change', function(){
   let v = $(this).val();
   if(!v){

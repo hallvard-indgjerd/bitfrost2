@@ -2,9 +2,9 @@
   position:relative;
   display: flex;
   width:100%;
-  min-height: 80vh;
+  /* min-height: 80vh; */
   height:auto;
-  justify-content: space-around;
+  justify-content: flex-start;
   flex-direction: row;
   flex-wrap: wrap;
 }
