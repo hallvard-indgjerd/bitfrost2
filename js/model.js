@@ -14,7 +14,7 @@ const uploadButton = document.getElementById('preview');
 const fileInput = document.getElementById('nxz');
 const endpoint = 'api/modelPreview.php';
 let file;
-$("#preview").hide()
+$("#preview, #initParamObjectForm").hide()
 $("[name=nxz]").on('change', function(){$("#preview").show()});
 
 uploadButton.addEventListener('click', uploadFile);
@@ -40,10 +40,11 @@ function progressHandler(event){
   el("status").innerHTML = Math.round(percent)+"% uploaded... please wait";
 }
 function completeHandler(event){
+  $("#initParamObjectForm").show();
   el("status").innerHTML = event.target.responseText;
   el("progressBar").value = 0;
   scene = {
-    meshes: {"nxz" : { url: 'models/preview/'+file.name }},
+    meshes: {"nxz" : { url: 'archive/models/preview/'+file.name }},
     modelInstances : {"nxz" : { mesh : "nxz", tags: ['Group'] }},
     //trackball: trackBallOpt
   }

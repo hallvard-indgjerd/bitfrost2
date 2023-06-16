@@ -31,7 +31,7 @@
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Artifact</h2>
             <div class="divSection mb-5">
               <div class="alert" id="status"></div>
-              <p id="description"></p>
+              <p class="fw-bold h5 my-3" id="description"></p>
               <div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="main-section">
@@ -51,6 +51,22 @@
                   </div>
                 </div>
                 <div class="accordion-item">
+                  <h2 class="accordion-header" id="chronology-data">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#chronologySection">Chronological definition</button>
+                  </h2>
+                  <div id="chronologySection" class="accordion-collapse collapse" aria-labelledby="chronology-data">
+                    <div class="accordion-body">
+                      <ul class="list-group list-group-flush">
+                        <li class="list-group-item txt-adc-dark fw-bold">Specific chronology</li>
+                        <li class="list-group-item"><span>start / end</span><span id="chronoYears"></span></li>
+                        <li class="list-group-item txt-adc-dark fw-bold">The specific chronology is related to following historical periods</li>
+                        <li class="list-group-item"><span>from</span><span id="start_period"></span></li>
+                        <li class="list-group-item"><span>to</span><span id="end_period"></span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
                   <h2 class="accordion-header" id="conservation-data">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#conservationSection">Conservation info</button>
                   </h2>
@@ -62,6 +78,38 @@
                         <li class="list-group-item"><span>Conservation state</span><span id="conservation_state"></span></li>
                         <li class="list-group-item"><span>Object condition</span><span id="object_condition"></span></li>
                         <li class="list-group-item"><span>Is a museum copy</span><span id="is_a_copy"></span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="measure-data">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#measureSection">Measures</button>
+                  </h2>
+                  <div id="measureSection" class="accordion-collapse collapse" aria-labelledby="measure-data">
+                    <div class="accordion-body">
+                      <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><span>Length</span><span id="length"></span></li>
+                        <li class="list-group-item"><span>Width</span><span id="width"></span></li>
+                        <li class="list-group-item"><span>Depth</span><span id="depth"></span></li>
+                        <li class="list-group-item"><span>Diameter</span><span id="diameter"></span></li>
+                        <li class="list-group-item"><span>Weight</span><span id="weight"></span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="artifactMetadata-data">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#artifactMetadataSection">Artifact metadata</button>
+                  </h2>
+                  <div id="artifactMetadataSection" class="accordion-collapse collapse" aria-labelledby="artifactMetadata-data">
+                    <div class="accordion-body">
+                      <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><span>Author</span><span id="auth"></span></li>
+                        <li class="list-group-item"><span>Owner</span><span id="owner"></span></li>
+                        <li class="list-group-item"><span>license</span><span id="license"></span></li>
+                        <li class="list-group-item"><span>Create at</span><span id="create_at"></span></li>
+                        <li class="list-group-item"><span>Last update</span><span id="updated_at"></span></li>
                       </ul>
                     </div>
                   </div>
