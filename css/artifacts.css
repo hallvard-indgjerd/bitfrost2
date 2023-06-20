@@ -20,6 +20,16 @@ fieldset > legend{
   height:400px;
 }
 
+#viewCollection{
+  position:fixed;
+  top:122px;
+  left:0;
+  width:100%;
+  padding:10px 30px;
+  background-color: #fff;
+  z-index:499;
+}
+
 .viewArtifactsBtn{width:100% !important;}
 .card-header{
   width:100%;

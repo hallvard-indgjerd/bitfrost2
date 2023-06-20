@@ -3,6 +3,7 @@ const byMaterial = $("#byMaterial");
 const byChronology = $("#byChronology");
 const byDescription = $("#byDescription");
 const sortBy = $("#sortBy");
+let activeFilter = 0;
 currentPageActiveLink('index.php');
 getFilterList();
 buildGallery();
@@ -20,8 +21,11 @@ $("#resetGallery").on('click', function(){
   byMaterial.val('');
   byDescription.val('');
   byChronology.val('');
+  activeFilter = 0;
   buildGallery()
 })
+
+$("#createFromFiltered").on('')
 function getFilter(){
   filter = [];
   if(byCategory.val()){filter.push("class.id = "+byCategory.val())}
@@ -48,6 +52,12 @@ function getFilterList(){
     data.chronology.forEach((item, i) => {
       $("<option/>").text(item.period + " ("+item.tot+")").val(item.start+"|"+item.end).appendTo(byChronology);
     });
-
   })
+}
+
+function collectedGallery(){
+  console.log(collected);
+}
+function checkActiveFilter(){
+  filter.length > 0 ? $("#createFromFiltered").show() : $("#createFromFiltered").hide();
 }

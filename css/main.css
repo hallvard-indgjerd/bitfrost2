@@ -1,5 +1,5 @@
 .bg-adc-light, .accordion-button.collapsed{background:#f0eee5;}
-.bg-adc-dark{background-color:#875e29;}
+.bg-adc-dark{background-color:#875e29 !important; color:#fff !important}
 .txt-adc-light{color:#f0eee5;}
 .txt-adc-dark{color:#875e29;}
 .btn-adc-dark{background-color: #875e29; border:1px solid #875e29; color:#f0eee5;}
@@ -16,10 +16,10 @@ header img{width:50px;}
 header h2{font-size: 1rem;}
 header .headerLink{text-align: center;}
 header .headerLink > a{color:#875e29; display: inline-block;text-align: center; font-size:1.5rem;}
-main{position: relative; width:100%; min-height:calc(100vh - 100px); margin:100px auto 0; padding:20px 30px; z-index:1}
+main{position: relative; width:100%; min-height:calc(100vh - 100px); margin:120px auto 0; padding:20px 30px; z-index:1}
 
 main.full{padding-right:0;}
-main.small{padding-right: 300px;}
+main.small, .itemTool.small{padding-right: 300px;}
 main > .itemTool{position:fixed;top:57px;left:0;width:100vw;min-height:40px; padding:4px 20px; background:#212529; z-index:400;}
 
 #backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;background: rgba(0,0,0,.3);z-index:500;}

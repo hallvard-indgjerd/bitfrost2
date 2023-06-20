@@ -1,8 +1,11 @@
+let collected = [];
 let items = [];
 let filter = [];
 let sort = "rand()";
-$("#collectionDiv").hide();
+$("#viewCollection, #createFromFiltered").hide();
+
 function buildGallery(){
+  checkActiveFilter()
   $(".card-wrap").html('');
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data={
@@ -12,7 +15,6 @@ function buildGallery(){
   };
   $.ajax(ajaxSettings)
   .done(function(data) {
-    console.log(ajaxSettings.data);
     console.log(data);
     let totItemsTxt;
     if (data.length == 0) {totItemsTxt = 'No items found';}
@@ -36,6 +38,7 @@ function buildGallery(){
       uncollectBtn.hide();
       collectBtn.on('click',function(){
         items.push(item.id);
+        collected.push(item);
         $(this).hide();
         uncollectBtn.show();
         countItems();
@@ -55,7 +58,7 @@ function buildGallery(){
 }
 
 function countItems(){
-  items.length > 0 ? $("#collectionDiv").show() : $("#collectionDiv").hide()
+  items.length > 0 ? $("#viewCollection").show() : $("#viewCollection").hide()
   $("#collectedItems").val("collected items: "+items.length)
 }
 

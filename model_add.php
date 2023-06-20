@@ -36,13 +36,6 @@
               <div class="col-md-8">
                 <div id="wrap3d">
                   <div id="3dhop" class="tdhop" onmousedown="if (event.preventDefault) event.preventDefault()">
-                    <!-- <div id="toolbar" class="btn-group" role="group">
-                    <button type="button" id="home" class="btn btn-light" data-toggle="tooltip" title="reset zoom"><i class="fa-sharp fa-solid fa-house"></i></button>
-                    <button type="button" id="zoomin" class="btn btn-light" data-toggle="tooltip" title="zoom in"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-                    <button type="button" id="zoomout" class="btn btn-light" data-toggle="tooltip" title="zoom out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-                    <button type="button" id="light_on" class="btn btn-light" data-toggle="tooltip" title="enable light control"><i class="fa-solid fa-lightbulb"></i></button>
-                    <button type="button" id="full_on" class="btn btn-light" data-toggle="tooltip" title="full screen"><i class="fa-solid fa-expand"></i></button>
-                    </div> -->
                     <canvas id="draw-canvas" />
                   </div>
                 </div>
@@ -134,7 +127,6 @@
               </div>
             </div>
           </fieldset>
-
           <button type="submit" name="newArtifact" class="btn btn-warning">save item</button>
         </form>
       </div>

@@ -1,6 +1,7 @@
-select i.name, i.abbreviation, cat.value category, cities.name city, i.address, i.lat, i.lon, i.link
-from artifact a
-inner join institution i on a.storage_place = i.id
-inner join list_institution_category cat on i.category = cat.id
-left join cities on i.city = cities.id
-where a.id = 344 \G
+select artifact.id, artifact.name, coalesce(artifact.description, 'no description available','') description, class.id as category_id, class.value as category, material.id as material_id, coalesce(material.value, null, 'not defined') as material, artifact.start, artifact.end, model.nxz, model.thumb_256
+from artifact
+inner join list_category_class class on artifact.category_class = class.id
+inner join artifact_material_technique amt on amt.artifact = artifact.id
+inner join artifact_model am on artifact.id = am.artifact
+inner join model on model.id = am.model
+left join list_material_specs material on amt.material = material.id

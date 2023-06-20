@@ -1,7 +1,11 @@
 <?php
 session_start();
 $mainClass = 'full';
-if (isset($_SESSION['id']) && isMobileCheck() == 0) { $mainClass = 'small'; }
+$itemToolClass = '';
+if (isset($_SESSION['id']) && isMobileCheck() == 0) {
+  $mainClass = 'small';
+  $itemToolClass = 'small';
+}
 
 function isMobileCheck(){
   $ua = strtolower($_SERVER["HTTP_USER_AGENT"]);

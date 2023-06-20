@@ -42,9 +42,10 @@ function login(el,f){
     $.ajax(ajaxSettings)
     .done(function(data) {
       console.log(data);
+      form.find(".outputMsg").removeClass('text-success text-danger');
       let classe = data[1] == 0 ? 'text-success' : 'text-danger';
       form.find(".outputMsg").addClass(classe).html(data[0]);
-      window.setTimeout(function(){location.href = "index.php";}, 3000);
+      if(data[1] == 0){window.setTimeout(function(){location.href = "index.php";}, 3000);}
     }).fail(function(data){form.find(".outputMsg").html(data);});
   }
 }

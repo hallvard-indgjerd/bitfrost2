@@ -18,12 +18,13 @@ $("#preview, #initParamObjectForm").hide()
 $("[name=nxz]").on('change', function(){$("#preview").show()});
 
 uploadButton.addEventListener('click', uploadFile);
+
 function el(el){return document.getElementById(el);}
 
 function uploadFile(){
   file = fileInput.files[0];
   var formdata = new FormData();
-  formdata.append("nxz", file);
+  formdata.append("nxz", file, file.name);
   var ajax = new XMLHttpRequest();
   ajax.upload.addEventListener("progress", progressHandler, false);
   ajax.addEventListener("load", completeHandler, false);

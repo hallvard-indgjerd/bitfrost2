@@ -10,10 +10,10 @@
   <body>
     <?php require("assets/header.php"); ?>
     <main class="<?php echo $mainClass; ?>">
-      <nav class="itemTool">
+      <nav class="itemTool <?php echo $itemToolClass; ?>">
         <div class="container-fluid">
           <div class="d-inline-block me-1">
-            <button class="btn btn-light btn-sm" type="button" id="resetGallery"  data-bs-toggle="tooltip" data-bs-title="reset filters"><span class="mdi mdi-reload"></span></button>
+            <button class="btn btn-light btn-sm" type="button" id="resetGallery" data-bs-toggle="tooltip" data-bs-title="reset filters" style="margin-top:-5px"><span class="mdi mdi-reload"></span></button>
           </div>
           <div class="d-inline-block me-1">
             <select class="form-select form-select-sm buildGallery" id="byCategory">
@@ -32,14 +32,13 @@
           </div>
           <div class="d-inline-block me-1">
             <div class="input-group input-group-sm">
-              <input type="text" class="form-control w-auto" id="byDescription">
+              <input type="search" class="form-control w-auto" id="byDescription" value="">
               <button class="btn btn-light buildGallery" type="button"><span class="mdi mdi-magnify"></span></button>
             </div>
           </div>
-          <div class="d-inline-block mx-3">
-            <div class="input-group input-group-sm" id="collectionDiv">
-              <input type="text" readonly class="form-control w-auto" id="collectedItems" value="">
-              <button class="btn btn-adc-dark" type="button"  name="saveColl"  data-bs-toggle="modal" data-bs-target="#saveCollectionModal">save</button>
+          <div class="d-inline-block me-1">
+            <div class="btn-group">
+              <button class="btn bg-adc-dark btn-sm" type="button" id="createFromFiltered" data-bs-toggle="tooltip" data-bs-title="create a new collection from filtered items" style="margin-top:-5px">create collection</button>
             </div>
           </div>
           <div class="dropdown float-end me-3">
@@ -52,6 +51,9 @@
           </div>
         </div>
       </nav>
+      <div id="viewCollection">
+        <button type="button" class="btn btn-adc-dark" name="viewCollectionBtn">view your collection</button>
+      </div>
       <div class="container-fluid mt-5">
         <div class="row">
           <div class="col text-center">
