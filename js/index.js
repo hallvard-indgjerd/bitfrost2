@@ -25,7 +25,10 @@ $("#resetGallery").on('click', function(){
   buildGallery()
 })
 
-$("#createFromFiltered").on('')
+$("#createFromFiltered").on('click', function(){$(".addItemBtn").trigger('click');})
+
+$("[name='viewCollectionBtn']").on('click', collectedGallery)
+
 function getFilter(){
   filter = [];
   if(byCategory.val()){filter.push("class.id = "+byCategory.val())}
@@ -55,7 +58,48 @@ function getFilterList(){
   })
 }
 
+function gallery(data, wrapDiv){
+  console.log(data);
+  $(wrapDiv).html('');
+  let cardClass = wrapDiv == ".card-wrap" ? 'viewArtifactsBtn' : 'collectedCard';
+  data.forEach((item, i) => {
+    let div = $("<div/>",{class:'card m-1 '+cardClass}).data("item",item.id).appendTo(wrapDiv);
+    $("<div/>", {class:'card-header'})
+    .css({"background-image":"url('archive/thumb_256/"+item.thumb_256+"')"})
+    .appendTo(div);
+    let body = $("<div/>",{class:'card-body'}).appendTo(div);
+    $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
+    $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+item.material+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html(cutString(item.description, 100)).appendTo(body);
+    if (wrapDiv == ".card-wrap") {
+      let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
+      let itemUrlBtn = $("<button/>",{class:'btn btn-primary ms-3'}).text('view').appendTo(footer);
+      let collectBtn = $("<button/>",{class:'btn btn-primary ms-3 addItemBtn', id: 'addItem'+item.id}).text('collect').appendTo(footer);
+      let uncollectBtn = $("<button/>",{class:'btn btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('remove').appendTo(footer);
+      uncollectBtn.hide();
+      collectBtn.on('click',function(){
+        collected.push(item);
+        $(this).hide();
+        uncollectBtn.show();
+        countItems();
+      })
+      uncollectBtn.on('click',function(){
+        let idx = collected.findIndex(i => i === item.id);
+        collected.splice(idx, 1);
+        $(this).hide();
+        collectBtn.show();
+        countItems();
+      })
+      itemUrlBtn.on('click', function(){
+        $.redirectPost('artifact_view.php', {id:item.id});
+      })
+    }
+  })
+}
+
 function collectedGallery(){
+  gallery(collected,"#wrapCollected")
   console.log(collected);
 }
 function checkActiveFilter(){

@@ -52,7 +52,8 @@
         </div>
       </nav>
       <div id="viewCollection">
-        <button type="button" class="btn btn-adc-dark" name="viewCollectionBtn">view your collection</button>
+        <button type="button" class="btn btn-adc-dark" name="viewCollectionBtn" data-bs-toggle="modal" data-bs-target="#saveCollectionModal">view your collection</button>
+        <!-- data-bs-toggle="modal" data-bs-target="#saveCollectionModal" -->
       </div>
       <div class="container-fluid mt-5">
         <div class="row">
@@ -65,44 +66,52 @@
     </main>
 
     <div class="modal fade" id="saveCollectionModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">Create your collection</h3>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-dialog modal-xxl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">Create your collection</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-8">
+                    <div id="wrapCollected"></div>
+                  </div>
+                  <div class="col-md-4">
+                    <p class="txt-adc-dark m-0">In order to create a new collection we need your email to send you the direct link with which you can view the newly created collection.</p>
+                    <div class="mb-3">
+                      <label for="email" class="form-label">Email</label>
+                      <input type="email" class="form-control form-control-sm" id="email" required>
+                    </div>
+                    <p class="txt-adc-dark m-0">If you prefer, you can create a user account with which you will be able to manage your collections more easily.</p>
+                    <div class="form-check mb-3">
+                      <input class="form-check-input" type="checkbox" value="1" id="createAccount" name="createAccount">
+                      <label class="form-check-label" for="createAccount">Ok, create an account</label>
+                    </div>
+                    <p class="txt-adc-dark m-0">Please insert a title and a brief description for the collection</p>
+                    <div class="mb-2">
+                      <label for="title" class="form-label">title</label>
+                      <input type="text" class="form-control form-control-sm" id="title" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="description" class="form-label">Brief description</label>
+                      <textarea class="form-control form-control-sm" id="description" rows="3"></textarea>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Create collection</button>
+            </div>
+          </form>
+        </div>
       </div>
-      <form>
-        <div class="modal-body">
-          <h5 class="txt-adc-dark m-0">In order to create a new collection we need your email to send you the direct link with which you can view the newly created collection.</h5>
-          <div class="mb-5">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" required>
-          </div>
-          <h5 class="txt-adc-dark m-0">If you prefer, you can create a user account with which you will be able to manage your collections more easily.</h5>
-          <div class="form-check mb-5">
-            <input class="form-check-input" type="checkbox" value="1" id="createAccount" name="createAccount">
-            <label class="form-check-label" for="createAccount">Ok, create an account</label>
-          </div>
-          <h5 class="txt-adc-dark m-0">Please insert a title and a brief description for the collection</h5>
-          <div class="mb-2">
-            <label for="title" class="form-label">title</label>
-            <input type="text" class="form-control" id="title" required>
-          </div>
-          <div class="mb-3">
-            <label for="description" class="form-label">Brief description</label>
-            <textarea class="form-control" id="description" rows="3"></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Create collection</button>
-        </div>
-      </form>
     </div>
-  </div>
-</div>
-
-
     <?php require("assets/menu.php"); ?>
     <?php require("assets/js.html"); ?>
   </body>
