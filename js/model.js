@@ -14,8 +14,8 @@ const uploadButton = document.getElementById('preview');
 const fileInput = document.getElementById('nxz');
 const endpoint = 'api/modelPreview.php';
 let file;
-// $("#preview, #initParamObjectForm").hide()
-$("#preview").hide()
+$("#preview, #initParamObjectForm").hide()
+// $("#preview").hide()
 $("[name=nxz]").on('change', function(){$("#preview").show()});
 
 uploadButton.addEventListener('click', uploadFile);
