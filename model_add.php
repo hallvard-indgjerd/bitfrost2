@@ -62,54 +62,57 @@
                   </div>
                   <div class="mb-3">
                     <label class="d-block">Set the light</label>
-                    <input type="number" name="lightx" value="" class="form-control d-inline" style="width:30%;" placeholder="x value">
-                    <input type="number" name="lighty" value="" class="form-control d-inline" style="width:30%;" placeholder="y value">
-                    <input type="number" name="lightz" value="" class="form-control d-inline" style="width:30%;" placeholder="z value">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div class="w-50">
+                        <canvas id="lightcontroller_canvas" width="100" height="100"></canvas>
+                      </div>
+                      <div class="w-50">
+                        <input type="number" name="lightx" value="" step="0.001" class="form-control mb-2" placeholder="x value">
+                        <input type="number" name="lighty" value="" step="0.001" class="form-control" placeholder="y value">
+                      </div>
+                    </div>
                   </div>
                   <div class="mb-3">
                     <label>Texture type</label>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="texture" id="texture" checked>
-                      <label class="form-check-label" for="texture">Texture</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="texture" id="plainColor">
-                      <label class="form-check-label" for="plainColor">Plain color</label>
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <label>Solid / transparent</label>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="solid" id="solid" checked>
-                      <label class="form-check-label" for="solid">Solid</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="solid" id="plainColor">
-                      <label class="form-check-label" for="transparent">Transparent</label>
+                    <div class="toggleSwitch">
+                      <input type="checkbox" name="texture" class="toggleSwitch-checkbox" id="texture" checked>
+                      <label class="toggleSwitch-label" for="texture">
+                        <span class="toggleSwitch-inner" id="textureLabel"></span>
+                        <span class="toggleSwitch-switch"></span>
+                      </label>
                     </div>
                   </div>
                   <div class="mb-3">
-                    <label>Lighting / unshaded</label>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="lighting" id="lighting" checked>
-                      <label class="form-check-label" for="lighting">Lighting</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="lighting" id="unshaded">
-                      <label class="form-check-label" for="unshaded">Unshaded</label>
+                    <label>Solid type</label>
+                    <div class="toggleSwitch">
+                      <input type="checkbox" name="solid" class="toggleSwitch-checkbox" id="solid" checked>
+                      <label class="toggleSwitch-label" for="solid">
+                        <span class="toggleSwitch-inner" id="solidLabel"></span>
+                        <span class="toggleSwitch-switch"></span>
+                      </label>
                     </div>
                   </div>
                   <div class="mb-3">
-                    <label>Specular / diffuse</label>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="specular" id="specular" checked>
-                      <label class="form-check-label" for="specular">Specular</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="specular" id="diffuse">
-                      <label class="form-check-label" for="diffuse">Diffuse</label>
+                    <label>Light type</label>
+                    <div class="toggleSwitch">
+                      <input type="checkbox" name="lighting" class="toggleSwitch-checkbox" id="lighting" checked>
+                      <label class="toggleSwitch-label" for="lighting">
+                        <span class="toggleSwitch-inner" id="lightingLabel"></span>
+                        <span class="toggleSwitch-switch"></span>
+                      </label>
                     </div>
                   </div>
+                  <div class="mb-3">
+                    <label>Light direction</label>
+                    <div class="toggleSwitch">
+                      <input type="checkbox" name="specular" class="toggleSwitch-checkbox" id="specular" checked>
+                      <label class="toggleSwitch-label" for="specular">
+                        <span class="toggleSwitch-inner" id="specularLabel"></span>
+                        <span class="toggleSwitch-switch"></span>
+                      </label>
+                    </div>
+                  </div>
+
                   <div class="mb-3">
                     <label for="grid">Grid type</label>
                     <select class="form-select" name="grid" id="grid">
