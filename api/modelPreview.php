@@ -1,7 +1,7 @@
 <?php
 $fileName = $_FILES["nxz"]["name"];
 $fileTmpLoc = $_FILES["nxz"]["tmp_name"];
-$fileLoc = "/var/www/html/adc/archive/models/preview/".$fileName;
+$fileLoc = $_SERVER['DOCUMENT_ROOT']."/archive/models/preview/".$fileName;
 $fileType = $_FILES["nxz"]["type"];
 $fileSize = $_FILES["nxz"]["size"];
 $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);

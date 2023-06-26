@@ -45,7 +45,6 @@ function getFilterList(){
   ajaxSettings.data={trigger:'getFilterList'};
   $.ajax(ajaxSettings)
   .done(function(data) {
-    console.log(data.chronology);
     data.category.forEach((item, i) => {
       $("<option/>").text(item.value + " ("+item.tot+")").val(item.id).appendTo(byCategory);
     });
@@ -59,7 +58,6 @@ function getFilterList(){
 }
 
 function gallery(data, wrapDiv){
-  console.log(data);
   $(wrapDiv).html('');
   let cardClass = wrapDiv == ".card-wrap" ? 'viewArtifactsBtn' : 'collectedCard';
   data.forEach((item, i) => {
@@ -72,35 +70,33 @@ function gallery(data, wrapDiv){
     $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+item.material+"</span>").appendTo(body);
     $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
     $("<p/>",{class:'mb-2'}).html(cutString(item.description, 100)).appendTo(body);
-    if (wrapDiv == ".card-wrap") {
-      let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
-      let itemUrlBtn = $("<button/>",{class:'btn btn-primary ms-3'}).text('view').appendTo(footer);
-      let collectBtn = $("<button/>",{class:'btn btn-primary ms-3 addItemBtn', id: 'addItem'+item.id}).text('collect').appendTo(footer);
-      let uncollectBtn = $("<button/>",{class:'btn btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('remove').appendTo(footer);
-      uncollectBtn.hide();
-      collectBtn.on('click',function(){
-        collected.push(item);
-        $(this).hide();
-        uncollectBtn.show();
-        countItems();
-      })
-      uncollectBtn.on('click',function(){
-        let idx = collected.findIndex(i => i === item.id);
-        collected.splice(idx, 1);
-        $(this).hide();
-        collectBtn.show();
-        countItems();
-      })
-      itemUrlBtn.on('click', function(){
-        $.redirectPost('artifact_view.php', {id:item.id});
-      })
-    }
+    let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
+    let itemUrlBtn = $("<button/>",{class:'btn btn-primary ms-3'}).text('view').appendTo(footer);
+    let collectBtn = $("<button/>",{class:'btn btn-primary ms-3 addItemBtn', id: 'addItem'+item.id}).text('collect').appendTo(footer);
+    let uncollectBtn = $("<button/>",{class:'btn btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('remove').appendTo(footer);
+    wrapDiv == ".card-wrap" ? uncollectBtn.hide() : uncollectBtn.show();
+    wrapDiv == ".card-wrap" ? collectBtn.show() : collectBtn.hide();
+    collectBtn.on('click',function(){
+      collected.push(item);
+      $(this).hide();
+      uncollectBtn.show();
+      countItems();
+    })
+    uncollectBtn.on('click',function(){
+      let idx = collected.findIndex(i => i === item.id);
+      collected.splice(idx, 1);
+      $(this).hide();
+      collectBtn.show();
+      countItems();
+    })
+    itemUrlBtn.on('click', function(){
+      $.redirectPost('artifact_view.php', {id:item.id});
+    })
   })
 }
 
 function collectedGallery(){
   gallery(collected,"#wrapCollected")
-  console.log(collected);
 }
 function checkActiveFilter(){
   filter.length > 0 ? $("#createFromFiltered").show() : $("#createFromFiltered").hide();

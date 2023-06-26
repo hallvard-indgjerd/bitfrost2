@@ -1,6 +1,7 @@
 <?php
   require 'init.php';
   if (!isset($_SESSION['id'])) { header('Location: 403.php');}
+  echo $_SERVER['DOCUMENT_ROOT'];
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">

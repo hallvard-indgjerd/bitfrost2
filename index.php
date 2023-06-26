@@ -97,7 +97,7 @@
                     </div>
                     <div class="mb-3">
                       <label for="description" class="form-label">Brief description</label>
-                      <textarea class="form-control form-control-sm" id="description" rows="3"></textarea>
+                      <textarea class="form-control form-control-sm" id="description" rows="10"></textarea>
                     </div>
 
                   </div>
