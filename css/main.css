@@ -30,7 +30,7 @@ body > nav > #linkWrap > span.titleSection{display: block; padding: 5px 20px; te
 body > nav > #linkWrap > a{color:#fff; padding:5px 20px; border-bottom: 1px solid rgba(0,0,0,.3);}
 
 .form-sm{width:360px;}
-
+.tdhopBg{background-image: linear-gradient(to top, #6a6a6a, #fff);}
 /* bootstrap hack */
 .custom-tooltip {
   --bs-tooltip-bg: var(--bs-white);

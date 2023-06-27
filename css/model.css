@@ -15,6 +15,8 @@
   border: 1px solid #ced4da;
   border-radius: 5px;
 }
+.mainLabel{font-size: 18px;}
+.lightDir{display: inline; width:75px; margin-right: 1px;}
 
 .toggleSwitch-inner {
   display: block;
@@ -71,6 +73,8 @@
 .toggleSwitch-inner:before { padding-left: 10px; }
 .toggleSwitch-inner:after {padding-right: 10px;text-align: right;}
 
+#orthoLabel:before{content: "DEFAULT";}
+#orthoLabel:after{content: "ORTHO";}
 #textureLabel:before{content: "TEXTURE";}
 #textureLabel:after{content: "PLAIN COLOR";}
 #solidLabel:before{content: "SOLID";}
@@ -79,6 +83,8 @@
 #lightingLabel:after{content: "UNSHADED";}
 #specularLabel:before{content: "DIFFUSE";}
 #specularLabel:after{content: "SPECULAR";}
+#xyz_axesLabel:before{content: "HIDE AXES";}
+#xyz_axesLabel:after{content: "SHOW AXES";}
 
 #wrap3d{width:100%; height:600px;}
 .card-wrap{

@@ -1,7 +1,6 @@
 <?php
   require 'init.php';
   if (!isset($_SESSION['id'])) { header('Location: 403.php');}
-  echo $_SERVER['DOCUMENT_ROOT'];
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -44,88 +43,107 @@
               <div class="col-md-4">
                 <div id="initParamObjectForm">
                   <h3>Model init parameters</h3>
-                  <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" value="1" id="ortho">
-                    <label class="form-check-label" for="ortho">Ortho</label>
+                  <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom">
+                    <div>
+                      <label class="mainLabel"><i class="mdi mdi-help-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Switch between default and orthogonal view"></i> Ortho view</label>
+                      <div class="toggleSwitch">
+                        <input type="checkbox" name="ortho" class="toggleSwitch-checkbox" id="ortho" checked>
+                        <label class="toggleSwitch-label" for="ortho">
+                          <span class="toggleSwitch-inner" id="orthoLabel"></span>
+                          <span class="toggleSwitch-switch"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="mainLabel" for="view">Side view</label>
+                      <select class="form-select w-auto" name="view" id="view">
+                        <option value="" selected>--select view--</option>
+                        <option value="top">top</option>
+                        <option value="bottom">bottom</option>
+                        <option value="front">front</option>
+                        <option value="left">left</option>
+                        <option value="right">right</option>
+                        <option value="back">back</option>
+                      </select>
+                    </div>
                   </div>
-                  <div class="mb-3">
-                    <label for="view">Select view</label>
-                    <select class="form-select" name="view" id="view">
-                      <option value="" selected>--select view--</option>
-                      <option value="top">top</option>
-                      <option value="bottom">bottom</option>
-                      <option value="front">front</option>
-                      <option value="left">left</option>
-                      <option value="right">right</option>
-                      <option value="back">back</option>
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <label class="d-block">Set the light</label>
+                  <div class="mb-3 pb-3 border-bottom">
+                    <label class="mainLabel mb-2">Set the light</label>
                     <div class="d-flex justify-content-between align-items-start">
-                      <div class="w-50">
-                        <canvas id="lightcontroller_canvas" width="100" height="100"></canvas>
+                      <div>
+                        <canvas id="lightcontroller_canvas" width="150" height="150"></canvas>
                       </div>
-                      <div class="w-50">
-                        <input type="number" name="lightx" value="" step="0.001" class="form-control mb-2" placeholder="x value">
-                        <input type="number" name="lighty" value="" step="0.001" class="form-control" placeholder="y value">
+                      <div>
+                        <div class="mb-2">
+                          <label class="mainLabel">Light direction</label>
+                          <div class="toggleSwitch">
+                            <input type="checkbox" name="specular" class="toggleSwitch-checkbox" id="specular" checked>
+                            <label class="toggleSwitch-label" for="specular">
+                              <span class="toggleSwitch-inner" id="specularLabel"></span>
+                              <span class="toggleSwitch-switch"></span>
+                            </label>
+                          </div>
+                        </div>
+                        <div>
+                          <label class="mainLabel">Light type</label>
+                          <div class="toggleSwitch">
+                            <input type="checkbox" name="lighting" class="toggleSwitch-checkbox" id="lighting" checked>
+                            <label class="toggleSwitch-label" for="lighting">
+                              <span class="toggleSwitch-inner" id="lightingLabel"></span>
+                              <span class="toggleSwitch-switch"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <input type="text" name="lightx" value="" class="lightDir form-control form-control-sm" readonly>
+                      <input type="text" name="lighty" value="" class="lightDir form-control form-control-sm" readonly>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom">
+                    <div>
+                      <label class="mainLabel">Texture type</label>
+                      <div class="toggleSwitch">
+                        <input type="checkbox" name="texture" class="toggleSwitch-checkbox" id="texture" checked>
+                        <label class="toggleSwitch-label" for="texture">
+                          <span class="toggleSwitch-inner" id="textureLabel"></span>
+                          <span class="toggleSwitch-switch"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="mainLabel">Solid type</label>
+                      <div class="toggleSwitch">
+                        <input type="checkbox" name="solid" class="toggleSwitch-checkbox" id="solid" checked>
+                        <label class="toggleSwitch-label" for="solid">
+                          <span class="toggleSwitch-inner" id="solidLabel"></span>
+                          <span class="toggleSwitch-switch"></span>
+                        </label>
                       </div>
                     </div>
                   </div>
-                  <div class="mb-3">
-                    <label>Texture type</label>
-                    <div class="toggleSwitch">
-                      <input type="checkbox" name="texture" class="toggleSwitch-checkbox" id="texture" checked>
-                      <label class="toggleSwitch-label" for="texture">
-                        <span class="toggleSwitch-inner" id="textureLabel"></span>
-                        <span class="toggleSwitch-switch"></span>
-                      </label>
+                  <div class="mb-3 d-flex justify-content-between align-items-start">
+                    <div>
+                      <label class="mainLabel" for="grid">Grid type</label>
+                      <select class="form-select w-auto" name="grid" id="grid">
+                        <option value="" selected>--select grid--</option>
+                        <option value="off">off</option>
+                        <option value="base">base</option>
+                        <option value="box">box</option>
+                        <option value="fixed">fixed</option>
+                      </select>
                     </div>
-                  </div>
-                  <div class="mb-3">
-                    <label>Solid type</label>
-                    <div class="toggleSwitch">
-                      <input type="checkbox" name="solid" class="toggleSwitch-checkbox" id="solid" checked>
-                      <label class="toggleSwitch-label" for="solid">
-                        <span class="toggleSwitch-inner" id="solidLabel"></span>
-                        <span class="toggleSwitch-switch"></span>
-                      </label>
+                    <div>
+                      <label class="mainLabel">View XYZ axes</label>
+                      <div class="toggleSwitch">
+                        <input type="checkbox" name="xyz_axes" class="toggleSwitch-checkbox" id="xyz_axes">
+                        <label class="toggleSwitch-label" for="xyz_axes">
+                          <span class="toggleSwitch-inner" id="xyz_axesLabel"></span>
+                          <span class="toggleSwitch-switch"></span>
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                  <div class="mb-3">
-                    <label>Light type</label>
-                    <div class="toggleSwitch">
-                      <input type="checkbox" name="lighting" class="toggleSwitch-checkbox" id="lighting" checked>
-                      <label class="toggleSwitch-label" for="lighting">
-                        <span class="toggleSwitch-inner" id="lightingLabel"></span>
-                        <span class="toggleSwitch-switch"></span>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <label>Light direction</label>
-                    <div class="toggleSwitch">
-                      <input type="checkbox" name="specular" class="toggleSwitch-checkbox" id="specular" checked>
-                      <label class="toggleSwitch-label" for="specular">
-                        <span class="toggleSwitch-inner" id="specularLabel"></span>
-                        <span class="toggleSwitch-switch"></span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div class="mb-3">
-                    <label for="grid">Grid type</label>
-                    <select class="form-select" name="grid" id="grid">
-                      <option value="" selected>--select grid--</option>
-                      <option value="off">off</option>
-                      <option value="base">base</option>
-                      <option value="box">box</option>
-                      <option value="fixed">fixed</option>
-                    </select>
-                  </div>
-                  <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" value="1" id="xyz_axes">
-                    <label class="form-check-label" for="xyz_axes">XYZ axes</label>
                   </div>
                 </div>
               </div>
@@ -146,6 +164,7 @@
     <script type="text/javascript" src="assets/3dhop/trackball_pantilt.js"></script>
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
+    <script src="js/3dhopFunctions.js" charset="utf-8"></script>
     <script src="js/model.js" charset="utf-8"></script>
   </body>
 </html>
