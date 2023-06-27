@@ -86,7 +86,7 @@
 #xyz_axesLabel:before{content: "HIDE AXES";}
 #xyz_axesLabel:after{content: "SHOW AXES";}
 
-#wrap3d{width:100%; height:600px;}
+#wrap3d{width:100%; height:630px;}
 .card-wrap{
   position:relative;
   display: flex;

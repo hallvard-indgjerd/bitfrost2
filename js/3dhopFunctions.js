@@ -1,7 +1,13 @@
 let presenter, scene;
 const canvas = document.getElementById("draw-canvas");
 const lightControllerCanvas = document.getElementById("lightcontroller_canvas");
-const instanceOpt = {"nxz" : { mesh : "nxz", tags: ['Group'] }}
+const instanceOpt = {"nxz" : {
+  mesh : "nxz",
+  tags: ['Group'],
+  color : [0.5, 0.5, 0.5],
+  backfaceColor : [0.5, 0.5, 0.5, 3.0],
+  specularColor : [0.0, 0.0, 0.0, 256.0]
+}}
 const trackBallOpt = {
   type : TurnTableTrackball,
   trackOptions : {
@@ -36,6 +42,9 @@ let VIEW_STATE = {
   "specular" : false,
   "lightDir" : [-0.1700,-0.1700],
 };
+
+let addGrid = addBaseGrid;  //starting default
+let sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
 
 function setup3dhop(scene){
   presenter = new Presenter("draw-canvas");
@@ -98,3 +107,149 @@ function setupLightController() {
   }, false);
 }
 ////////////////////////////
+function computeEncumbrance() {
+  computeSceneBB();
+  var gStep = 1.0;
+  // if(ARCHIVE.data(OBJCODE,"MEASURE_UNIT") === "mm")
+  //   gStep = 10.0;
+  // else if(ARCHIVE.data(OBJCODE,"MEASURE_UNIT") === "m")
+  //   gStep = 0.01;
+
+  var encumbrance = [0.0, 0.0, 0.0];
+  encumbrance[0] = Math.trunc(Math.ceil((sceneBB[0]-sceneBB[3])/gStep)+1);
+  encumbrance[1] = Math.trunc(Math.ceil((sceneBB[1]-sceneBB[4])/gStep)+1);
+  encumbrance[2] = Math.trunc(Math.ceil((sceneBB[2]-sceneBB[5])/gStep)+1);
+
+  $("#encumbrance").text("Encumbrance: "+encumbrance[0] + " x " + encumbrance[1]  + " x " + encumbrance[2] + " cm");
+  // ARCHIVE.objects[OBJCODE].ENCUMBRANCE = encumbrance[0] + " x " + encumbrance[1]  + " x " + encumbrance[2] + " cm";
+  // fillMetadataPanel();
+}
+
+function computeSceneBB() {
+  for(inst in presenter._scene.modelInstances){
+    let bb = getBBox(inst);
+    if(bb[0] > sceneBB[0]) sceneBB[0] = bb[0];
+    if(bb[1] > sceneBB[1]) sceneBB[1] = bb[1];
+    if(bb[2] > sceneBB[2]) sceneBB[2] = bb[2];
+    if(bb[3] < sceneBB[3]) sceneBB[3] = bb[3];
+    if(bb[4] < sceneBB[4]) sceneBB[4] = bb[4];
+    if(bb[5] < sceneBB[5]) sceneBB[5] = bb[5];
+  }
+}
+function getBBox(instance) {
+  var mname = presenter._scene.modelInstances[instance].mesh;
+  var vv = presenter._scene.meshes[mname].renderable.mesh.basev;
+  var bbox = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
+  var point,tpoint;
+
+  for(var vi=1; vi<(vv.length / 3); vi++){
+    point = [vv[(vi*3)+0], vv[(vi*3)+1], vv[(vi*3)+2], 1.0]
+    tpoint = SglMat4.mul4(presenter._scene.modelInstances[instance].transform.matrix, point);
+    if(tpoint[0] > bbox[0]) bbox[0] = tpoint[0];
+    if(tpoint[1] > bbox[1]) bbox[1] = tpoint[1];
+    if(tpoint[2] > bbox[2]) bbox[2] = tpoint[2];
+    if(tpoint[0] < bbox[3]) bbox[3] = tpoint[0];
+    if(tpoint[1] < bbox[4]) bbox[4] = tpoint[1];
+    if(tpoint[2] < bbox[5]) bbox[5] = tpoint[2];
+  }
+  return bbox;
+}
+
+/////////////////////////////////////////////////////////
+//// Grid functions ////////////////////////////////////
+function startupGrid(){
+  for(inst in presenter._scene.modelInstances){
+    let vv = presenter._scene.meshes[presenter._scene.modelInstances[inst].mesh].renderable.mesh.basev;
+    if (typeof vv === 'undefined') {
+      setTimeout(startupGrid, 50);
+      return;
+    }
+  }
+
+  computeEncumbrance();
+  addGrid();
+}
+
+function addBaseGrid() {
+  computeSceneBB();
+  var rad = 1.0 / presenter.sceneRadiusInv;
+  var XC = (sceneBB[0] + sceneBB[3]) / 2.0;
+  var YC = sceneBB[4];
+  var ZC = (sceneBB[2] + sceneBB[5]) / 2.0;
+
+  var gStep = 10.0;
+  var numDivMaj = Math.floor(rad/gStep);
+  var linesBuffer;
+
+  // major
+  var gridBase;
+  linesBuffer = [];
+  for (gg = -numDivMaj; gg <= numDivMaj; gg+=1){
+    linesBuffer.push([XC + (gg*gStep), YC, ZC + (-gStep*numDivMaj)]);
+    linesBuffer.push([XC + (gg*gStep), YC, ZC + ( gStep*numDivMaj)]);
+    linesBuffer.push([XC + (-gStep*numDivMaj), YC, ZC + (gg*gStep)]);
+    linesBuffer.push([XC + ( gStep*numDivMaj), YC, ZC + (gg*gStep)]);
+  }
+  gridBase = presenter.createEntity("gridBase", "lines", linesBuffer);
+  gridBase.color = [0.9, 0.9, 0.9, 1.0];
+  gridBase.zOff = 0.0;
+  presenter.repaint();
+}
+
+function changeGrid() {
+  var GG = document.getElementById('i_grid').selectedIndex;
+  if (GG===0)
+    addGrid = removeGrid;
+  if (GG===1)
+    addGrid = addBaseGrid;
+  if (GG===2)
+    addGrid = addBoxGrid;
+  if (GG===3)
+    addGrid = addBBGrid;
+
+  removeGrid();
+  addGrid(0.01);
+}
+
+/////////////////////////////////////////
+//// XYZ axes functions ////////////////
+function removeAxes(){
+  presenter.deleteEntity("XXaxis");
+  presenter.deleteEntity("YYaxis");
+  presenter.deleteEntity("ZZaxis");
+}
+
+function addAxes(){
+  var rad = (1.0 / presenter.sceneRadiusInv)/2.0;
+  var linesBuffer;
+  var point, tpoint;
+
+  point = [rad, 0.0, 0.0, 1.0]
+  tpoint = SglMat4.mul4(presenter._scene.modelInstances["model_specimen_0"].transform.matrix, point);
+  linesBuffer = [];
+  linesBuffer.push([0, 0, 0]);
+  linesBuffer.push([tpoint[0], tpoint[1], tpoint[2]]);
+  var axisX = presenter.createEntity("XXaxis", "lines", linesBuffer);
+  axisX.color = [1.0, 0.2, 0.2, 1.0];
+  axisX.zOff = 0.0;
+
+  point = [0.0, rad, 0.0, 1.0]
+  tpoint = SglMat4.mul4(presenter._scene.modelInstances["model_specimen_0"].transform.matrix, point);
+  linesBuffer = [];
+  linesBuffer.push([0, 0, 0]);
+  linesBuffer.push([tpoint[0], tpoint[1], tpoint[2]]);
+  var axisY = presenter.createEntity("YYaxis", "lines", linesBuffer);
+  axisY.color = [0.2, 1.0, 0.2, 1.0];
+  axisY.zOff = 0.0;
+
+  point = [0.0, 0.0, rad, 1.0]
+  tpoint = SglMat4.mul4(presenter._scene.modelInstances["model_specimen_0"].transform.matrix, point);
+  linesBuffer = [];
+  linesBuffer.push([0, 0, 0]);
+  linesBuffer.push([tpoint[0], tpoint[1], tpoint[2]]);
+  var axisZ = presenter.createEntity("ZZaxis", "lines", linesBuffer);
+  axisZ.color = [0.2, 0.2, 1.0, 1.0];
+  axisZ.zOff = 0.0;
+
+  presenter.repaint();
+}

@@ -145,6 +145,11 @@
                       </div>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class="col">
+                      <div class="alert alert-info" id="encumbrance"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

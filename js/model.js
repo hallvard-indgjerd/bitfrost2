@@ -7,9 +7,6 @@ $("#preview, #initParamObjectForm,#progressBar").hide()
 $("[name=nxz]").on('change', function(){$("#preview").show()});
 
 uploadButton.addEventListener('click', uploadFile);
-setupLightController();
-updateLightController(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
-
 function el(el){return document.getElementById(el);}
 
 function uploadFile(){
@@ -51,6 +48,9 @@ function completeHandler(event){
   }else {
     presenter.setScene(scene);
   }
+  setupLightController();
+  updateLightController(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
+  setTimeout(startupGrid, 200);
   console.log(presenter);
 }
 function errorHandler(event){el("status").innerHTML = "Upload Failed";}
