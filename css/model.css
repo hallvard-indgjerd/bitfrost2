@@ -1,6 +1,7 @@
 .toggleSwitch {
   position: relative;
   width: 150px;
+  user-select: none;
   -webkit-user-select:none;
   -moz-user-select:none;
   -ms-user-select: none;

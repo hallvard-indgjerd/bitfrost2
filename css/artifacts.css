@@ -44,7 +44,6 @@ fieldset > legend{
   background-repeat: no-repeat;
   background-size: contain;
 }
-
 @media (min-width: 992px) {
   .viewArtifactsBtn{width:19% !important;}
   .collectedCard{width:32% !important;}

@@ -7,246 +7,235 @@
   <head>
     <?php require("assets/meta.php"); ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
-    <link rel="stylesheet" href="css/artifacts.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/css/bootstrap5-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/artifacts_add.css">
   </head>
   <body>
     <?php require("assets/header.php"); ?>
     <main class="<?php echo $mainClass; ?>">
       <div class="container">
+        <input type="hidden" name="usr" value="<?php echo $_SESSION['id']; ?>">
         <form name="newArtifactForm" enctype="multipart/form-data" method="post">
-          <div class="row mb-3">
-            <div class="col">
-              <h4 class="bg-adc-light txt-adc-dark p-2">Museum Object</h4>
-              <small class="text-muted">aka METADATA</small>
-            </div>
-          </div>
           <fieldset>
-            <legend class="border-bottom">Internal data</legend>
             <div class="row mb-3">
-              <div class="col-md-3">
-                <label for="museum" class="form-label">Museum</label>
-                <select class="form-select" id="museum" name="museum" required>
-                  <option selected disabled>select a value</option>
-                  <option value="1" data-abbr="LUHM">Lund</option>
-                  <option value="3" data-abbr="BKM">Blekinge</option>
-                  <option value="2" data-abbr="SHM">Stockholm</option>
-                  <option value="4">...</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label for="inventory" class="form-label">Inventory</label>
-                <input type="text" class="form-control" name="inventory" id="inventory" value="no_inv" required>
-              </div>
-              <div class="col-md-3">
-                <label for="visible" class="form-label">Visibility</label>
-                <select class="form-select" id="visible" name="visible" required>
-                  <option selected disabled>select a value</option>
-                  <option value="1">visible</option>
-                  <option value="0">not visible</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label for="name" class="form-label">Object name</label>
-                <input type="text" class="form-control" name="name" id="name" value="no_inv" required>
+              <div class="col">
+                <h4 class="bg-adc-light txt-adc-dark p-2">Main data</h4>
               </div>
             </div>
-          </fieldset>
-          <fieldset>
-            <legend class="border-bottom">Physical properties</legend>
             <div class="row mb-3">
-              <div class="col-md-4">
-                <label for="material_class" class="form-label">Material Class</label>
-                <select class="form-select" id="material_class" name="material_class"></select>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="description" class="fw-bold text-danger">Description</label>
+                  <textarea id="description" rows="8" class="form-control" data-table="artifact" required></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="mainNotes">Main data notes</label>
+                  <textarea id="mainNotes" rows="5" class="form-control" data-table="artifact"></textarea>
+                </div>
               </div>
-              <div class="col-md-4">
-                <label for="material_spec" class="form-label">Material Specification</label>
-                <select class="form-select" id="material_spec" name="material_spec" disabled>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label for="technique" class="form-label">Technique</label>
-                <input type="search" class="form-control" name="technique" id="technique" value="">
-              </div>
-              <div class="col-md-1">
-                <label for="" class="form-label text-white d-block">trick</label>
-                <button type="button" class="btn btn-sm btn-secondary" name="addMaterial"><span class="mdi mdi-plus"></span></button>
-              </div>
-            </div>
-            <div id="materialWrap"></div>
-          </fieldset>
 
-          <fieldset>
-            <legend class="border-bottom">Dating</legend>
+              <div class="col-md-6">
+                <div class="wrapfield">
+                  <div class="align-top">
+                    <label for="category_class" class="fw-bold text-danger">Category class</label>
+                    <select class="form-select" id="category_class" data-table="artifact" required>
+                      <option value="" selected disabled>-- select value --</option>
+                    </select>
+                  </div>
+                  <div class="align-top">
+                    <label for="category_specs">Category specification</label>
+                    <select class="form-select" id="category_specs" data-table="artifact" disabled></select>
+                    <div id="catSpecsMsg" class="form-text text-danger">No specifications available</div>
+                  </div>
+                </div>
+                <div class="wrapfield">
+                  <label for="type">Typology</label>
+                  <input type="text" class="form-control" id="typology" data-table="artifact" value="">
+                </div>
+                <div class="wrapfield">
+                  <div class="material">
+                    <label for="material" class="fw-bold text-danger">Material</label>
+                    <select class="form-select" id="material">
+                      <option value="" selected disabled>-- select value --</option>
+                    </select>
+                  </div>
+                  <div class="technique">
+                    <label for="technique">
+                      <i class="mdi mdi mdi-information-slab-circle-outline" data-bs-toggle="tooltip" title="the field is not mandatory but it is strongly recommended to fill it in to have more complete data"></i>
+                      Technique
+                    </label>
+                    <div class="input-group">
+                      <input type="text" id="technique" class="form-control" value="">
+                      <button type="button" name="confirmMaterial" class="btn btn-success" data-bs-toggle="tooltip" title="click button to add a new material/technique definition">add</button>
+                    </div>
+                  </div>
+                </div>
+                <div id="matTechArray"></div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <h4 class="bg-adc-light txt-adc-dark p-2">Chronological definition</h4>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <legend>Lower bound</legend>
+              </div>
+            </div>
             <div class="row mb-3">
               <div class="col-md-4">
-                <div class="mb-3">
-                  <label for="period1" class="form-label">Start Period</label>
-                  <select class="form-select" id="chronoPeriodStart" name="chronoPeriodStart"></select>
-                </div>
+                <label for="startGenericList">Filter start year by generic cultural period definition</label>
+                <select class="form-select" id="startGenericList">
+                  <option value="">-- no filter --</option>
+                </select>
               </div>
               <div class="col-md-4">
-                <div class="mb-3">
-                  <label for="period1" class="form-label">End Period</label>
-                  <select class="form-select" id="chronoPeriodEnd" name="chronoPeriodEnd" disabled></select>
-                </div>
+                <label for="startSpecificList">Filter start year by specific cultural period definition</label>
+                <select class="form-select" id="startSpecificList" disabled></select>
+              </div>
+              <div class="col-md-4">
+                <label for="start" class="fw-bold text-danger">Start year</label>
+                <input type="number" class="form-control w-auto" id="start" step="1" data-table="artifact" value="" min="-3000000" max="<?php echo Date('Y'); ?>" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <legend>Upper bound</legend>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="endGenericList">Filter end year by generic cultural period definition</label>
+                <select class="form-select" id="endGenericList" disabled></select>
+              </div>
+              <div class="col-md-4">
+                <label for="endSpecificList">Filter end year by specific cultural period definition</label>
+                <select class="form-select" id="endSpecificList" disabled></select>
+              </div>
+              <div class="col-md-4">
+                <label for="end" class="fw-bold text-danger">End year</label>
+                <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="-3000000" max="<?php echo Date('Y'); ?>" required>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col">
+                <h4 class="bg-adc-light txt-adc-dark p-2">Conservation info</h4>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label for="storage_place" class="fw-bold text-danger">Storage place</label>
+                <select class="form-select" id="storage_place" data-table="artifact" required>
+                  <option value="" selected disabled>-- select a value --</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="inventory">Inventory</label>
+                <input type="text" id="inventory" class="form-control" data-table="artifact" value="">
               </div>
               <div class="col-md-2">
-                <div class="mb-3">
-                  <label for="chronoYearStart" class="form-label">Start year</label>
-                  <input type="number" class="form-control" name="chronoYearStart" id="chronoYearStart" step="1" value="" required>
-                </div>
+                <label for="conservation_state" class="fw-bold text-danger">Conservation state</label>
+                <select class="form-select" id="conservation_state" data-table="artifact" required>
+                  <option value="" selected disabled>-- select a value --</option>
+                </select>
               </div>
               <div class="col-md-2">
-                <div class="mb-3">
-                  <label for="chronoYearEnd" class="form-label">End year</label>
-                  <input type="number" class="form-control" name="chronoYearEnd" id="chronoYearEnd" step="1" value="" required>
-                </div>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend class="border-bottom">Locating</legend>
-            <div class="row mb-3">
-              <div class="col-md-3">
-                <div class="mb-3">
-                  <label for="countries" class="form-label">Countries</label>
-                  <select class="form-select" id="countries" name="countries"></select>
-                </div>
-                <div class="mb-3">
-                  <label for="states" class="form-label">County</label>
-                  <select class="form-select" id="states" name="states" disabled></select>
-                </div>
-                <div class="mb-3">
-                  <label for="cities" class="form-label">Village / town / city</label>
-                  <select class="form-select" id="cities" name="cities" disabled></select>
-                </div>
-                <div class="mb-3">
-                  <label for="lat" class="form-label">Lat</label>
-                  <input type="number" class="form-control" name="lat" id="lat" step="0.01" value="">
-                </div>
-                <div class="mb-3">
-                  <label for="lon" class="form-label">Lon</label>
-                  <input type="number" class="form-control" name="lon" id="lon" step="0.01" value="">
-                </div>
-                <div class="mb-3">
-                  <button type="button" class="btn btn-primary form-control" name="resetMap" id="resetMap"><i class="mdi mdi-fullscreen"></i> reset map</button>
-                </div>
-              </div>
-              <div class="col-md-9">
-                <div id="map"></div>
-                <div class="mb-3">
-                  <label for="geoNotes" class="form-label">Additional locating info</label>
-                  <textarea name="geoNotes" id="geoNotes" rows="6" class="form-control"></textarea>
-                  <small class="text-muted">generic, free text, can be anything: an address, a toponym, an historical collection, a name of excavation campaign</small>
-                </div>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend class="border-bottom">Property metadata</legend>
-            <div class="row mb-3">
-              <div class="col-md-3">
-                <label for="author" class="form-label">Author</label>
-                <select class="form-select" id="author" name="author" required>
-                  <option selected disabled>select a value</option>
-                </select>
-                <small class="text-muted">Items list from Person resource</small>
-              </div>
-              <div class="col-md-3">
-                <label for="owner" class="form-label">Owner</label>
-                <select class="form-select" id="owner" name="owner" required>
-                  <option selected disabled>select a value</option>
-                </select>
-                <small class="text-muted">Items list from Person resource</small>
-              </div>
-              <div class="col-md-3">
-                <label for="license" class="form-label">License</label>
-                <select class="form-select" id="license" name="license" required>
-                  <option selected disabled>select a value</option>
-                  <option value="">PD</option>
-                  <option value="">CC0</option>
-                  <option value="">CC-BY</option>
-                  <option value="">CC-BY-SA</option>
-                  <option value="">CC-BY-SA-NC</option>
+                <label for="object_condition">Object condition</label>
+                <select class="form-select" id="object_condition" data-table="artifact">
+                  <option value="" selected disabled>-- select a value --</option>
                 </select>
               </div>
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend class="border-bottom">Other info</legend>
-            <div class="row mb-3">
-              <div class="col-md-3">
-                <label for="state" class="form-label">State of item</label>
-                <select class="form-select" id="state" name="state" required>
-                  <option selected disabled>select a value</option>
-                  <option value="1">under processing</option>
-                  <option value="0">data complete</option>
-                </select>
-                <small class="text-muted">an object "under processing" will not be visible in the gallery until the status has changed to "data complete"</small>
+              <div class="col-md-2">
+                <label for="is_museum_copy" class="me-3 d-block">is museum copy</label>
+                <input type="checkbox" data-toggle="toggle" data-onlabel="yes" data-offlabel="no" data-onstyle="success" data-offstyle="secondary" id="is_museum_copy">
               </div>
             </div>
-          </fieldset>
 
-          <div class="row mb-3">
-            <div class="col">
-              <h4 class="bg-adc-light txt-adc-dark p-2">3D Object</h4>
-              <small class="text-muted">aka PARADATA</small>
-            </div>
-          </div>
-
-          <fieldset>
-            <legend class="border-bottom">Upload model</legend>
             <div class="row mb-3">
-              <div class="col-md-4">
-                <label for="nxz" class="form-label">You can upload only nxz file</label>
-                <div class="input-group">
-                  <input class="form-control" type="file" id="nxz" name="nxz" accept="application/octet-stream">
-                  <button class="btn btn-secondary" type="button" id="preview"><i class="mdi mdi-monitor-eye"></i>  preview</button>
-                </div>
-                <div class="">
-                  <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
-                  <h3 id="status"></h3>
-                  <p id="loaded_n_total"></p>
-                </div>
+              <div class="col">
+                <h4 class="bg-adc-light txt-adc-dark p-2">Geographic information</h4>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col">
-                <div id="3dhop" class="tdhop" onmousedown="if (event.preventDefault) event.preventDefault()">
-              <!-- <div id="toolbar" class="btn-group" role="group">
-                <button type="button" id="home" class="btn btn-light" data-toggle="tooltip" title="reset zoom"><i class="fa-sharp fa-solid fa-house"></i></button>
-                <button type="button" id="zoomin" class="btn btn-light" data-toggle="tooltip" title="zoom in"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-                <button type="button" id="zoomout" class="btn btn-light" data-toggle="tooltip" title="zoom out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-                <button type="button" id="light_on" class="btn btn-light" data-toggle="tooltip" title="enable light control"><i class="fa-solid fa-lightbulb"></i></button>
-                <button type="button" id="full_on" class="btn btn-light" data-toggle="tooltip" title="full screen"><i class="fa-solid fa-expand"></i></button>
-              </div> -->
-              <canvas id="draw-canvas" />
-            </div>
+                <legend>Find site</legend>
               </div>
             </div>
-          </fieldset>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <div id="cityWrap" class="mb-3">
+                  <label for="city" class="fw-bold text-danger">City</label>
+                  <input type="text" name="city" class="form-control" value="" placeholder="digit city name" required>
+                  <div id="cityMsg" class="form-text text-danger">No city selected</div>
+                  <div class="list-group" id="citySuggested"></div>
+                </div>
+                <div class="mb-3">
+                  <label for="parish">Parish</label>
+                  <input type="text" id="parish" value="" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label for="toponym">Toponym</label>
+                  <input type="text" id="toponym" value="" class="form-control">
+                </div>
+                <div class="mb-3 wrapfield">
+                  <div class="">
+                    <label for="longitude" class="fw-bold text-danger">Longitude</label>
+                    <input type="number" id="longitude" step="0.01" class="form-control" value="0.00" min="-180.00" max="180.00" required>
+                  </div>
+                  <div class="">
+                    <label for="latitude" class="fw-bold text-danger">Latitude</label>
+                    <input type="number" id="latitude" step="0.01" class="form-control" value="0.00" min="-90.00" max="90.00" required>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="findplace_notes">Notes about position</label>
+                  <textarea id="findplace_notes" rows="5" class="form-control"></textarea>
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div id="map">
+                  <div class="alert alert-warning" id="mapAlert">To put a marker on map you have to zoom in</div>
+                </div>
+              </div>
+            </div>
 
-          <button type="submit" name="newArtifact" class="btn btn-warning">save item</button>
+            <div class="row mb-3">
+              <div class="col">
+                <h4 class="bg-adc-light txt-adc-dark p-2">Metadata</h4>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="author" class="fw-bold text-danger">Author</label>
+                <select class="form-select" id="author" required></select>
+              </div>
+              <div class="col-md-4">
+                <label for="owner" class="fw-bold text-danger">Owner</label>
+                <select class="form-select" id="owner" required>
+                  <option value="" selected disabled>-- select value --</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="license" class="fw-bold text-danger">License</label>
+                <select class="form-select" id="license" required>
+                  <option value="" selected disabled>-- select license --</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" name="newArtifact" class="btn btn-warning">save item</button>
+          </fieldset>
         </form>
       </div>
     </main>
     <?php require("assets/menu.php"); ?>
     <?php require("assets/js.html"); ?>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
-    <script type="text/javascript" src="assets/3dhop/spidergl.js"></script>
-    <script type="text/javascript" src="assets/3dhop/presenter.js"></script>
-    <script type="text/javascript" src="assets/3dhop/nexus.js"></script>
-    <script type="text/javascript" src="assets/3dhop/ply.js"></script>
-    <script type="text/javascript" src="assets/3dhop/trackball_turntable.js"></script>
-    <script type="text/javascript" src="assets/3dhop/trackball_turntable_pan.js"></script>
-    <script type="text/javascript" src="assets/3dhop/trackball_pantilt.js"></script>
-    <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
-    <script type="text/javascript" src="assets/3dhop/init.js"></script>
-    <script src="js/artifacts.js" charset="utf-8"></script>
-    <script type="text/javascript">
-      mapInit()
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/js/bootstrap5-toggle.ecmas.min.js"></script>
+    <script src="js/leafletBaseLayer.js" charset="utf-8"></script>
+    <script src="js/artifact_add.js" charset="utf-8"></script>
+    <script src="js/chronologyFunc.js" charset="utf-8"></script>
   </body>
 </html>

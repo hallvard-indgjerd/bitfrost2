@@ -6,28 +6,72 @@ if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
   <div id="linkWrap">
     <?php if(isset($_SESSION['id'])){ ?>
       <span id="user"><?php echo $_SESSION['email']; ?></span>
+      <a href='#' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="My dashboard. From this page you can manage your record and do many other funny things">
+        <span class="mdi mdi-view-dashboard"></span>
+        dashboard
+      </a>
       <span class="titleSection">resources</span>
-      <a href='models.php' class='animated'>models</a>
-      <a href='artifacts.php' class='animated'>artifacts</a>
-      <a href='#' class='animated'>runes</a>
-      <a href='#' class='animated'>buildings</a>
-      <a href='#' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="research insitutions, museum, university etc.">institutions</a>
-      <a href='persons.php' class='animated'>persons</a>
+      <a href='artifacts_add.php' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="Artifacts gallery. From this page you can manage artifact">
+        <span class="mdi mdi-axe"></span>
+        artifacts
+      </a>
+      <a href='#' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="Models gallery. From this page you can manage model">
+        <span class="mdi mdi-cube-outline"></span>
+        models
+      </a>
+      <a href='#' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="research insitutions, museum, university etc.">
+        <span class="mdi mdi-bank"></span>
+        institutions
+      </a>
+      <a href='persons_add.php' class='animated'>
+        <span class="mdi mdi-book-account"></span>
+        address book
+      </a>
       <span class="titleSection">admin</span>
-      <a href='#' class='animated'>users</a>
-      <a href='#' class='animated'>vocabularies</a>
+      <a href='#' class='animated'>
+        <span class="mdi mdi-account-group"></span>
+        users
+      </a>
+      <a href='#' class='animated'>
+        <span class="mdi mdi-format-list-bulleted-square"></span>
+        vocabularies
+      </a>
       <span class="titleSection">my account</span>
-      <a href='#' class='animated'>settings</a>
-      <a href='#' class='animated'>my collections</a>
-      <a href="logout.php" class="animated">logout</a>
+      <a href='#' class='animated'>
+        <span class="mdi mdi-cog"></span>
+        settings
+      </a>
+      <a href='#' class='animated'>
+        <span class="mdi mdi-image-multiple"></span>
+        my collections
+      </a>
+      <a href="logout.php" class="animated">
+        <span class="mdi mdi-logout-variant"></span>
+        logout
+      </a>
     <?php } ?>
     <span class="titleSection d-lg-none">main pages</span>
-    <a href="index.php" class="animated d-lg-none">home</a>
-    <a href="#" class="animated d-lg-none">about</a>
-    <a href="#" class="animated d-lg-none">milestones</a>
-    <a href="#" class="animated d-lg-none">partners</a>
+    <a href="index.php" class="animated d-lg-none">
+      <span class="mdi mdi-home"></span>
+      home
+    </a>
+    <a href="#" class="animated d-lg-none">
+      <span class="mdi mdi-information-outline"></span>
+      about
+    </a>
+    <a href="#" class="animated d-lg-none">
+      <span class="mdi mdi-sign-direction"></span>
+      milestones
+    </a>
+    <a href="#" class="animated d-lg-none">
+      <span class="mdi mdi-handshake-outline"></span>
+      partners
+    </a>
     <?php if (!isset($_SESSION['id'])) {?>
-      <a href="login.php" class="animated d-lg-none">login</a>
+      <a href="login.php" class="animated d-lg-none">
+        <span class="mdi mdi-login-variant"></span>
+        login
+      </a>
     <?php } ?>
   </div>
 </nav>

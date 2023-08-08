@@ -1,15 +1,12 @@
 let map,marker,markerGroup;
-let material = [];
 let collection={};
 let items = [];
-let matClassSet = {trigger:'getSelectOptions', list:'list_material_class', column:'en', filter:null};
 let countriesSet = {trigger:'getSelectOptions', list:'countries', column:'name', filter:'id = 213 or id = 165'};
 let ownerSet = {trigger:'getSelectOptions', list:'user', column:'name', filter:null};
 let authorSet = {trigger:'getSelectOptions', list:'user', column:'name', filter:null};
 let periodStartSet = {trigger:'getSelectOptions', list:'cultural_specific_period', column:'start', filter:null};
 
 countItems();
-getList(matClassSet,'material_class','en');
 getList(countriesSet,'countries','name');
 getList(authorSet,'author','name');
 getList(ownerSet,'owner','name');
@@ -102,73 +99,11 @@ function setMapView(ll,zoom){
   $("[name=lon]").val(ll[1]);
 }
 
-
-$("[name=material_class]").on('change', function(){
-  let v = $(this).val();
-  if(!v){
-    $("[name=material_spec]").html('').attr({"disabled":true});
-    return false;
-  }
-  let matSpecSet = {trigger:'getSelectOptions', list:'list_material_specs', column:'en', filter:'class = '+v}
-  $("[name=material_spec]").html('');
-  getList(matSpecSet,'material_spec','en');
-  $("[name=material_spec]").attr({"disabled":false});
-})
-
-function getList(settings,selName,label){
-  ajaxSettings.url=API+"get.php";
-  ajaxSettings.data=settings;
-  $.ajax(ajaxSettings)
-  .done(function(data) {
-    let firstOpt = $("<option/>").attr({"selected":true}).text('select a value').val('').appendTo("#"+selName)
-    data.forEach((opt, i) => {
-      let item = $("<option/>").val(opt.id).text(opt[label]).appendTo("#"+selName)
-      if (selName=='chronoPeriodStart') {item.attr({"data-start":opt.start, "data-end":opt.end});}
-      if (selName=='chronoPeriodEnd') {item.attr({"data-end":opt.end});}
-      if (selName=='countries' || selName=='states' || selName=='cities') {
-        let lat = parseFloat(opt.latitude).toFixed(4);
-        let lon = parseFloat(opt.longitude).toFixed(4);
-        item.attr({"data-lat":lat, "data-lon":lon});
-      }
-    });
-
-  })
-}
-
-function handleMaterial(){
-  let mclass = $("[name=material_class]").val();
-  let mclassTxt = $("[name=material_class]").find("option:selected").text();
-  let mspec = $("[name=material_spec]").val() ? $("[name=material_spec]").val() : null ;
-  let mspecTxt = $("[name=material_spec]").val() ?  $("[name=material_spec]").find("option:selected").text() : '';
-  let tech = $("[name=technique]").val() ? $("[name=technique]").val() : null;
-  if (!mclass) {
-    alert('You must select 1 "material class" at least');
-    return false;
-  }
-  material.push({mclass,mspec,tech});
-  let row = $("<div/>", {class:'row mb-3 border-bottom'}).appendTo("#materialWrap");
-  let col1 = $("<div/>",{class:'col-md-4'}).appendTo(row);
-  let col2 = $("<div/>",{class:'col-md-4'}).appendTo(row);
-  let col3 = $("<div/>",{class:'col-md-3'}).appendTo(row);
-  let col4 = $("<div/>",{class:'col-md-1'}).appendTo(row);
-  $("<input/>",{class:'form-control-plaintext', type:'text'}).val(mclassTxt).attr({"readonly":true}).appendTo(col1);
-  $("<input/>",{class:'form-control-plaintext', type:'text'}).val(mspecTxt).attr({"readonly":true}).appendTo(col2);
-  $("<input/>",{class:'form-control-plaintext', type:'text'}).val(tech).attr({"readonly":true}).appendTo(col3);
-  $("<button/>",{type:'button', class:'btn btn-sm btn-danger', name:'delMat'}).html('<span class="mdi mdi-trash-can"></span>').appendTo(col4).on('click', function(){
-    let idx = $("#materialWrap .row").index(row);
-    material.splice(idx,1)
-    row.remove();
-  })
-  $("[name=material_class]").val($("[name=material_class] option:first").val());
-  $("[name=material_spec]").html('').attr({"disabled":true});
-  $("[name=technique]").val('')
-}
-
 function mapInit(){
   const mapExt = [[55.7,5.3],[69.3,30.3]];
 
   map = L.map('map').fitBounds(mapExt);
-  let osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
 
   markerGroup = L.layerGroup().addTo(map);
   map.on('click', function(e){

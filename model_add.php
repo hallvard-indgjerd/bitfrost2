@@ -15,6 +15,9 @@
       <div class="container">
         <form name="newArtifactForm" enctype="multipart/form-data" method="post">
           <fieldset>
+            <input type="text" name="test" value="" class="form-control" required>
+          </fieldset>
+          <fieldset>
             <legend class="border-bottom">Upload model</legend>
             <div class="row mb-3">
               <div class="col-md-4">

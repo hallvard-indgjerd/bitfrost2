@@ -18,6 +18,7 @@ class Model extends Conn{
 
   public function getArtifact(int $id){
     $artifact = "select a.name, status.value status, a.inventory, a.storage_place, conservation.value conservation_state, category_class.value category_class, category_specs.value category_specs, coalesce(a.type, 'not defined', null) type, list_object_condition.value object_condition, a.is_museum_copy, a.description, a.start, a.end, coalesce(a.notes, '',null) notes from artifact a inner join list_item_status status on a.status = status.id inner join list_conservation_state conservation on a.conservation_state = conservation.id left join list_category_class category_class on a.category_class = category_class.id left join list_category_specs category_specs on a.category_specs = category_specs.id left join list_object_condition on a.object_condition = list_object_condition.id where a.id = ".$id.";";
+    $model = $this->simple("select model from artifact_model where artifact = ".$id.";")[0]['model'];
     $out['artifact'] = $this->simple($artifact)[0];
     if (!empty($out['artifact']['start'])) { $out['start_period'] = $this->getChronology($out['artifact']['start']); }
     if (!empty($out['artifact']['end'])) { $out['end_period'] = $this->getChronology($out['artifact']['end']); }
@@ -26,6 +27,18 @@ class Model extends Conn{
     $out['artifact_findplace'] = $this->getArtifactFindplace($id)[0];
     $out['artifact_material_technique'] = $this->getArtifactMaterial($id)[0];
     $out['storage_place'] = $this->getInstitution($out['artifact']['storage_place'])[0];
+
+    $out['paradata'] = $this->getModel($model);
+    return $out;
+  }
+
+  public function getModel(int $id){
+    $out['model'] = $this->simple("select * from model where id = ".$id.";")[0];
+    $out['model_biblio'] = $this->simple("select * from model_biblio where model = ".$id.";")[0];
+    $out['model_init'] = $this->simple("select * from model_init where model = ".$id.";")[0];
+    $out['model_param'] = $this->simple("select * from model_param where model = ".$id.";")[0];
+    $out['model_metadata'] = $this->getModelMetadata($id);
+
     return $out;
   }
 
@@ -42,6 +55,15 @@ class Model extends Conn{
     where item.artifact = ".$id.";";
     return $this->simple($sql);
   }
+  private function getModelMetadata(int $id){
+    $sql = "select auth.name auth, owner.name owner, license.license, license.acronym, license.link licenseLink, item.create_at, item.updated_at
+    from model_metadata item
+    inner join user auth on item.author = auth.id
+    inner join institution owner on item.owner = owner.id
+    inner join license on item.license = license.id
+    where item.model = ".$id.";";
+    return $this->simple($sql)[0];
+  }
 
   private function getInstitution(int $id){
     $sql = "select i.name, i.abbreviation, cat.value category, cities.name city, i.address, i.lat, i.lon, i.link from artifact a inner join institution i on a.storage_place = i.id inner join list_institution_category cat on i.category = cat.id inner join cities on i.city = cities.id where a.id = ".$id.";";
@@ -49,6 +71,6 @@ class Model extends Conn{
   }
   private function getArtifactMeasure(int $id){ return $this->simple("select * from artifact_measure where artifact = ".$id.";"); }
   private function getArtifactFindplace(int $id){ return $this->simple("select cities.name city, item.* from artifact_findplace item left join cities on item.city = cities.id where item.artifact = ".$id.";");}
-  private function getArtifactMaterial(int $id){ return $this->simple("select material.value material, item.technique, item.notes material_notes from artifact_material_technique item inner join list_material_specs material on item.material = material.id where item.artifact = ".$id.";");}
+  private function getArtifactMaterial(int $id){ return $this->simple("select material.value material, item.technique from artifact_material_technique item inner join list_material_specs material on item.material = material.id where item.artifact = ".$id.";");}
 }
 ?>

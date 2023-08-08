@@ -1,4 +1,39 @@
-.titleSection{}
-.divSection{}
 .accordion .list-group-item span{ display:inline-block; width:50%;}
 .accordion .list-group-item span:first-child{ font-weight: bold; vertical-align: top;}
+
+.tdhop{
+  background: rgb(255,255,255);
+  background: -moz-linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(121,121,121,1) 100%);
+  background: -webkit-linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(121,121,121,1) 100%);
+  background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(121,121,121,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff",endColorstr="#797979",GradientType=1);
+}
+.tdhop, #map, #alertMapWrap{ width:100%; height:300px;}
+.tdhop>canvas:focus-visible{outline: none !important;}
+
+#alertMapWrap{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+#alertMapWrap > .alert{
+  width:300px;
+  z-index:2000;
+  margin:0;
+}
+
+@media (min-width: 992px) {
+  .tdhop{height:300px;}
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .tdhop{height:400px;}
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  .tdhop{height:550px;}
+}

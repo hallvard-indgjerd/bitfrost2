@@ -4,15 +4,34 @@ namespace Adc;
 class Get extends Conn{
   function __construct(){}
 
-  public function getSelectOptions(string $list, string $column, $filter = null){
+  public function getSelectOptions(string $list, $filter = null, $orderBy=null){
     $where = '';
     $field = '';
     switch ($list) {
-      case 'person': $field = "id, concat(last_name, ' ',first_name) as name";  break;
+      case 'institution':
+        $field = "id, concat(abbreviation, ' - ',name) as value";
+      break;
+      case 'person':
+        $field = "id, concat(last_name, ' ',first_name) as name";
+      break;
+      case 'license':
+        $field = "id, concat(acronym, ' - ',license) as name";
+      break;
+      case 'city':
+        $field = "id, iso country_code, name";
+      break;
+      // case 'cities':
+      //   $field = "id, latitude, longitude, name, country_code";
+      // break;
+      case 'json':
+        $field = "st_asgeojson(shape) geometry";
+        $list = 'city';
+      break;
       default: $field = '*'; break;
     }
     if($filter){$where = "where ".$filter;}
-    $out = "select ".$field." from ".$list." ".$where." order by ".$column." asc;";
+    $sort = $orderBy ? $orderBy : 2;
+    $out = "select ".$field." from ".$list." ".$where." order by ".$sort." asc;";
     return $this->simple($out);
   }
 
