@@ -1,4 +1,3 @@
-const mapExt = [[55.7,5.3],[69.3,30.3]];
 let collected = [];
 let filter = [];
 let sort = "rand()";
@@ -31,9 +30,10 @@ function cutString(string, length) {
 }
 
 function getCity(query){
+  let countyVal = $("#county").val();
+  let county = countyVal ? ' county = '+countyVal+' and ': ' ';
   ajaxSettings.url=API+"get.php";
-  // listCity.settings.filter = " (country_id = 213 or country_id = 165) and name like '%"+query+"%'"
-  listCity.settings.filter = " name like '%"+query+"%'"
+  listCity.settings.filter = county+"name like '%"+query+"%'"
   ajaxSettings.data=listCity.settings;
   $.ajax(ajaxSettings)
   .done(function(data){
@@ -42,13 +42,15 @@ function getCity(query){
       $("<button/>", {class:'list-group-item list-group-item-action', type:'button'}).prop('disabled', true).text('No cities found').appendTo(citySuggested)
     }else {
       data.forEach((item, i) => {
-        let cityBtn = $("<button/>", {class:'list-group-item list-group-item-action', type:'button'}).text(item.name+" - "+item.country_code).appendTo(citySuggested)
+        let cityBtn = $("<button/>", {class:'list-group-item list-group-item-action', type:'button'}).text(item.name).appendTo(citySuggested)
         cityBtn.on('click', function(){
+          if(!countyVal){
+            $("#county").val(item.county).trigger('change');
+          }
           $("[name=city]").val(item.name).attr({"data-cityId":item.id})
           $('#citySuggested').fadeOut('fast');
           autocompleted = true;
-          // setMapView([parseFloat(item.latitude),parseFloat(item.longitude)],15)
-          setMapExtent(item.id)
+          setMapExtent('jsonCity',item.id)
         })
       });
     }
@@ -56,6 +58,22 @@ function getCity(query){
   })
   .fail(function() { console.log("error");})
   .always(function() { console.log("complete"); });
+}
+
+function getCityFromLonLat(ll){
+  ajaxSettings.url=API+"get.php";
+  ajaxSettings.data={trigger: 'getCityFromLonLat', point:ll};
+  let checkCity = $("[name=city]").val();
+  $.ajax(ajaxSettings)
+  .done(function(data) {
+    console.log(data);
+    $("#county").val(data[0].county).trigger('change');
+    $("[name=city]").val(data[0].name).attr({"data-cityId":data[0].id})
+    setMapExtent('jsonCity',data[0].id)
+  })
+  .fail(function( jqxhr, textStatus, error ) {
+    console.log("Request Failed: " + jqxhr+", "+textStatus + ", " + error );
+  });
 }
 
 function getDate(){
@@ -71,23 +89,14 @@ function getList(settings,selName,label){
   ajaxSettings.data=settings;
   $.ajax(ajaxSettings)
   .done(function(data) {
-    if (selName=='city') {console.log(data)}
     data.forEach((opt, i) => {
       let item = $("<option/>").val(opt.id).text(opt[label]).appendTo("#"+selName)
-
       if(selName=='startGenericList' || selName=='startSpecificList' || selName=='endGenericList' || selName=='endSpecificList'){
         item.attr({"data-start":opt.start, "data-end":opt.end})
       }
-
       if (selName == 'author') {
         let auth = $("[name=usr]").val()
         $("#author").val(auth)
-      }
-
-      if (selName=='countries' || selName=='states' || selName=='city') {
-        let lat = parseFloat(opt.latitude).toFixed(4);
-        let lon = parseFloat(opt.longitude).toFixed(4);
-        item.attr({"data-lat":lat, "data-lon":lon});
       }
     });
   })
@@ -148,7 +157,8 @@ function handleMaterialTechnique(){
 }
 
 function mapInit(){
-  map = L.map('map').fitBounds(mapExt);
+  map = L.map('map',{maxBounds:mapExt}).fitBounds(mapExt)
+  map.setMinZoom(4);
   osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
   gStreets = L.tileLayer(gStreetTile,{maxZoom: 18, subdomains:gSubDomains });
   gSat = L.tileLayer(gSatTile,{maxZoom: 18, subdomains:gSubDomains});
@@ -160,26 +170,38 @@ function mapInit(){
     "Google Street": gStreets
   };
   L.control.layers(baseLayers, null).addTo(map);
-
-  markerGroup = L.layerGroup().addTo(map);
+  countyGroup = L.featureGroup().addTo(map);
+  cityGroup = L.featureGroup().addTo(map);
   map.on({
     zoomend: handleAlert,
+    // moveend: console.log(map.getBounds()),
     click:function(e){
+      mapClick = true;
       let zoom = map.getZoom()
       if (zoom<14) { return false;}
       let ll = map.mouseEventToLatLng(e.originalEvent);
-      setMapView([parseFloat(ll.lat),parseFloat(ll.lng)],zoom)
+      $("#longitude").val(ll.lng);
+      $("#latitude").val(ll.lat);
+      getCityFromLonLat([parseFloat(ll.lng),parseFloat(ll.lat)], zoom)
+      if (marker != undefined) { map.removeLayer(marker)};
+      marker = L.marker(ll).addTo(map);
+      map.setView(ll,zoom)
     }
   })
   function handleAlert(){
     let alertClass, alertText;
+    // console.log(map.getBounds());
     let zoom = map.getZoom();
     if (zoom>=14) {
       alertClass = 'alert alert-success';
       alertText = 'Ok, you can click on map to create a marker';
+      map.removeLayer(countyGroup);
+      map.removeLayer(cityGroup);
     }else {
       alertClass = 'alert alert-warning'
       alertText = 'To put a marker on map you have to zoom in';
+      map.addLayer(countyGroup);
+      map.addLayer(cityGroup);
     }
     $("#mapAlert").removeClass().addClass(alertClass).text(alertText)
   }
@@ -188,7 +210,7 @@ function mapInit(){
     options: { position: 'topleft'},
     onAdd: function (map) {
       let container = L.DomUtil.create('div', 'extentControl leaflet-bar leaflet-control leaflet-touch');
-      let btnHome = $("<a/>",{href:'#', title:'max zoom'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
+      let btnHome = $("<a/>",{href:'#', title:'max zoom', id:'maxZoomBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
       $("<i/>",{class:'mdi mdi-earth'}).appendTo(btnHome)
       btnHome.on('click', function (e) {
         e.preventDefault()
@@ -198,7 +220,6 @@ function mapInit(){
     return container;
     }
   })
-
   map.addControl(new myToolbar());
 }
 
@@ -206,33 +227,49 @@ function resetChronology(){
   $("#start, #end, #startGenericList, #startSpecificList,#endGenericList, #endSpecificList").val('')
   $("#start, #end").attr({"min":-3000000,"max":getDate()['y']});
 }
-function setMapExtent(id){
-  let city = L.featureGroup().addTo(map);
+
+function setMapExtent(group, id){
+  console.log(mapClick);
+  jsonCity.settings.list = group;
+  jsonCity.settings.filter = " id = "+id
+  if (group == 'jsonCounty') {
+    map.removeLayer(countyGroup);
+    map.removeLayer(cityGroup);
+    countyGroup = L.featureGroup()
+  }else {
+    map.removeLayer(cityGroup);
+    cityGroup = L.featureGroup()
+  }
   let geojsonFeature = {
     "type": "Feature",
     "properties": {id:id}
   };
   ajaxSettings.url=API+"get.php";
-  jsonCity.settings.filter = " id = "+id
   ajaxSettings.data=jsonCity.settings;
   $.ajax(ajaxSettings)
   .done(function(data){
+    let json;
     geojsonFeature.geometry = JSON.parse(data[0].geometry);
-    console.log(geojsonFeature);
-    let l = L.geoJson(geojsonFeature).addTo(city);
-    map.fitBounds(l.getBounds());
+    if (group == 'jsonCounty') {
+      json = L.geoJson(geojsonFeature, {style:countyStyle}).addTo(countyGroup);
+      if(mapClick === false){
+        countyGroup.addTo(map)
+        if(!$("[name=city]").val()){
+          map.fitBounds(countyGroup.getBounds());
+        }
+      }
+    }else {
+      json = L.geoJson(geojsonFeature, {style:cityStyle}).addTo(cityGroup);
+      if (mapClick === false) {
+        cityGroup.addTo(map)
+        map.fitBounds(cityGroup.getBounds());
+      }
+    }
+    mapClick = false;
   })
   .fail(function( jqxhr, textStatus, error ) {
     console.log("Request Failed: " + jqxhr+", "+textStatus + ", " + error );
   });
-}
-function setMapView(ll,zoom){
-  map.removeLayer(markerGroup);
-  map.setView(ll,zoom);
-  markerGroup = L.layerGroup().addTo(map);
-  marker = L.marker(ll).addTo(markerGroup);
-  $("#latitude").val(ll[0].toFixed(4));
-  $("#longitude").val(ll[1].toFixed(4));
 }
 
 $.extend({

@@ -18,14 +18,18 @@ class Get extends Conn{
         $field = "id, concat(acronym, ' - ',license) as name";
       break;
       case 'city':
-        $field = "id, iso country_code, name";
+        $field = "id, concat(name,' (', iso, ')') name, county";
       break;
-      // case 'cities':
-      //   $field = "id, latitude, longitude, name, country_code";
-      // break;
-      case 'json':
+      case 'county':
+        $field = "id, concat(name,' (', iso, ')') name";
+      break;
+      case 'jsonCity':
         $field = "st_asgeojson(shape) geometry";
         $list = 'city';
+      break;
+      case 'jsonCounty':
+        $field = "st_asgeojson(shape) geometry";
+        $list = 'county';
       break;
       default: $field = '*'; break;
     }
@@ -40,6 +44,15 @@ class Get extends Conn{
     $out['material'] = $this->simple("select distinct l.id, l.value, count(*) tot from list_material_specs l inner join artifact_material_technique a on a.material = l.id group by l.id, l.value order by 2 asc;");
     $out['chronology'] = $this->simple("select c.definition as period, c.start, c.end, count(*) tot from artifact a, nordic_generic_period c where a.start between c.start and c.end and a.start is not null group by c.definition, c.start, c.end order by c.id asc;");
     return $out;
+  }
+
+  public function getCityFromLonLat(array $point){
+    $sql = "select id, name, county from city where st_contains(city.shape, st_srid(st_geomfromtext('POINT(".$point[0]." ".$point[1].")'), 4326));";
+    return $this->simple($sql);
+  }
+  public function getCountyByCity(int $city){
+    $sql = "select county.id, county.name from county, city where city.id = ".$city." and city.county = county.id;";
+    return $this->simple($sql)[0];
   }
 }
 ?>

@@ -166,9 +166,15 @@
             </div>
             <div class="row mb-3">
               <div class="col-md-4">
+                <div class="mb-3">
+                  <label for="county" class="fw-bold text-danger">County</label>
+                  <select class="form-select" id="county" required>
+                    <option value="" selected disabled>-- select county --</option>
+                  </select>
+                </div>
                 <div id="cityWrap" class="mb-3">
-                  <label for="city" class="fw-bold text-danger">City</label>
-                  <input type="text" name="city" class="form-control" value="" placeholder="digit city name" required>
+                  <label for="city">City</label>
+                  <input type="text" name="city" class="form-control" value="" placeholder="digit city name">
                   <div id="cityMsg" class="form-text text-danger">No city selected</div>
                   <div class="list-group" id="citySuggested"></div>
                 </div>
@@ -182,12 +188,12 @@
                 </div>
                 <div class="mb-3 wrapfield">
                   <div class="">
-                    <label for="longitude" class="fw-bold text-danger">Longitude</label>
-                    <input type="number" id="longitude" step="0.01" class="form-control" value="0.00" min="-180.00" max="180.00" required>
+                    <label for="longitude">Longitude</label>
+                    <input type="number" id="longitude" step="0.01" class="form-control" value="0.00" min="-180.00" max="180.00">
                   </div>
                   <div class="">
-                    <label for="latitude" class="fw-bold text-danger">Latitude</label>
-                    <input type="number" id="latitude" step="0.01" class="form-control" value="0.00" min="-90.00" max="90.00" required>
+                    <label for="latitude">Latitude</label>
+                    <input type="number" id="latitude" step="0.01" class="form-control" value="0.00" min="-90.00" max="90.00">
                   </div>
                 </div>
                 <div class="mb-3">
@@ -234,7 +240,7 @@
     <?php require("assets/js.html"); ?>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/js/bootstrap5-toggle.ecmas.min.js"></script>
-    <script src="js/leafletBaseLayer.js" charset="utf-8"></script>
+    <script src="js/geoConfig.js" charset="utf-8"></script>
     <script src="js/artifact_add.js" charset="utf-8"></script>
     <script src="js/chronologyFunc.js" charset="utf-8"></script>
   </body>

@@ -1,4 +1,3 @@
-let map,marker,markerGroup;
 const listTrigger='getSelectOptions';
 const citySuggested = $("#citySuggested");
 let autocompleted = false;
@@ -54,31 +53,38 @@ let listLicense = {
   htmlEl: 'license',
   label: 'name'
 }
+let listCounty = {
+  settings: {trigger:listTrigger, list:'county', orderBy:'name', filter:''},
+  htmlEl: 'county',
+  label: 'name'
+}
 let listCity = {
   settings: {trigger:listTrigger, list:'city', orderBy:'name', filter:''},
   htmlEl: 'city',
   label: 'name'
 }
 let jsonCity = {
-  settings: {trigger:listTrigger, list:'json', orderBy:'1', filter:''},
+  settings: {trigger:listTrigger, list:'', orderBy:'1', filter:''},
 }
 mapInit()
 
-listArray.push(listCatClass,listMaterial,chronoGeneric,listStoragePlace,listConservationState,listObjectCondition,listAuthor,listOwner,listLicense)
+listArray.push(listCatClass,listMaterial,chronoGeneric,listStoragePlace,listConservationState,listObjectCondition,listAuthor,listOwner,listLicense, listCounty)
 listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
 
 $('#catSpecsMsg,#cityMsg').hide();
 $(document).on('change', '#category_class', handleCategoryChange);
 $("[name=confirmMaterial]").on('click', handleMaterialTechnique)
 citySuggested.hide()
+
+$("#county").on('change', function(){
+  $("[name=city]").val('').attr({"data-id":''})
+  setMapExtent('jsonCounty',$(this).val())
+})
+
 $("[name=city]").on({
   keyup: function(){
     let v = $(this).val()
-    if(v.length >= 2){
-      getCity(v)
-    }else {
-      citySuggested.html('').fadeOut('fast')
-    }
+    if(v.length >= 2){ getCity(v) }else { citySuggested.html('').fadeOut('fast')}
   }
 })
 
