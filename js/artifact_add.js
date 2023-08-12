@@ -66,6 +66,8 @@ let listCity = {
 let jsonCity = {
   settings: {trigger:listTrigger, list:'', orderBy:'1', filter:''},
 }
+citySuggested.hide()
+$("#resetMapDiv").hide();
 mapInit()
 
 listArray.push(listCatClass,listMaterial,chronoGeneric,listStoragePlace,listConservationState,listObjectCondition,listAuthor,listOwner,listLicense, listCounty)
@@ -73,12 +75,17 @@ listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
 
 $('#catSpecsMsg,#cityMsg').hide();
 $(document).on('change', '#category_class', handleCategoryChange);
+$('[name=resetMap]').on('click',function(e){
+  e.preventDefault()
+  e.stopPropagation()
+  resetMapValue()
+});
 $("[name=confirmMaterial]").on('click', handleMaterialTechnique)
-citySuggested.hide()
 
 $("#county").on('change', function(){
-  $("[name=city]").val('').attr({"data-id":''})
+  $("[name=city]").val('').attr({"data-cityid":''})
   setMapExtent('jsonCounty',$(this).val())
+  $("#resetMapDiv").show();
 })
 
 $("[name=city]").on({
@@ -94,7 +101,7 @@ $(document).on('click', (event) => {
     let city = $("[name=city]").val()
     $('#citySuggested').fadeOut('fast');
     if(city && !autocompleted){
-      $("[name=city]").val('').attr({"data-id":''})
+      $("[name=city]").val('').attr({"data-cityid":''})
     }
   }
 })

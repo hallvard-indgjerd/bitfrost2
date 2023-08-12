@@ -55,9 +55,7 @@ function getCity(query){
       });
     }
     citySuggested.fadeIn('fast')
-  })
-  .fail(function() { console.log("error");})
-  .always(function() { console.log("complete"); });
+  });
 }
 
 function getCityFromLonLat(ll){
@@ -66,14 +64,21 @@ function getCityFromLonLat(ll){
   let checkCity = $("[name=city]").val();
   $.ajax(ajaxSettings)
   .done(function(data) {
-    console.log(data);
+    if(data.length==0){
+      $("#mapAlert")
+        .removeClass()
+        .addClass('alert alert-danger')
+        .text('Attention! You clicked out of the project area!')
+      return false;
+    }
+    if (marker != undefined) { map.removeLayer(marker)};
+    marker = L.marker([ll[1], ll[0]]).addTo(map);
     $("#county").val(data[0].county).trigger('change');
     $("[name=city]").val(data[0].name).attr({"data-cityId":data[0].id})
+    $("#longitude").val(ll[0].toFixed(4));
+    $("#latitude").val(ll[1].toFixed(4));
     setMapExtent('jsonCity',data[0].id)
   })
-  .fail(function( jqxhr, textStatus, error ) {
-    console.log("Request Failed: " + jqxhr+", "+textStatus + ", " + error );
-  });
 }
 
 function getDate(){
@@ -174,23 +179,16 @@ function mapInit(){
   cityGroup = L.featureGroup().addTo(map);
   map.on({
     zoomend: handleAlert,
-    // moveend: console.log(map.getBounds()),
     click:function(e){
       mapClick = true;
       let zoom = map.getZoom()
       if (zoom<14) { return false;}
       let ll = map.mouseEventToLatLng(e.originalEvent);
-      $("#longitude").val(ll.lng);
-      $("#latitude").val(ll.lat);
       getCityFromLonLat([parseFloat(ll.lng),parseFloat(ll.lat)], zoom)
-      if (marker != undefined) { map.removeLayer(marker)};
-      marker = L.marker(ll).addTo(map);
-      map.setView(ll,zoom)
     }
   })
   function handleAlert(){
     let alertClass, alertText;
-    // console.log(map.getBounds());
     let zoom = map.getZoom();
     if (zoom>=14) {
       alertClass = 'alert alert-success';
@@ -217,7 +215,7 @@ function mapInit(){
         e.stopPropagation()
         map.fitBounds(mapExt);
       });
-    return container;
+      return container;
     }
   })
   map.addControl(new myToolbar());
@@ -228,14 +226,29 @@ function resetChronology(){
   $("#start, #end").attr({"min":-3000000,"max":getDate()['y']});
 }
 
+function resetMapValue(){
+  map.fitBounds(mapExt);
+  map.removeLayer(countyGroup);
+  map.removeLayer(cityGroup);
+  countyGroup = L.featureGroup()
+  cityGroup = L.featureGroup()
+  map.eachLayer(function (layer) {
+    if (layer instanceof L.Marker) { layer.remove() }
+  });
+  $("#county, #parish, #toponym, #longitude, #latitude, #findplace_notes").val('')
+  $("[name=city]").val('').attr({"data-cityid":''})
+  $("#resetMapDiv").show();
+}
+
 function setMapExtent(group, id){
-  console.log(mapClick);
+  let countyJson, cityJson;
   jsonCity.settings.list = group;
   jsonCity.settings.filter = " id = "+id
   if (group == 'jsonCounty') {
     map.removeLayer(countyGroup);
     map.removeLayer(cityGroup);
     countyGroup = L.featureGroup()
+    cityGroup = L.featureGroup()
   }else {
     map.removeLayer(cityGroup);
     cityGroup = L.featureGroup()
@@ -248,28 +261,24 @@ function setMapExtent(group, id){
   ajaxSettings.data=jsonCity.settings;
   $.ajax(ajaxSettings)
   .done(function(data){
-    let json;
     geojsonFeature.geometry = JSON.parse(data[0].geometry);
     if (group == 'jsonCounty') {
-      json = L.geoJson(geojsonFeature, {style:countyStyle}).addTo(countyGroup);
+      countyJson = L.geoJson(geojsonFeature, {style:countyStyle}).addTo(countyGroup);
       if(mapClick === false){
         countyGroup.addTo(map)
         if(!$("[name=city]").val()){
-          map.fitBounds(countyGroup.getBounds());
+          map.fitBounds(countyJson.getBounds());
         }
       }
     }else {
-      json = L.geoJson(geojsonFeature, {style:cityStyle}).addTo(cityGroup);
+      cityJson = L.geoJson(geojsonFeature, {style:cityStyle}).addTo(cityGroup);
       if (mapClick === false) {
         cityGroup.addTo(map)
-        map.fitBounds(cityGroup.getBounds());
+        map.fitBounds(cityJson.getBounds());
       }
     }
     mapClick = false;
   })
-  .fail(function( jqxhr, textStatus, error ) {
-    console.log("Request Failed: " + jqxhr+", "+textStatus + ", " + error );
-  });
 }
 
 $.extend({

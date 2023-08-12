@@ -174,7 +174,7 @@
                 </div>
                 <div id="cityWrap" class="mb-3">
                   <label for="city">City</label>
-                  <input type="text" name="city" class="form-control" value="" placeholder="digit city name">
+                  <input type="text" name="city" class="form-control" value="" placeholder="digit city name" data-cityid=''>
                   <div id="cityMsg" class="form-text text-danger">No city selected</div>
                   <div class="list-group" id="citySuggested"></div>
                 </div>
@@ -204,6 +204,9 @@
               <div class="col-md-8">
                 <div id="map">
                   <div class="alert alert-warning" id="mapAlert">To put a marker on map you have to zoom in</div>
+                  <div id="resetMapDiv">
+                    <button type="button" class="btn btn-sm btn-light" data-bs-toggle="tooltip" title="remove all elements from map, reset field value and restore the initial zoom extent" name="resetMap">reset map value</button>
+                  </div>
                 </div>
               </div>
             </div>
