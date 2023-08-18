@@ -3,6 +3,34 @@ let filter = [];
 let sort = "rand()";
 $("#viewCollection, #createFromFiltered").hide();
 
+function buildData(){
+  $("[data-table]").each(function(){
+    if ($(this).is("input:text") ||
+      $(this).is("input[type=number]") ||
+      $(this).is("select") ||
+      $(this).is("textarea")
+    ) {
+      if (!$(this).is(':disabled')) {
+        if ($(this).val()) {
+          tab.push($(this).data('table'));
+          field.push({tab:$(this).data('table'),field:$(this).attr('id')});
+          val.push({tab:$(this).data('table'),field:$(this).attr('id'),val:$(this).val()});
+        }
+      }
+    }
+    if ($(this).is(':checkbox')) {
+      let v = $(this).is(':checked') ? 1 : 0;
+      tab.push($(this).data('table'));
+      field.push({tab:$(this).data('table'),field:$(this).attr('id')});
+      val.push({tab:$(this).data('table'),field:$(this).attr('id'),val:v});
+    }
+  });
+  tab = tab.filter((v, p) => tab.indexOf(v) == p);
+  $.each(tab,function(i,v){ dati[v]={} })
+  $.each(field,function(i,v){ dati[v.tab][v.field]={} })
+  $.each(val,function(i,v){ dati[v.tab][v.field]=v.val })
+}
+
 function buildGallery(){
   checkActiveFilter()
   ajaxSettings.url=API+"model.php";
@@ -108,7 +136,7 @@ function getList(settings,selName,label){
 }
 
 function handleCategoryChange(){
-  $("#category_specs").html('<option val="" selected>-- select a value --</option>').prop('disabled', false);
+  $("#category_specs").html('<option value="" selected>-- select a value --</option>').prop('disabled', false);
   let val = $('#category_class').val();
   getList({trigger:listTrigger, list:'list_category_specs',column:'value', filter:'category_class = '+val},'category_specs', 'value');
   let showMsgList = function(){
@@ -156,7 +184,7 @@ function handleMaterialTechnique(){
       let idx = $("#matTechArray .row").index(row);
       materialTechniqueArray.splice(idx,1)
       row.remove();
-      console.log(materialTechniqueArray);
+      $(this).tooltip('hide')
     })
     .tooltip()
 }

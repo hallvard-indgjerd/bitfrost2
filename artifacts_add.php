@@ -26,11 +26,11 @@
               <div class="col-md-6">
                 <div class="mb-3">
                   <label for="description" class="fw-bold text-danger">Description</label>
-                  <textarea id="description" rows="8" class="form-control" data-table="artifact" required></textarea>
+                  <textarea data-table="artifact" id="description" rows="8" class="form-control" required></textarea>
                 </div>
                 <div class="mb-3">
-                  <label for="mainNotes">Main data notes</label>
-                  <textarea id="mainNotes" rows="5" class="form-control" data-table="artifact"></textarea>
+                  <label for="notes">Main data notes</label>
+                  <textarea data-table="artifact" id="notes" rows="5" class="form-control"></textarea>
                 </div>
               </div>
 
@@ -44,13 +44,13 @@
                   </div>
                   <div class="align-top">
                     <label for="category_specs">Category specification</label>
-                    <select class="form-select" id="category_specs" data-table="artifact" disabled></select>
+                    <select class="form-select" id="category_specs" data-table="artifact" value="" disabled></select>
                     <div id="catSpecsMsg" class="form-text text-danger">No specifications available</div>
                   </div>
                 </div>
                 <div class="wrapfield">
                   <label for="type">Typology</label>
-                  <input type="text" class="form-control" id="typology" data-table="artifact" value="">
+                  <input type="text" class="form-control" id="type" data-table="artifact" value="">
                 </div>
                 <div class="wrapfield">
                   <div class="material">
@@ -150,7 +150,7 @@
               </div>
               <div class="col-md-2">
                 <label for="is_museum_copy" class="me-3 d-block">is museum copy</label>
-                <input type="checkbox" data-toggle="toggle" data-onlabel="yes" data-offlabel="no" data-onstyle="success" data-offstyle="secondary" id="is_museum_copy">
+                <input data-table="artifact" type="checkbox" data-toggle="toggle" data-onlabel="yes" data-offlabel="no" data-onstyle="success" data-offstyle="secondary" id="is_museum_copy">
               </div>
             </div>
 
@@ -168,37 +168,37 @@
               <div class="col-md-4">
                 <div class="mb-3">
                   <label for="county" class="fw-bold text-danger">County</label>
-                  <select class="form-select" id="county" required>
+                  <select data-table="artifact_findplace" class="form-select" id="county" required>
                     <option value="" selected disabled>-- select county --</option>
                   </select>
                 </div>
                 <div id="cityWrap" class="mb-3">
                   <label for="city">City</label>
-                  <input type="text" name="city" class="form-control" value="" placeholder="digit city name" data-cityid=''>
+                  <input id="city" type="text" name="city" class="form-control" value="" placeholder="digit city name" data-cityid=''>
                   <div id="cityMsg" class="form-text text-danger">No city selected</div>
                   <div class="list-group" id="citySuggested"></div>
                 </div>
                 <div class="mb-3">
                   <label for="parish">Parish</label>
-                  <input type="text" id="parish" value="" class="form-control">
+                  <input data-table="artifact_findplace" type="text" id="parish" value="" class="form-control">
                 </div>
                 <div class="mb-3">
                   <label for="toponym">Toponym</label>
-                  <input type="text" id="toponym" value="" class="form-control">
+                  <input data-table="artifact_findplace" type="text" id="toponym" value="" class="form-control">
                 </div>
                 <div class="mb-3 wrapfield">
                   <div class="">
                     <label for="longitude">Longitude</label>
-                    <input type="number" id="longitude" step="0.01" class="form-control" value="0.00" min="-180.00" max="180.00">
+                    <input data-table="artifact_findplace" type="number" id="longitude" step="0.0001" class="form-control" value="" min="-180.0000" max="180.0000">
                   </div>
                   <div class="">
                     <label for="latitude">Latitude</label>
-                    <input type="number" id="latitude" step="0.01" class="form-control" value="0.00" min="-90.00" max="90.00">
+                    <input data-table="artifact_findplace" type="number" id="latitude" step="0.0001" class="form-control" value="" min="-90.0000" max="90.0000">
                   </div>
                 </div>
                 <div class="mb-3">
                   <label for="findplace_notes">Notes about position</label>
-                  <textarea id="findplace_notes" rows="5" class="form-control"></textarea>
+                  <textarea data-table="artifact_findplace" id="findplace_notes" rows="5" class="form-control"></textarea>
                 </div>
               </div>
               <div class="col-md-8">
@@ -219,17 +219,17 @@
             <div class="row mb-3">
               <div class="col-md-4">
                 <label for="author" class="fw-bold text-danger">Author</label>
-                <select class="form-select" id="author" required></select>
+                <select data-table="artifact" class="form-select" id="author" required></select>
               </div>
               <div class="col-md-4">
                 <label for="owner" class="fw-bold text-danger">Owner</label>
-                <select class="form-select" id="owner" required>
+                <select data-table="artifact" class="form-select" id="owner" required>
                   <option value="" selected disabled>-- select value --</option>
                 </select>
               </div>
               <div class="col-md-4">
                 <label for="license" class="fw-bold text-danger">License</label>
-                <select class="form-select" id="license" required>
+                <select data-table="artifact" class="form-select" id="license" required>
                   <option value="" selected disabled>-- select license --</option>
                 </select>
               </div>

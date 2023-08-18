@@ -1,5 +1,10 @@
 const listTrigger='getSelectOptions';
 const citySuggested = $("#citySuggested");
+const form = $("[name='newArtifactForm']");
+let dati={}
+let tab=[]
+let field=[]
+let val=[]
 let autocompleted = false;
 let materialTechniqueArray = []
 let listArray = [];
@@ -91,7 +96,11 @@ $("#county").on('change', function(){
 $("[name=city]").on({
   keyup: function(){
     let v = $(this).val()
-    if(v.length >= 2){ getCity(v) }else { citySuggested.html('').fadeOut('fast')}
+    if(v.length >= 2){
+      getCity(v)
+    }else{
+      citySuggested.html('').fadeOut('fast')
+    }
   }
 })
 
@@ -105,3 +114,36 @@ $(document).on('click', (event) => {
     }
   }
 })
+
+$("[name='newArtifact']").on('click', function(el){
+  checkMaterialArray()
+  if (form[0].checkValidity()) {
+    el.preventDefault()
+    buildData()
+    dati.trigger = 'addArtifact';
+    dati.artifact_material_technique = materialTechniqueArray;
+    if ($("#city").val()) {
+      dati.artifact_findplace.city = $("#city").data('cityid')
+    }
+    ajaxSettings.url=API+"artifact.php";
+    ajaxSettings.data = dati
+    $.ajax(ajaxSettings)
+    .done(function(data) {
+      console.log(data);
+    }).fail(function(data){
+      form.find(".outputMsg").html(data);
+    });
+  }
+})
+
+function checkMaterialArray(){
+  const mt = materialTechniqueArray.length
+  const mtEl = document.getElementById('material')
+  if (mt == 0) {
+    mtEl.setCustomValidity('You have to add 1 material at least')
+    return false;
+  }else {
+    mtEl.setCustomValidity('')
+    return true;
+  }
+}
