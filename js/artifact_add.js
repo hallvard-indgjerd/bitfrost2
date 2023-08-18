@@ -129,9 +129,17 @@ $("[name='newArtifact']").on('click', function(el){
     ajaxSettings.data = dati
     $.ajax(ajaxSettings)
     .done(function(data) {
-      console.log(data);
-    }).fail(function(data){
-      form.find(".outputMsg").html(data);
+      if (data.res==0) {
+        $("#toastDivError .errorOutput").text(data.output);
+        $("#toastDivError").removeClass("d-none");
+      }else {
+        $("#toastDivSuccess").removeClass("d-none")
+        $("#toastDivSuccess #createNewRecord").attr("href","artifacts_add.php")
+        $("#toastDivSuccess #goToItemPage").on('click', function(){
+          $.redirectPost('artifact_view.php', {id:data.id});
+        })
+      }
+      $("#toastDivContent").removeClass('d-none')
     });
   }
 })

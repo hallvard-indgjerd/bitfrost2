@@ -6,7 +6,7 @@ if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
   <div id="linkWrap">
     <?php if(isset($_SESSION['id'])){ ?>
       <span id="user"><?php echo $_SESSION['email']; ?></span>
-      <a href='#' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="My dashboard. From this page you can manage your record and do many other funny things">
+      <a href='dashboard.php' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="My dashboard. From this page you can manage your record and do many other funny things">
         <span class="mdi mdi-view-dashboard"></span>
         dashboard
       </a>

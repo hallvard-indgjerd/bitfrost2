@@ -21,10 +21,10 @@ class Artifact extends Conn{
       $this->prepared($sql, $dati['artifact_findplace']);
 
       $this->pdo()->commit();
-      return ["out"=> true, "id"=>$lastId];
+      return ["res"=> 1, "id"=>$lastId];
     } catch (\Exception $e) {
       $this->pdo()->rollBack();
-      return [$e->getMessage(), $e->getCode()];
+      return ["res"=>0, "output"=>$e->getMessage()];
     }
 
   }

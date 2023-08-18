@@ -239,8 +239,11 @@
         </form>
       </div>
     </main>
-    <?php require("assets/menu.php"); ?>
-    <?php require("assets/js.html"); ?>
+    <?php
+      require("assets/toastDiv.html");
+      require("assets/menu.php");
+      require("assets/js.html");
+    ?>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/js/bootstrap5-toggle.ecmas.min.js"></script>
     <script src="js/geoConfig.js" charset="utf-8"></script>
