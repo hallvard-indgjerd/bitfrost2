@@ -71,6 +71,7 @@
                   <div id="mainSection" class="accordion-collapse collapse show" aria-labelledby="main-section">
                     <div class="accordion-body">
                       <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><span>Codename</span><span id="codename"></span></li>
                         <li class="list-group-item"><span>Category class</span><span id="category_class"></span></li>
                         <li class="list-group-item"><span>Category specification</span><span id="category_specs"></span></li>
                         <li class="list-group-item"><span>Material / technique</span><span id="material"></span></li>

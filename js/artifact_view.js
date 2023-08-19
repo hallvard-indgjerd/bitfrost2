@@ -1,7 +1,7 @@
 let map,conservationMarker, findplaceMarker;
 const mapExt = [[55.7,5.3],[69.3,30.3]];
 
-ajaxSettings.url=API+"model.php";
+ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:$("[name=artifactId]").val()};
 $.ajax(ajaxSettings)
 .done(function(data) {

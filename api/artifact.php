@@ -10,4 +10,5 @@ if(isset($funzione) && function_exists($funzione)) {
 }
 
 function addArtifact($obj){ return json_encode($obj->addArtifact($_POST)); }
+function getArtifact($obj){return json_encode($obj->getArtifact($_POST['id']));}
 ?>
