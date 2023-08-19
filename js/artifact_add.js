@@ -78,6 +78,30 @@ mapInit()
 listArray.push(listCatClass,listMaterial,chronoGeneric,listStoragePlace,listConservationState,listObjectCondition,listAuthor,listOwner,listLicense, listCounty)
 listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
 
+$("[name=checkNameBtn]").on('click', function(){
+  let name = $("#name").val()
+  if(!name){
+    alert('The field is empty, enter a value and retry')
+    return false;
+  }
+  if(name.length < 5){
+    alert('The name must be 5 characters at least')
+    return false;
+  }
+  checkName(name)
+})
+
+function checkName(name){
+  dati.trigger='checkName';
+  dati.name = name;
+  ajaxSettings.url=API+"artifact.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings).done(function(data){
+    let output = data.length==0 ? '<div class="alert alert-success">Ok, the value is not present in the database, you can use this name</div>':'<div class="alert alert-danger">The value already exists in the database, you cannot use it</div>';
+    $("#checkNameResult").html(output);
+  });
+}
+
 $('#catSpecsMsg,#cityMsg').hide();
 $(document).on('change', '#category_class', handleCategoryChange);
 $('[name=resetMap]').on('click',function(e){

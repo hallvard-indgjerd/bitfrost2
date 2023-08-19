@@ -24,6 +24,19 @@
             </div>
             <div class="row mb-3">
               <div class="col-md-6">
+                <label for="name" class="text-danger fw-bold">Name</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="name" data-table="artifact" id="name" required>
+                  <button class="btn btn-warning" type="button" name="checkNameBtn">check name</button>
+                </div>
+                <div id="checkNameResult"></div>
+              </div>
+              <div class="col-md-6">
+                Fill in the "name" field with a value that help you to easily identify the artifact. Remember that you cannot use the same value for different artifacts. To verify if the name already exists, you can insert the value and click the button "check name", a messagge will appears. If you don't check the value now, the system will do it for you when you save the record
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
                 <div class="mb-3">
                   <label for="description" class="fw-bold text-danger">Description</label>
                   <textarea data-table="artifact" id="description" rows="8" class="form-control" required></textarea>

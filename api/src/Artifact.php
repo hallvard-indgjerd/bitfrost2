@@ -30,6 +30,11 @@ class Artifact extends Conn{
 
   }
 
+  public function checkName(string $name){
+    $sql = "select id from artifact where name = '".$name."';";
+    return $this->simple($sql);
+  }
+
   public function getArtifact(int $id){
     $artifact = "select * from artifact_view where id = ".$id.";";
     $out['artifact'] = $this->simple($artifact)[0];
