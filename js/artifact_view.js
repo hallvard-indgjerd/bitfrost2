@@ -5,6 +5,8 @@ ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:$("[name=artifactId]").val()};
 $.ajax(ajaxSettings)
 .done(function(data) {
+  console.log(data);
+  return false;
   let artifact = data.artifact;
   let findplace = data.artifact_findplace;
   let material = data.artifact_material_technique;
@@ -15,7 +17,6 @@ $.ajax(ajaxSettings)
   if (data.end_period) {end_period = data.end_period[0]}
   let model_meta = data.paradata.model_metadata;
   let model_param = data.paradata.model_param;
-  console.log(data);
   //title name
   // $("#name").text(artifact.name);
 

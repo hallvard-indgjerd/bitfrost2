@@ -253,3 +253,8 @@ function addAxes(){
 
   presenter.repaint();
 }
+
+
+function onTrackballUpdate(trackState){
+  console.log('x:'+ trackState[0]);
+}

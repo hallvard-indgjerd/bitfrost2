@@ -1,0 +1,21 @@
+Marco salva i parametri scelti dall'utente nella variabile "view" e per il settaggio,la modifica o l'eliminazione di una view utilizza le funzioni:
+1. addView
+2. updateView
+3. gotoVIew
+4. deleteView
+
+
+e utilizza i seguenti oggetti Json per gestire i valori:
+1. OBJECT_ANNOTATION
+2. VIEW_STATE
+
+per catturare la posizione del modello e passarla alla variabile di OBJECT_ANNOTATION, utilizza la posizione della trackBall:
+OBJECT_ANNOTATION.views[viewID].view = track2view(presenter.getTrackballPosition());
+
+mentre il processo inverso (leggere dalla variabile e impostare la scene) utilizza:
+presenter.animateToTrackballPosition(view2track(OBJECT_ANNOTATION.views[viewID].view));
+
+ATTENZIONE! Sono gestiti quasi tutti i parametri, ad esempio la visibilità degli assi xyz non è gestita, nel senso che se vengono attivati per una view poi restano visibili
+
+
+https://visual.ariadne-infrastructure.eu/

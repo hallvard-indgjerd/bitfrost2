@@ -1,0 +1,11 @@
+#dashboardWrap{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-left: 20px;
+}
+
+.toolbarDiv{ padding:15px 0; }
