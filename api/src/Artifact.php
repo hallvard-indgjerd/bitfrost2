@@ -56,7 +56,7 @@ class Artifact extends Conn{
       array_push($filter,$searchString);
     }
 
-    if($_SESSION['role'] > 0){array_push($filter, "author = ".$_SESSION['id']);}
+    if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
     if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
     $sql = "select id, name, description, cast(last_update as date) as last_update from artifact_view ".$filter. " order by last_update desc";
     return $this->simple($sql);
