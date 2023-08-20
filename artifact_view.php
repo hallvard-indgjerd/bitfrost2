@@ -51,18 +51,12 @@
           </div>
         </div>
       </nav>
-      <div class="container-fluid">
-        <!-- <div class="row">
-          <div class="col">
-            <h1 class="text-center txt-adc-dark fw-bold" id="name"></h1>
-          </div>
-        </div> -->
+      <div class="container-fluid" id="wrapData">
         <div class="row">
           <div class="col-md-4">
-            <div class="alert" id="status"></div>
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Artifact</h2>
+            <div class="alert" id="status"></div>
             <div class="divSection mb-5">
-              <p class="h5 my-3" id="description"></p>
               <div class="accordion accordion-flush" id="accordionArtifact">
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="main-section">
@@ -71,11 +65,12 @@
                   <div id="mainSection" class="accordion-collapse collapse show" aria-labelledby="main-section">
                     <div class="accordion-body">
                       <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><span>Codename</span><span id="codename"></span></li>
+                        <li class="list-group-item"><span>Name</span><span id="name"></span></li>
                         <li class="list-group-item"><span>Category class</span><span id="category_class"></span></li>
                         <li class="list-group-item"><span>Category specification</span><span id="category_specs"></span></li>
                         <li class="list-group-item"><span>Material / technique</span><span id="material"></span></li>
-                        <li class="list-group-item"><span>Typology</span><span id="tipology"></span></li>
+                        <li class="list-group-item"><span>Typology</span><span id="type"></span></li>
+                        <li class="list-group-item"><span>Description</span><span id="description"></span></li>
                         <li class="list-group-item"><span>Notes</span><span id="notes"></span></li>
                       </ul>
                     </div>
@@ -89,7 +84,8 @@
                     <div class="accordion-body">
                       <ul class="list-group list-group-flush">
                         <li class="list-group-item txt-adc-dark fw-bold">Specific chronology</li>
-                        <li class="list-group-item"><span>start / end</span><span id="chronoYears"></span></li>
+                        <li class="list-group-item"><span>start</span><span id="start"></span></li>
+                        <li class="list-group-item"><span>end</span><span id="end"></span></li>
                         <li class="list-group-item txt-adc-dark fw-bold">The specific chronology is related to following historical periods</li>
                         <li class="list-group-item"><span>from</span><span id="start_period"></span></li>
                         <li class="list-group-item"><span>to</span><span id="end_period"></span></li>
@@ -136,11 +132,11 @@
                   <div id="artifactMetadataSection" class="accordion-collapse collapse" aria-labelledby="artifactMetadata-data">
                     <div class="accordion-body">
                       <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><span>Author</span><span id="auth"></span></li>
+                        <li class="list-group-item"><span>Author</span><span id="author"></span></li>
                         <li class="list-group-item"><span>Owner</span><span id="owner"></span></li>
                         <li class="list-group-item"><span>license</span><span id="license"></span></li>
-                        <li class="list-group-item"><span>Create at</span><span id="create_at"></span></li>
-                        <li class="list-group-item"><span>Last update</span><span id="updated_at"></span></li>
+                        <li class="list-group-item"><span>Create at</span><span id="created_at"></span></li>
+                        <li class="list-group-item"><span>Last update</span><span id="last_update"></span></li>
                       </ul>
                     </div>
                   </div>
