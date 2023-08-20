@@ -12,4 +12,5 @@ if(isset($funzione) && function_exists($funzione)) {
 function addArtifact($obj){ return json_encode($obj->addArtifact($_POST)); }
 function getArtifact($obj){return json_encode($obj->getArtifact($_POST['id']));}
 function checkName($obj){return json_encode($obj->checkName($_POST['name']));}
+function getArtifactDashboardList($obj){return json_encode($obj->getArtifactDashboardList($_POST['search']));}
 ?>

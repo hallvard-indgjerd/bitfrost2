@@ -35,6 +35,33 @@ class Artifact extends Conn{
     return $this->simple($sql);
   }
 
+  public function getArtifactDashboardList(array $search){
+    $filter = [];
+    if($search['status'] > 0){
+      array_push($filter, "status_id = ".$search['status']);
+    }else {
+      array_push($filter, "status_id > ".$search['status']);
+    }
+
+    if(isset($search['description'])){
+      $string = trim($search['description']);
+      $arrString = explode(" ",$string);
+      $searchArray = [];
+      foreach ($arrString as $value) {
+        if(strlen($value)>3){
+          array_push($searchArray, " description like '%".$value."%' ");
+        }
+      }
+      $searchString = "(".join(" and ", $searchArray).")";
+      array_push($filter,$searchString);
+    }
+
+    if($_SESSION['role'] > 0){array_push($filter, "author = ".$_SESSION['id']);}
+    if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
+    $sql = "select id, name, description, cast(last_update as date) as last_update from artifact_view ".$filter. " order by last_update desc";
+    return $this->simple($sql);
+   }
+
   public function getArtifact(int $id){
     $artifact = "select * from artifact_view where id = ".$id.";";
     $out['artifact'] = $this->simple($artifact)[0];

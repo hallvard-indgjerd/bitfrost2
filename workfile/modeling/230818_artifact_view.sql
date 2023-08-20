@@ -1,6 +1,7 @@
-create view artifact_view as
+create or replace view artifact_view as
 select
   a.id,
+  a.name,
   a.status status_id,
   status.value status,
   a.storage_place,
@@ -21,7 +22,9 @@ select
   a.notes,
   a.author,
   a.owner,
-  a.license
+  a.license,
+  a.created_at,
+  a.last_update
 from artifact a
 inner join list_item_status status on a.status = status.id
 inner join list_conservation_state conservation on a.conservation_state = conservation.id

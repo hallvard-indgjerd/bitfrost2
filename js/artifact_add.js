@@ -159,7 +159,8 @@ $("[name='newArtifact']").on('click', function(el){
       }else {
         $("#toastDivSuccess").removeClass("d-none")
         $("#toastDivSuccess #createNewRecord").attr("href","artifacts_add.php")
-        $("#toastDivSuccess #goToItemPage").on('click', function(){
+        $("#toastDivSuccess #goToItemPage").on('click', function(e){
+          e.preventDefault()
           $.redirectPost('artifact_view.php', {id:data.id});
         })
       }

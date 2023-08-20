@@ -55,7 +55,7 @@ class User extends Conn{
   }
   private function setSession(array $dati){
     $_SESSION['id'] = $dati['id'];
-    $_SESSION['role'] = $dati['role'];
+    $_SESSION['role'] = $dati['role_id'];
     $_SESSION['email'] = $dati['email'];
     return true;
   }
