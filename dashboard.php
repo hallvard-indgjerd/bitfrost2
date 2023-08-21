@@ -1,5 +1,6 @@
 <?php
   require 'init.php';
+  if (!isset($_SESSION['id'])) { header('Location: 403.php');}
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">

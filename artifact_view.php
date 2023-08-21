@@ -70,8 +70,14 @@
                         <li class="list-group-item"><span>Category specification</span><span id="category_specs"></span></li>
                         <li class="list-group-item"><span>Material / technique</span><span id="material"></span></li>
                         <li class="list-group-item"><span>Typology</span><span id="type"></span></li>
-                        <li class="list-group-item"><span>Description</span><span id="description"></span></li>
-                        <li class="list-group-item"><span>Notes</span><span id="notes"></span></li>
+                        <li class="list-group-item">
+                          <span class="d-block mb-3">Description</span>
+                          <div id="description"></div>
+                        </li>
+                        <li class="list-group-item">
+                          <span class="d-block mb-3">Notes</span>
+                          <div id="notes"></div>
+                        </li>
                       </ul>
                     </div>
                   </div>
