@@ -11,18 +11,31 @@ $.ajax(ajaxSettings)
   Object.keys(artifact).forEach(function(key) {
     if(!artifact[key]){artifact[key] = 'not defined'}
     if(key == 'status'){ artifact[key] = 'The item status is: '+artifact[key] }
-    let statusClass = artifact['status_id'] == 1 ? 'alert-danger' : 'alert-success'
+    if(key == 'from'){ $("#start_period").text(artifact['from']['definition'])}
+    if(key == 'to'){ $("#end_period").text(artifact['to']['definition'])}
+    let statusClass = artifact['status_id'] == 1 ? 'alert-danger' : 'alert-success';
     $("#status").addClass(statusClass).text("The item status is: "+artifact.status);
+    artifact['is_museum_copy'] = artifact['is_museum_copy'] == 0 ? false : true;
     $("#"+key).text(artifact[key])
-    console.log(key + ', ' + artifact[key])
   })
+
+  let material = data.artifact_material_technique;
+  material.forEach((item) => {
+    $("<li/>", {class:'list-group-item ps-0'}).text(item.material +" / "+(item.technique ? item.technique : 'not defined') ).appendTo('#material>ol')
+  });
+
+  let institution = data.storage_place;
+  let gMapLink = 'http://maps.google.com/maps?q='+institution.name.replace(/ /g,"+");
+  $("#storage_name").text(institution.name)
+  $("#gMapLink").attr("href",gMapLink)
+  $("#storage_address").text(institution.address)
+  $("#storage_link").attr("href",institution.link).text(institution.link)
+
   return false;
 
   let findplace = data.artifact_findplace;
-  let material = data.artifact_material_technique;
   let measure = data.artifact_measure;
   let metadata = data.artifact_metadata;
-  let institution = data.storage_place;
   if (data.start_period) {start_period = data.start_period[0];}
   if (data.end_period) {end_period = data.end_period[0]}
   let model_meta = data.paradata.model_metadata;

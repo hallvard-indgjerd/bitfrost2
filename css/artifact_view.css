@@ -1,7 +1,9 @@
 #wrapData{position:relative; margin-top: 150px;}
 
-.accordion .list-group-item span{ display:inline-block; width:50%;}
-.accordion .list-group-item span:first-child{ font-weight: bold; vertical-align: top;}
+.accordion .list-group-item div:first-child, .accordion .list-group-item span:first-child {font-weight: bold; vertical-align: top;}
+
+#mainSection span:first-child, #conservationSection span:first-child{display: inline-block; width:50%;}
+#chronologySection span:first-child{display: inline-block; width:50px;}
 
 .tdhop{
   background: rgb(255,255,255);

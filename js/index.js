@@ -71,7 +71,7 @@ function gallery(data, wrapDiv){
     $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
     $("<p/>",{class:'mb-2'}).html(cutString(item.description, 100)).appendTo(body);
     let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
-    let itemUrlBtn = $("<button/>",{class:'btn btn-primary ms-3'}).text('view').appendTo(footer);
+    let itemUrlBtn = $("<a/>",{class:'btn btn-primary ms-3', href:'artifact_view.php?item='+item.id}).text('view').appendTo(footer);
     let collectBtn = $("<button/>",{class:'btn btn-primary ms-3 addItemBtn', id: 'addItem'+item.id}).text('collect').appendTo(footer);
     let uncollectBtn = $("<button/>",{class:'btn btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('remove').appendTo(footer);
     wrapDiv == ".card-wrap" ? uncollectBtn.hide() : uncollectBtn.show();
@@ -88,9 +88,6 @@ function gallery(data, wrapDiv){
       $(this).hide();
       collectBtn.show();
       countItems();
-    })
-    itemUrlBtn.on('click', function(){
-      $.redirectPost('artifact_view.php', {id:item.id});
     })
   })
 }

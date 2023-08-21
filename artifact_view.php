@@ -11,7 +11,7 @@
   <body>
     <?php require("assets/header.php"); ?>
     <main class="<?php echo $mainClass; ?>">
-      <input type="hidden" name="artifactId" value="<?php echo $_POST['id']; ?>">
+      <input type="hidden" name="artifactId" value="<?php echo $_GET['item']; ?>">
       <nav class="itemTool">
         <div class="container-fluid">
           <div class="row">
@@ -65,17 +65,34 @@
                   <div id="mainSection" class="accordion-collapse collapse show" aria-labelledby="main-section">
                     <div class="accordion-body">
                       <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><span>Name</span><span id="name"></span></li>
-                        <li class="list-group-item"><span>Category class</span><span id="category_class"></span></li>
-                        <li class="list-group-item"><span>Category specification</span><span id="category_specs"></span></li>
-                        <li class="list-group-item"><span>Material / technique</span><span id="material"></span></li>
-                        <li class="list-group-item"><span>Typology</span><span id="type"></span></li>
                         <li class="list-group-item">
-                          <span class="d-block mb-3">Description</span>
+                          <span>Name</span>
+                          <span id="name"></span>
+                        </li>
+                        <li class="list-group-item">
+                          <span>Category class</span>
+                          <span id="category_class"></span>
+                        </li>
+                        <li class="list-group-item">
+                          <span>Category specification</span>
+                          <span id="category_specs"></span>
+                        </li>
+                        <li class="list-group-item">
+                          <span>Typology</span>
+                          <span id="type"></span>
+                        </li>
+                        <li class="list-group-item">
+                          <div>Material / technique</div>
+                          <div id="material">
+                            <ol class="list-group list-group-numbered list-group-flush"></ol>
+                          </div>
+                        </li>
+                        <li class="list-group-item">
+                          <div>Description</div>
                           <div id="description"></div>
                         </li>
                         <li class="list-group-item">
-                          <span class="d-block mb-3">Notes</span>
+                          <div>Notes</div>
                           <div id="notes"></div>
                         </li>
                       </ul>
@@ -106,11 +123,16 @@
                   <div id="conservationSection" class="accordion-collapse collapse" aria-labelledby="conservation-data">
                     <div class="accordion-body">
                       <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><span>Storage place</span><span id="storage_place"></span></li>
+                        <li class="list-group-item">
+                          <div>Storage place</div>
+                          <p id="storage_name" class="m-1"></p>
+                          <a href="" target="_blank" id="gMapLink" data-bs-toggle="tooltip" data-bs-title="view on Google Maps <br /> [link open a new tab or page]"><i class="mdi mdi-map-marker"></i><span id="storage_address"></span></a>
+                          <a href="" target="_blank" id="storage_link" data-bs-toggle="tooltip" data-bs-title="go to official website <br /> [link open a new tab or page]"></a>
+                        </li>
                         <li class="list-group-item"><span>Inventory</span><span id="inventory"></span></li>
                         <li class="list-group-item"><span>Conservation state</span><span id="conservation_state"></span></li>
                         <li class="list-group-item"><span>Object condition</span><span id="object_condition"></span></li>
-                        <li class="list-group-item"><span>Is a museum copy</span><span id="is_a_copy"></span></li>
+                        <li class="list-group-item"><span>Is a museum copy</span><span id="is_museum_copy"></span></li>
                       </ul>
                     </div>
                   </div>

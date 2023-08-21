@@ -66,23 +66,23 @@ class Artifact extends Conn{
     $artifact = "select * from artifact_view where id = ".$id.";";
     $out['artifact'] = $this->simple($artifact)[0];
     $out['artifact_material_technique'] = $this->getArtifactMaterial($id);
+    if (!empty($out['artifact']['start'])) { $out['artifact']['from'] = $this->getChronology($out['artifact']['start'])[0]; }
+    if (!empty($out['artifact']['end'])) { $out['artifact']['to'] = $this->getChronology($out['artifact']['end'])[0]; }
+    $out['storage_place'] = $this->getInstitution($out['artifact']['storage_place'])[0];
 
-    // if (!empty($out['artifact']['start'])) { $out['start_period'] = $this->getChronology($out['artifact']['start']); }
-    // if (!empty($out['artifact']['end'])) { $out['end_period'] = $this->getChronology($out['artifact']['end']); }
     // $out['artifact_metadata'] = $this->getArtifactMetadata($id)[0];
     // $out['artifact_measure'] = $this->getArtifactMeasure($id)[0];
     // $out['artifact_findplace'] = $this->getArtifactFindplace($id)[0];
-    // $out['storage_place'] = $this->getInstitution($out['artifact']['storage_place'])[0];
     // $out['paradata'] = $this->getModel($model);
     return $out;
   }
 
-  private function getArtifactMaterial(int $id){ return $this->simple("select material.value material, item.technique from artifact_material_technique item inner join list_material_specs material on item.material = material.id where item.artifact = ".$id.";");}
+  private function getArtifactMaterial(int $id){ return $this->simple("select item.material material_id, material.value material, item.technique from artifact_material_technique item inner join list_material_specs material on item.material = material.id where item.artifact = ".$id.";");}
 
 
 
   private function getInstitution(int $id){
-    $sql = "select i.name, i.abbreviation, cat.value category, cities.name city, i.address, i.lat, i.lon, i.link from artifact a inner join institution i on a.storage_place = i.id inner join list_institution_category cat on i.category = cat.id inner join cities on i.city = cities.id where a.id = ".$id.";";
+    $sql = "select i.name, i.abbreviation, cat.value category, city.name city, i.address, i.lat, i.lon, i.link from artifact a inner join institution i on a.storage_place = i.id inner join list_institution_category cat on i.category = cat.id inner join city on i.city = city.id where a.id = ".$id.";";
     return $this->simple($sql);
   }
   private function getArtifactMeasure(int $id){ return $this->simple("select * from artifact_measure where artifact = ".$id.";"); }

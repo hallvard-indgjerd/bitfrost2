@@ -1,6 +1,1 @@
-select
-  material.value material, 
-  item.technique
-from artifact_material_technique item
-inner join list_material_specs material on item.material = material.id
-where item.artifact = 422;
+select i.name, i.abbreviation, cat.value category, city.name city, i.address, i.lat, i.lon, i.link from artifact a inner join institution i on a.storage_place = i.id inner join list_institution_category cat on i.category = cat.id inner join city on i.city = city.id;
