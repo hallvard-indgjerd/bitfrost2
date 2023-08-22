@@ -1,5 +1,5 @@
 initPersons();
-$("[name=newPerson]").on('click', (el) => {newPerson(el)})
+
 
 function initPersons(){
   ajaxSettings.url=API+"person.php";
@@ -19,8 +19,4 @@ function initPersons(){
     });
 
   });
-}
-
-function newPerson(el){
-  el.preventDefault();
 }

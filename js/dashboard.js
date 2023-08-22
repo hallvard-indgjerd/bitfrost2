@@ -39,15 +39,11 @@ function getArtifactDashboardList(){
     console.log(data);
     $('#artifactList .badge').text(data.length)
     data.forEach((item, i) => {
-      let li = $("<a/>", {class: 'list-group-item list-group-item-action'}).attr("href","#").appendTo('#artifactList .listWrap');
+      let li = $("<a/>", {class: 'list-group-item list-group-item-action'}).attr("href","artifact_view.php?item="+item.id).appendTo('#artifactList .listWrap');
       $('<span/>').text(item.id).appendTo(li)
       $('<span/>').text(item.name).appendTo(li)
       $('<span/>').text(item.description).appendTo(li)
       $('<span/>').text(item.last_update).appendTo(li)
-      li.on('click', function(e){
-        e.preventDefault();
-        $.redirectPost('artifact_view.php', {id:item.id});
-      })
     });
 
   });

@@ -69,9 +69,9 @@ class Artifact extends Conn{
     if (!empty($out['artifact']['start'])) { $out['artifact']['from'] = $this->getChronology($out['artifact']['start'])[0]; }
     if (!empty($out['artifact']['end'])) { $out['artifact']['to'] = $this->getChronology($out['artifact']['end'])[0]; }
     $out['storage_place'] = $this->getInstitution($out['artifact']['storage_place'])[0];
+    if(count($this->getArtifactMeasure($id))>0){$out['artifact_measure'] = $this->getArtifactMeasure($id);}
+    $out['artifact_metadata'] = $this->getArtifactMetadata($id);
 
-    // $out['artifact_metadata'] = $this->getArtifactMetadata($id)[0];
-    // $out['artifact_measure'] = $this->getArtifactMeasure($id)[0];
     // $out['artifact_findplace'] = $this->getArtifactFindplace($id)[0];
     // $out['paradata'] = $this->getModel($model);
     return $out;
@@ -79,6 +79,10 @@ class Artifact extends Conn{
 
   private function getArtifactMaterial(int $id){ return $this->simple("select item.material material_id, material.value material, item.technique from artifact_material_technique item inner join list_material_specs material on item.material = material.id where item.artifact = ".$id.";");}
 
+  private function getChronology(int $year){
+    $sql = "select * from nordic_generic_period where ".$year." between start and end order by id";
+    return $this->simple($sql);
+  }
 
 
   private function getInstitution(int $id){
@@ -87,22 +91,18 @@ class Artifact extends Conn{
   }
   private function getArtifactMeasure(int $id){ return $this->simple("select * from artifact_measure where artifact = ".$id.";"); }
 
+  private function getArtifactMetadata(int $id){
+    $out = [];
+    $authorSql = "select p.id, p.first_name, p.last_name from person p inner join user_person up on up.person = p.id inner join user u on up.user = u.id inner join artifact a on a.author = u.id where a.id = ".$id.";";
+    $ownerSql = "select i.id, i.name from institution i inner join artifact a on a.owner = i.id where a.id = ".$id.";";
+    $licenseSql = "select l.id, l.license, l.acronym, l.link from license l inner join artifact a on a.license = l.id where a.id = ".$id.";";
+    $out['author'] = $this->simple($authorSql)[0];
+    $out['owner'] = $this->simple($ownerSql)[0];
+    $out['license'] = $this->simple($licenseSql)[0];
+    return $out;
+  }
+
   private function getArtifactFindplace(int $id){ return $this->simple("select cities.name city, item.* from artifact_findplace item left join cities on item.city = cities.id where item.artifact = ".$id.";");}
 
-
-  private function getChronology(int $year){
-    $sql = "select * from nordic_generic_period where ".$year." between start and end order by id";
-    return $this->simple($sql);
-  }
-
-  private function getArtifactMetadata(int $id){
-    $sql = "select auth.name auth, owner.name owner, license.license, license.acronym, license.link licenseLink, item.create_at, item.updated_at
-    from artifact_metadata item
-    inner join user auth on item.author = auth.id
-    inner join institution owner on item.owner = owner.id
-    inner join license on item.license = license.id
-    where item.artifact = ".$id.";";
-    return $this->simple($sql);
-  }
 }
 ?>

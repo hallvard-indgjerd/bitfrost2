@@ -139,16 +139,21 @@
                 </div>
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="measure-data">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#measureSection">Measures</button>
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#measureSection">Dimensions</button>
                   </h2>
                   <div id="measureSection" class="accordion-collapse collapse" aria-labelledby="measure-data">
                     <div class="accordion-body">
+                      <small class="txt-adc-dark">Linear measures are in cm, weight is in gr.</small>
                       <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><span>Length</span><span id="length"></span></li>
-                        <li class="list-group-item"><span>Width</span><span id="width"></span></li>
-                        <li class="list-group-item"><span>Depth</span><span id="depth"></span></li>
-                        <li class="list-group-item"><span>Diameter</span><span id="diameter"></span></li>
-                        <li class="list-group-item"><span>Weight</span><span id="weight"></span></li>
+                        <li class="list-group-item"><span>Length</span><span id="length">measure not defined</span></li>
+                        <li class="list-group-item"><span>Width</span><span id="width">measure not defined</span></li>
+                        <li class="list-group-item"><span>Depth</span><span id="depth">measure not defined</span></li>
+                        <li class="list-group-item"><span>Diameter</span><span id="diameter">measure not defined</span></li>
+                        <li class="list-group-item"><span>Weight</span><span id="weight">measure not defined</span></li>
+                        <li class="list-group-item">
+                          <div>Notes</div>
+                          <div id="measures_notes"></div>
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -160,9 +165,18 @@
                   <div id="artifactMetadataSection" class="accordion-collapse collapse" aria-labelledby="artifactMetadata-data">
                     <div class="accordion-body">
                       <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><span>Author</span><span id="author"></span></li>
-                        <li class="list-group-item"><span>Owner</span><span id="owner"></span></li>
-                        <li class="list-group-item"><span>license</span><span id="license"></span></li>
+                        <li class="list-group-item">
+                          <span>Author</span>
+                          <span id="artifact_author"><a href="" data-bs-toggle="tooltip" title="view author profile" class="disabled"></a></span>
+                        </li>
+                        <li class="list-group-item">
+                          <span>Owner</span>
+                          <span id="artifact_owner"><a href="" data-bs-toggle="tooltip" title="view owner profile"></a></span>
+                        </li>
+                        <li class="list-group-item">
+                          <span>license</span>
+                          <span id="artifact_license"><a href="" target="_blank" data-bs-toggle="tooltip" title="read license summary<br />[link open a new tab]"></a></span>
+                        </li>
                         <li class="list-group-item"><span>Create at</span><span id="created_at"></span></li>
                         <li class="list-group-item"><span>Last update</span><span id="last_update"></span></li>
                       </ul>

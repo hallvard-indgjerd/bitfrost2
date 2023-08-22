@@ -1,1 +1,10 @@
-select i.name, i.abbreviation, cat.value category, city.name city, i.address, i.lat, i.lon, i.link from artifact a inner join institution i on a.storage_place = i.id inner join list_institution_category cat on i.category = cat.id inner join city on i.city = city.id;
+begin;
+update license set link = 'https://creativecommons.org/publicdomain/mark/1.0/' where id = 1;
+update license set link = 'https://creativecommons.org/publicdomain/zero/1.0/' where id = 2;
+update license set link = 'https://creativecommons.org/licenses/by/4.0/' where id = 3;
+update license set link = 'https://creativecommons.org/licenses/by-sa/4.0/' where id = 4;
+update license set link = 'https://creativecommons.org/licenses/by-nd/4.0/' where id = 5;
+update license set link = 'https://creativecommons.org/licenses/by-nc/4.0/' where id = 6;
+update license set link = 'https://creativecommons.org/licenses/by-nc-sa/4.0/' where id = 7;
+insert into license (license, acronym, link) values ('Attribution-NonCommercial-NoDerivatives', 'CC BY-NC-ND', 'https://creativecommons.org/licenses/by-nc-nd/4.0/');
+commit;

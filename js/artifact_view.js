@@ -30,12 +30,24 @@ $.ajax(ajaxSettings)
   $("#gMapLink").attr("href",gMapLink)
   $("#storage_address").text(institution.address)
   $("#storage_link").attr("href",institution.link).text(institution.link)
+  if (data.artifact_measure !== undefined) {
+    let measure = data.artifact_measure;
+    measure.forEach((item, i) => {
+      Object.keys(item).forEach(function(key) {
+        if (key == 'notes') {$("#measures_"+key).text(item[key])}
+        if(item[key]){$("#"+key).text(item[key])}
+      })
+    });
+
+  }
+  let metadata = data.artifact_metadata;
+  $("#artifact_author>a").attr("href","person_view.php?person="+metadata.author.id).text(metadata.author.last_name+" "+metadata.author.first_name)
+  $("#artifact_owner>a").attr("href","institution_view.php?institution="+metadata.owner.id).text(metadata.owner.name)
+  $("#artifact_license>a").attr("href",metadata.license.link).text(metadata.license.license+" ("+metadata.license.acronym+")")
 
   return false;
 
   let findplace = data.artifact_findplace;
-  let measure = data.artifact_measure;
-  let metadata = data.artifact_metadata;
   if (data.start_period) {start_period = data.start_period[0];}
   if (data.end_period) {end_period = data.end_period[0]}
   let model_meta = data.paradata.model_metadata;

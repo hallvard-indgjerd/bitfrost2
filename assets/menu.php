@@ -23,12 +23,12 @@ if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
         <span class="mdi mdi-bank"></span>
         institutions
       </a>
-      <a href='persons_add.php' class='animated'>
+      <a href='persons_add.php?user=false' class='animated'>
         <span class="mdi mdi-book-account"></span>
-        address book
+        person
       </a>
       <span class="titleSection">admin</span>
-      <a href='#' class='animated'>
+      <a href='persons_add.php?user=true' class='animated'>
         <span class="mdi mdi-account-group"></span>
         users
       </a>
