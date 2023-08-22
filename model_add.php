@@ -7,15 +7,78 @@
   <head>
     <?php require("assets/meta.php"); ?>
     <link rel="stylesheet" href="css/3dhop.css">
-    <link rel="stylesheet" href="css/model.css">
+    <link rel="stylesheet" href="css/model_add.css">
   </head>
   <body>
     <?php require("assets/header.php"); ?>
     <main class="<?php echo $mainClass; ?>">
       <div class="container">
         <form name="newArtifactForm" enctype="multipart/form-data" method="post">
+          <input type="hidden" name="usr" value="<?php echo $_SESSION['id']; ?>">
           <fieldset>
-            <input type="text" name="test" value="" class="form-control" required>
+            <legend class="border-bottom">Metadata Model</legend>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="author" class="fw-bold text-danger">Author</label>
+                <select data-table="artifact" class="form-select" id="author" required></select>
+              </div>
+              <div class="col-md-4">
+                <label for="owner" class="fw-bold text-danger">Owner</label>
+                <select data-table="artifact" class="form-select" id="owner" required>
+                  <option value="" selected disabled>-- select value --</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="license" class="fw-bold text-danger">License</label>
+                <select data-table="artifact" class="form-select" id="license" required>
+                  <option value="" selected disabled>-- select license --</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend class="border-bottom">Define paradata</legend>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="software" class="text-danger fw-bold">Software</label>
+                <input class="form-control" type="text" id="software" name="software" required>
+              </div>
+              <div class="col-md-4">
+                <label for="acquisition_method">Acquisition method</label>
+                <input class="form-control" type="text" id="acquisition_method" name="acquisition_method">
+              </div>
+              <div class="col-md-4">
+                <label for="measure_unit">Measure unit</label>
+                <select class="form-select" name="measure_unit" id="measure_unit">
+                  <option value="">-- select unit --</option>
+                  <option value="mm">millimeters</option>
+                  <option value="cm">centimeters</option>
+                  <option value="m">meters</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label for="points">Points</label>
+                <input type="number" class="form-control" min="0" step="1" name="points" id="points" value="">
+              </div>
+              <div class="col-md-3">
+                <label for="polygons">Polygons</label>
+                <input type="number" class="form-control" min="0" step="1" name="polygons" id="polygons" value="">
+              </div>
+              <div class="col-md-2">
+                <label for="textures">Textures</label>
+                <input type="number" class="form-control" min="0" step="1" name="textures" id="textures" value="">
+              </div>
+              <div class="col-md-2">
+                <label for="scans">Scans</label>
+                <input type="number" class="form-control" min="0" step="1" name="scans" id="scans" value="">
+              </div>
+              <div class="col-md-2">
+                <label for="pictures">Pictures</label>
+                <input type="number" class="form-control" min="0" step="1" name="pictures" id="pictures" value="">
+              </div>
+            </div>
           </fieldset>
           <fieldset>
             <legend class="border-bottom">Upload model</legend>
@@ -72,43 +135,43 @@
                   </div>
                   <div class="mb-3 pb-3 border-bottom">
                     <label class="mainLabel mb-2">Set the light</label>
-                    <div class="d-flex justify-content-between align-items-start">
+                    <div class="d-flex justify-content-center align-items-center">
                       <div>
                         <canvas id="lightcontroller_canvas" width="150" height="150"></canvas>
                       </div>
-                      <div>
-                        <div class="mb-2">
-                          <label class="mainLabel">Light direction</label>
-                          <div class="toggleSwitch">
-                            <input type="checkbox" name="specular" class="toggleSwitch-checkbox" id="specular" checked>
-                            <label class="toggleSwitch-label" for="specular">
-                              <span class="toggleSwitch-inner" id="specularLabel"></span>
-                              <span class="toggleSwitch-switch"></span>
-                            </label>
-                          </div>
-                        </div>
-                        <div>
-                          <label class="mainLabel">Light type</label>
-                          <div class="toggleSwitch">
-                            <input type="checkbox" name="lighting" class="toggleSwitch-checkbox" id="lighting" checked>
-                            <label class="toggleSwitch-label" for="lighting">
-                              <span class="toggleSwitch-inner" id="lightingLabel"></span>
-                              <span class="toggleSwitch-switch"></span>
-                            </label>
-                          </div>
-                        </div>
-                      </div>
                     </div>
-                    <div>
+                    <div class="text-center">
                       <input type="text" name="lightx" value="" class="lightDir form-control form-control-sm" readonly>
                       <input type="text" name="lighty" value="" class="lightDir form-control form-control-sm" readonly>
                     </div>
                   </div>
                   <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom">
                     <div>
+                      <label class="mainLabel">Light direction</label>
+                      <div class="toggleSwitch">
+                        <input type="checkbox" name="specular" class="toggleSwitch-checkbox" id="specular" checked>
+                        <label class="toggleSwitch-label" for="specular">
+                          <span class="toggleSwitch-inner" id="specularLabel"></span>
+                          <span class="toggleSwitch-switch"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="mainLabel">Light type</label>
+                      <div class="toggleSwitch">
+                        <input type="checkbox" name="lighting" class="toggleSwitch-checkbox" id="lighting" checked>
+                        <label class="toggleSwitch-label" for="lighting">
+                          <span class="toggleSwitch-inner" id="lightingLabel"></span>
+                          <span class="toggleSwitch-switch"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom">
+                    <div>
                       <label class="mainLabel">Texture type</label>
                       <div class="toggleSwitch">
-                        <input type="checkbox" name="texture" class="toggleSwitch-checkbox" id="texture" checked>
+                        <input type="checkbox" name="texture" class="toggleSwitch-checkbox" id="texture">
                         <label class="toggleSwitch-label" for="texture">
                           <span class="toggleSwitch-inner" id="textureLabel"></span>
                           <span class="toggleSwitch-switch"></span>
@@ -118,7 +181,7 @@
                     <div>
                       <label class="mainLabel">Solid type</label>
                       <div class="toggleSwitch">
-                        <input type="checkbox" name="solid" class="toggleSwitch-checkbox" id="solid" checked>
+                        <input type="checkbox" name="solid" class="toggleSwitch-checkbox" id="solid">
                         <label class="toggleSwitch-label" for="solid">
                           <span class="toggleSwitch-inner" id="solidLabel"></span>
                           <span class="toggleSwitch-switch"></span>
@@ -150,7 +213,8 @@
                   </div>
                   <div class="row">
                     <div class="col">
-                      <div class="alert alert-info" id="encumbrance"></div>
+                      <label for="encumbrance">Encumbrance</label>
+                      <input type="text" class="form-control" name="encumbrance" id="encumbrance" value="">
                     </div>
                   </div>
                 </div>
@@ -173,6 +237,6 @@
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
     <script src="js/3dhopFunctions.js" charset="utf-8"></script>
-    <script src="js/model.js" charset="utf-8"></script>
+    <script src="js/model_add.js" charset="utf-8"></script>
   </body>
 </html>

@@ -126,13 +126,48 @@
                         <li class="list-group-item">
                           <div>Storage place</div>
                           <p id="storage_name" class="m-1"></p>
-                          <a href="" target="_blank" id="gMapLink" data-bs-toggle="tooltip" data-bs-title="view on Google Maps <br /> [link open a new tab or page]"><i class="mdi mdi-map-marker"></i><span id="storage_address"></span></a>
-                          <a href="" target="_blank" id="storage_link" data-bs-toggle="tooltip" data-bs-title="go to official website <br /> [link open a new tab or page]"></a>
+                          <a href="" class="d-block" target="_blank" id="gMapLink" data-bs-toggle="tooltip" data-bs-title="view on Google Maps <br /> [link open a new tab or page]"><i class="mdi mdi-map-marker"></i><span id="storage_address"></span></a>
+                          <a href="" class="d-block" target="_blank" id="storage_link" data-bs-toggle="tooltip" data-bs-title="go to official website <br /> [link open a new tab or page]"></a>
                         </li>
                         <li class="list-group-item"><span>Inventory</span><span id="inventory"></span></li>
                         <li class="list-group-item"><span>Conservation state</span><span id="conservation_state"></span></li>
                         <li class="list-group-item"><span>Object condition</span><span id="object_condition"></span></li>
                         <li class="list-group-item"><span>Is a museum copy</span><span id="is_museum_copy"></span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="findplace-data">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#findplaceSection">Find place</button>
+                  </h2>
+                  <div id="findplaceSection" class="accordion-collapse collapse" aria-labelledby="findplace-data">
+                    <div class="accordion-body">
+                      <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                          <span>Nation</span>
+                          <span id="findplace_nation"></span>
+                        </li>
+                        <li class="list-group-item">
+                          <span>County</span>
+                          <span id="findplace_county"></span>
+                        </li>
+                        <li class="list-group-item">
+                          <span>City</span>
+                          <span id="findplace_city">Not defined</span>
+                        </li>
+                        <li class="list-group-item">
+                          <span>Parish</span>
+                          <span id="findplace_parish">Not defined</span>
+                        </li>
+                        <li class="list-group-item">
+                          <span>Toponym</span>
+                          <span id="findplace_toponym">Not defined</span>
+                        </li>
+                        <li class="list-group-item">
+                          <div>Notes</div>
+                          <div id="findplace_notes">Not defined</div>
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -235,9 +270,9 @@
             </div>
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Geographic information</h2>
             <div class="divSection mb-5" id="map">
-              <div id="alertMapWrap">
+              <!-- <div id="alertMapWrap">
                 <div class="alert alert-danger">Coordinaes not saved</div>
-              </div>
+              </div> -->
             </div>
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Media gallery</h2>
             <div class="divSection mb-5"></div>
@@ -258,6 +293,7 @@
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
     <script type="text/javascript" src="js/3dhopFunctions.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="js/geoConfig.js" charset="utf-8"></script>
     <script src="js/artifact_view.js" charset="utf-8"></script>
   </body>
 </html>

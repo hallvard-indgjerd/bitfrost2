@@ -1,9 +1,13 @@
 <?php
 namespace Adc;
 session_start();
-use Model;
+
+use \Adc\Model;
 class Artifact extends Conn{
-  function __construct(){}
+  public $model;
+  function __construct(){
+    $this->model = new Model();
+  }
   public function addArtifact(array $dati){
     try {
       $this->pdo()->beginTransaction();
@@ -71,10 +75,17 @@ class Artifact extends Conn{
     $out['storage_place'] = $this->getInstitution($out['artifact']['storage_place'])[0];
     if(count($this->getArtifactMeasure($id))>0){$out['artifact_measure'] = $this->getArtifactMeasure($id);}
     $out['artifact_metadata'] = $this->getArtifactMetadata($id);
-
-    // $out['artifact_findplace'] = $this->getArtifactFindplace($id)[0];
-    // $out['paradata'] = $this->getModel($model);
+    $out['artifact_findplace'] = $this->getArtifactFindplace($id);
+    $modelId = $this->getModelId($id);
+    if(count($modelId) > 0){
+      $out['model'] = $this->model->getModel($modelId[0]['model']);
+    }
     return $out;
+  }
+
+  private function getModelId($artifact){
+    $sql = "select model from artifact_model where artifact = ".$artifact;
+    return $this->simple($sql);
   }
 
   private function getArtifactMaterial(int $id){ return $this->simple("select item.material material_id, material.value material, item.technique from artifact_material_technique item inner join list_material_specs material on item.material = material.id where item.artifact = ".$id.";");}
@@ -102,7 +113,9 @@ class Artifact extends Conn{
     return $out;
   }
 
-  private function getArtifactFindplace(int $id){ return $this->simple("select cities.name city, item.* from artifact_findplace item left join cities on item.city = cities.id where item.artifact = ".$id.";");}
+  private function getArtifactFindplace(int $id){
+    $sql = "select nation.name nation, county.name county, city.name city, f.parish, f.toponym, f.lat, f.lon, f.findplace_notes notes from artifact_findplace f inner join city on f.city = city.id inner join county on f.county = county.id inner join nation on county.nation = nation.id where f.artifact = ".$id.";";
+    return $this->simple($sql)[0];}
 
 }
 ?>

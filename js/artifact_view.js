@@ -1,5 +1,5 @@
-let map,conservationMarker, findplaceMarker;
-const mapExt = [[55.7,5.3],[69.3,30.3]];
+let storagePlaceMarker, findplaceMarker;
+let markerArr = {}
 
 ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:$("[name=artifactId]").val()};
@@ -30,7 +30,9 @@ $.ajax(ajaxSettings)
   $("#gMapLink").attr("href",gMapLink)
   $("#storage_address").text(institution.address)
   $("#storage_link").attr("href",institution.link).text(institution.link)
-  if (data.artifact_measure !== undefined) {
+  markerArr.storage = [parseFloat(institution.lat), parseFloat(institution.lon)]
+
+  if (data.artifact_measure) {
     let measure = data.artifact_measure;
     measure.forEach((item, i) => {
       Object.keys(item).forEach(function(key) {
@@ -38,38 +40,40 @@ $.ajax(ajaxSettings)
         if(item[key]){$("#"+key).text(item[key])}
       })
     });
-
   }
   let metadata = data.artifact_metadata;
   $("#artifact_author>a").attr("href","person_view.php?person="+metadata.author.id).text(metadata.author.last_name+" "+metadata.author.first_name)
   $("#artifact_owner>a").attr("href","institution_view.php?institution="+metadata.owner.id).text(metadata.owner.name)
   $("#artifact_license>a").attr("href",metadata.license.link).text(metadata.license.license+" ("+metadata.license.acronym+")")
 
-  return false;
-
-  let findplace = data.artifact_findplace;
-  if (data.start_period) {start_period = data.start_period[0];}
-  if (data.end_period) {end_period = data.end_period[0]}
-  let model_meta = data.paradata.model_metadata;
-  let model_param = data.paradata.model_param;
-
-
-  if (data.paradata.model.nxz) {
-    initModel(data.paradata.model.nxz,data.paradata.model_init)
-  }else{
-    $("<div/>",{class:'alert alert-info text-center py-5 fs-3'}).text('Model not yet available!!').appendTo("#3dhop");
+  if(data.model){
+    let model = data.model;
+    if (model.model.nxz) {
+      initModel(model.model.nxz)
+    }else{
+      $("#3dhop > canvas").remove()
+      $("<div/>",{id:"alertModel", class:'alert alert-info text-center py-3 fs-3'}).text('Model not yet available!!').appendTo("#3dhop");
+    }
+  }else {
+    $("#3dhop > canvas").remove()
+    $("<div/>",{id:"alertModel", class:'alert alert-info text-center py-3 fs-3'}).text('Model not yet available!!').appendTo("#3dhop");
   }
 
-  mapInit()
+  if (data.artifact_findplace) {
+    let findplace = data.artifact_findplace;
+    Object.keys(findplace).forEach(function(key) {
+      if(findplace[key]){$("#findplace_"+key).text(findplace[key])}
+    })
+  }
+  artifactMap(markerArr)
 
 });
 
 function initModel(nxz, init){
-  console.log([nxz,init]);
   let scene = {
     meshes: {"nxz" : { url: 'archive/models/'+nxz }},
     modelInstances : instanceOpt,
-    // trackball: trackBallOpt,
+    trackball: trackBallOpt,
     space: spaceOpt,
     config: configOpt
   }
@@ -78,23 +82,33 @@ function initModel(nxz, init){
   presenter.setScene(scene);
 }
 
-function mapInit(){
-  map = L.map('map').fitBounds(mapExt);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
-
-  //markerGroup = L.layerGroup().addTo(map);
-  map.on('click', function(e){
-    let ll = map.mouseEventToLatLng(e.originalEvent);
-    let zoom = map.getZoom();
-    setMapView([parseFloat(ll.lat).toFixed(4),parseFloat(ll.lng).toFixed(4)],zoom)
-  })
-
-  $("#resetMap").on("click", function() {
-    map.fitBounds(mapExt);
-    map.removeLayer(markerGroup);
-    $("[name=countries]").val('');
-    $("[name=states], [name=cities]").html('').prop('disabled', true);
-    $("[name=lat]").val('');
-    $("[name=lon]").val('');
+function artifactMap(markerArr){
+  map = L.map('map',{maxBounds:mapExt})//.fitBounds(mapExt)
+  map.setMinZoom(4);
+  osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
+  gStreets = L.tileLayer(gStreetTile,{maxZoom: 18, subdomains:gSubDomains });
+  gSat = L.tileLayer(gSatTile,{maxZoom: 18, subdomains:gSubDomains});
+  gTerrain = L.tileLayer(gTerrainTile,{maxZoom: 18, subdomains:gSubDomains});
+  baseLayers = {
+    "OpenStreetMap": osm,
+    "Google Terrain":gTerrain,
+    "Google Satellite": gSat,
+    "Google Street": gStreets
+  };
+  L.control.layers(baseLayers, null).addTo(map);
+  let markerGroup = L.featureGroup().addTo(map);
+  var storagePlaceIco = L.icon({
+    iconUrl: 'img/ico/storagePlace.png',
+    iconSize:     [30, 30],
+    iconAnchor:   [15, 15],
+    popupAnchor:  [-3, -76]
   });
+  var findplaceIco = L.icon({
+    iconUrl: 'img/ico/findPlace.png',
+    iconSize:     [30, 30],
+    iconAnchor:   [15, 15],
+    popupAnchor:  [-3, -76]
+  });
+  storagePlaceMarker = L.marker(markerArr['storage'],{icon:storagePlaceIco}).addTo(markerGroup);
+  map.fitBounds(markerGroup.getBounds())
 }

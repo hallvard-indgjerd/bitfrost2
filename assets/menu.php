@@ -10,18 +10,18 @@ if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
         <span class="mdi mdi-view-dashboard"></span>
         dashboard
       </a>
-      <span class="titleSection">resources</span>
+      <span class="titleSection">add resource</span>
       <a href='artifacts_add.php' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="Artifacts gallery. From this page you can manage artifact">
         <span class="mdi mdi-axe"></span>
-        artifacts
+        artifact
       </a>
-      <a href='#' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="Models gallery. From this page you can manage model">
+      <a href='model_add.php' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="Models gallery. From this page you can manage model">
         <span class="mdi mdi-cube-outline"></span>
-        models
+        model
       </a>
       <a href='#' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="research insitutions, museum, university etc.">
         <span class="mdi mdi-bank"></span>
-        institutions
+        institution
       </a>
       <a href='persons_add.php?user=false' class='animated'>
         <span class="mdi mdi-book-account"></span>
@@ -30,11 +30,11 @@ if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
       <span class="titleSection">admin</span>
       <a href='persons_add.php?user=true' class='animated'>
         <span class="mdi mdi-account-group"></span>
-        users
+        user
       </a>
       <a href='#' class='animated'>
         <span class="mdi mdi-format-list-bulleted-square"></span>
-        vocabularies
+        vocabulary
       </a>
       <span class="titleSection">my account</span>
       <a href='#' class='animated'>

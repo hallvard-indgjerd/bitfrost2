@@ -76,10 +76,10 @@
 
 #orthoLabel:before{content: "DEFAULT";}
 #orthoLabel:after{content: "ORTHO";}
-#textureLabel:before{content: "TEXTURE";}
-#textureLabel:after{content: "PLAIN COLOR";}
-#solidLabel:before{content: "SOLID";}
-#solidLabel:after{content: "TRANSPARENT";}
+#textureLabel:before{content: "PLAIN COLOR";}
+#textureLabel:after{content: "TEXTURE";}
+#solidLabel:before{content: "TRANSPARENT";}
+#solidLabel:after{content: "SOLID";}
 #lightingLabel:before{content: "LIGHTING";}
 #lightingLabel:after{content: "UNSHADED";}
 #specularLabel:before{content: "DIFFUSE";}
@@ -87,7 +87,7 @@
 #xyz_axesLabel:before{content: "HIDE AXES";}
 #xyz_axesLabel:after{content: "SHOW AXES";}
 
-#wrap3d{width:100%; height:630px;}
+#wrap3d{width:100%; height:700px;}
 .card-wrap{
   position:relative;
   display: flex;

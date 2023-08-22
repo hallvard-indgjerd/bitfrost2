@@ -9,7 +9,7 @@ const instanceOpt = {"nxz" : {
   specularColor : [0.0, 0.0, 0.0, 256.0]
 }}
 const trackBallOpt = {
-  type : TurnTableTrackball,
+  type : TurntablePanTrackball,
   trackOptions : {
     startPhi: 15.0,
     startTheta: 15.0,
@@ -49,6 +49,45 @@ let sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.M
 function setup3dhop(scene){
   presenter = new Presenter("draw-canvas");
   presenter.setScene(scene);
+}
+
+function updateOrtho(){
+  $("[name=ortho]").is(':checked') ? presenter.setCameraPerspective() : presenter.setCameraOrthographic();
+}
+
+function viewFrom(direction){
+  let distance = 1.3;
+  let view;
+  switch(direction) {
+    case "front": view =[0.0, 0.0, 0.0, 0.0, 0.0, distance]; break;
+    case "back": view = [180.0, 0.0, 0.0, 0.0, 0.0], distance; break;
+    case "top": view = [0.0, 90.0, 0.0, 0.0, 0.0, distance]; break;
+    case "bottom": view = [0.0, -90.0, 0.0, 0.0, 0.0, distance]; break;
+    case "left": view = [270.0, 0.0, 0.0, 0.0, 0.0, distance]; break;
+    case "right": view = [90.0, 0.0, 0.0, 0.0, 0.0, distance]; break;
+  }
+  presenter.animateToTrackballPosition(view);
+}
+
+function updateSpecular(){
+  let spec = $("[name=specular]").is(':checked') ? [0.3,0.3,0.3,256.0] : [0.0,0.0,0.0,256.0];
+  for (inst in presenter._scene.modelInstances){
+    presenter._scene.modelInstances[inst].specularColor = spec;
+  }
+  presenter.repaint();
+}
+
+function updateLighting(){
+  presenter.enableSceneLighting($("[name=lighting]").is(':checked'));
+  presenter.repaint();
+}
+function updateTexture(){
+  presenter.setInstanceSolidColor('Group', $("[name=texture]").is(':checked'), false);
+  presenter.repaint();
+}
+function updateTransparency(){
+  presenter.setInstanceTransparency('Group', $("[name=solid]").is(':checked'), false);
+  presenter.repaint();
 }
 
 function updateLightController(xx,yy) {
@@ -120,7 +159,7 @@ function computeEncumbrance() {
   encumbrance[1] = Math.trunc(Math.ceil((sceneBB[1]-sceneBB[4])/gStep)+1);
   encumbrance[2] = Math.trunc(Math.ceil((sceneBB[2]-sceneBB[5])/gStep)+1);
 
-  $("#encumbrance").text("Encumbrance: "+encumbrance[0] + " x " + encumbrance[1]  + " x " + encumbrance[2] + " cm");
+  $("#encumbrance").val(encumbrance[0] + " x " + encumbrance[1]  + " x " + encumbrance[2] + " cm");
   // ARCHIVE.objects[OBJCODE].ENCUMBRANCE = encumbrance[0] + " x " + encumbrance[1]  + " x " + encumbrance[2] + " cm";
   // fillMetadataPanel();
 }
@@ -256,5 +295,5 @@ function addAxes(){
 
 
 function onTrackballUpdate(trackState){
-  console.log('x:'+ trackState[0]);
+  // console.log('x:'+ trackState[0]);
 }

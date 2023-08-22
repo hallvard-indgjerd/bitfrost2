@@ -1,10 +1,6 @@
-begin;
-update license set link = 'https://creativecommons.org/publicdomain/mark/1.0/' where id = 1;
-update license set link = 'https://creativecommons.org/publicdomain/zero/1.0/' where id = 2;
-update license set link = 'https://creativecommons.org/licenses/by/4.0/' where id = 3;
-update license set link = 'https://creativecommons.org/licenses/by-sa/4.0/' where id = 4;
-update license set link = 'https://creativecommons.org/licenses/by-nd/4.0/' where id = 5;
-update license set link = 'https://creativecommons.org/licenses/by-nc/4.0/' where id = 6;
-update license set link = 'https://creativecommons.org/licenses/by-nc-sa/4.0/' where id = 7;
-insert into license (license, acronym, link) values ('Attribution-NonCommercial-NoDerivatives', 'CC BY-NC-ND', 'https://creativecommons.org/licenses/by-nc-nd/4.0/');
-commit;
+select nation.name, county.name, city.name, f.parish, f.toponym, f.lat, f.lon, f.findplace_notes
+from artifact_findplace f
+inner join city on f.city = city.id
+inner join county on f.county = county.id
+inner join nation on county.nation = nation.id
+where f.artifact = 422;
