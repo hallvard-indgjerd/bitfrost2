@@ -52,7 +52,7 @@
               </div>
             </div>
           </div>
-          <div class="listWrap" id="modelDashboardGallery"></div>
+          <div class="" id="modelDashboardGallery"></div>
         </div>
       </div>
     </main>
