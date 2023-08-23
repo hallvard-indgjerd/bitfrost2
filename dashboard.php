@@ -13,8 +13,8 @@
     <main class="<?php echo $mainClass; ?>">
       <input type="hidden" name="usrId" value="<?php echo $_SESSION['id']; ?>">
       <input type="hidden" name="usrCls" value="<?php echo $_SESSION['role']; ?>">
-      <div id="dashboardWrap">
-        <div id="artifactList" class="border rounded shadow p-3">
+      <div id="dashboardWrap" class="dashboardFlex">
+        <div id="artifactList" class="border rounded shadow p-3 mb-5">
           <h3>Artifact <span id="artifactStatusTitle"></span><span class="badge text-bg-dark float-end"></span></h3>
           <div class="toolbarDiv border-bottom">
             <div>
@@ -40,7 +40,7 @@
             <div class="listWrap"></div>
           </div>
         </div>
-        <div id="modelList" class="border rounded shadow p-3">
+        <div id="modelList" class="border rounded shadow p-3 mb-5">
           <h3>Model <span id="modelStatusTitle"></span><span class="badge text-bg-dark float-end"></span></h3>
           <div class="toolbarDiv border-bottom">
             <div>
@@ -54,7 +54,18 @@
               </div>
             </div>
           </div>
-          <div class="" id="modelDashboardGallery"></div>
+          <div class="dashboardFlex" id="modelDashboardGallery"></div>
+        </div>
+        <div id="institutionList" class="border rounded shadow p-3">
+            <h3>Institution <span class="badge text-bg-dark float-end"></span></h3>
+            <div class="listWrap" id="institutionDasboardList"></div>
+        </div>
+        <div id="personList" class="border rounded shadow p-3">
+            <h3>Person <span class="badge text-bg-dark float-end"></span></h3>
+            <div class="list-group list-group-flush listDashBoard">
+              <a class="list-group-item pe-4 fw-bold disabled"><span>name</span><span>role</span><span>active</span><span>artifact</span><span>model</span></a>
+              <div class="listWrap"></div>
+            </div>
         </div>
       </div>
     </main>

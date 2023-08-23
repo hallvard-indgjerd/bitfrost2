@@ -211,10 +211,15 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row mb-3">
                     <div class="col">
                       <label for="encumbrance">Encumbrance</label>
                       <input type="text" class="form-control" name="encumbrance" id="encumbrance" value="">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <button type="button" class="btn btn-adc-dark" name="screenshot"><span class="mdi mdi-image-size-select-large"></span> create a thumbnail</button>
                     </div>
                   </div>
                 </div>

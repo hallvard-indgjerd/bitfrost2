@@ -1,7 +1,7 @@
 <?php
 require 'vendor/autoload.php';
-use \Adc\Person;
-$obj = new Person();
+use \Adc\Institution;
+$obj = new Institution();
 $funzione = $_POST['trigger'];
 unset($_POST['trigger']);
 if(isset($funzione) && function_exists($funzione)) {
@@ -9,6 +9,5 @@ if(isset($funzione) && function_exists($funzione)) {
   echo $trigger;
 }
 
-function getPersons($obj){return json_encode($obj->getPersons());}
-function getPersonDashboardList($obj){return json_encode($obj->getPersonDashboardList());}
+function getInstitutionDashboardList($obj){return json_encode($obj->getInstitutionDashboardList());}
 ?>

@@ -30,6 +30,7 @@ $("[name=specular]").on('change', updateSpecular)
 $("[name=lighting]").on('change', updateLighting)
 $("[name=texture]").on('change', updateTexture)
 $("[name=solid]").on('change', updateTransparency)
+$("[name=screenshot]").on('click', function(){presenter.saveScreenshot();})
 
 uploadButton.addEventListener('click', uploadFile);
 function el(el){return document.getElementById(el);}
