@@ -11,4 +11,6 @@ if(isset($funzione) && function_exists($funzione)) {
 
 function buildGallery($obj){return json_encode($obj->buildGallery($_POST['sort'], $_POST['filter']));}
 
+function getModelDashboardList($obj){return json_encode($obj->getModelDashboardList($_POST['search']));}
+
 ?>

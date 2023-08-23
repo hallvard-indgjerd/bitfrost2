@@ -38,6 +38,22 @@
             <div class="listWrap"></div>
           </div>
         </div>
+        <div id="modelList" class="border rounded shadow p-3">
+          <h3>Model <span id="modelStatusTitle"></span><span class="badge text-bg-dark float-end"></span></h3>
+          <div class="toolbarDiv border-bottom">
+            <div>
+              <div class="btn-group btn-group-sm" role="group">
+                <input type="radio" class="btn-check" name="modelStatus" id="modelStatusAll" value="0" autocomplete="off" checked>
+                <label class="btn btn-outline-secondary" for="modelStatusAll">All</label>
+                <input type="radio" class="btn-check" name="modelStatus" id="modelStatusComplete" value="2" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="modelStatusComplete">Complete</label>
+                <input type="radio" class="btn-check" name="modelStatus" id="modelStatusIncomplete" value="1" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="modelStatusIncomplete">Under processing</label>
+              </div>
+            </div>
+          </div>
+          <div class="listWrap" id="modelDashboardGallery"></div>
+        </div>
       </div>
     </main>
     <?php require("assets/menu.php"); ?>

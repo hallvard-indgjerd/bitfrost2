@@ -35,5 +35,20 @@ class Model extends Conn{
     where item.model = ".$id.";";
     return $this->simple($sql)[0];
   }
+
+  public function getModelDashboardList(array $search){
+    $filter = [];
+    if($search['status'] > 0){
+      array_push($filter, "status = ".$search['status']);
+    }else {
+      array_push($filter, "status > ".$search['status']);
+    }
+    if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
+    if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
+
+    $sql = "select m.id, m.nxz, m.thumb_256, u.id author_id, u.name, m.description from model m inner join model_metadata meta on meta.model= m.id inner join user u on meta.author = u.id ".$filter." order by updated_at desc;";
+
+    return $this->simple($sql);
+  }
 }
 ?>
