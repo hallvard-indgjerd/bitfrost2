@@ -46,7 +46,7 @@ class Model extends Conn{
     if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
     if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
 
-    $sql = "select m.id, m.nxz, m.thumb_256, u.id author_id, u.name, m.description from model m inner join model_metadata meta on meta.model= m.id inner join user u on meta.author = u.id ".$filter." order by updated_at desc;";
+    $sql = "select m.id, m.nxz, m.thumb_256 thumb, u.id author_id, u.name, m.description,  meta.updated_at from model m inner join model_metadata meta on meta.model= m.id inner join user u on meta.author = u.id ".$filter." order by meta.updated_at desc;";
 
     return $this->simple($sql);
   }
