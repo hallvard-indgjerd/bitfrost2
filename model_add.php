@@ -220,6 +220,8 @@
                   <div class="row">
                     <div class="col">
                       <button type="button" class="btn btn-adc-dark" name="screenshot"><span class="mdi mdi-image-size-select-large"></span> create a thumbnail</button>
+                      <div class="my-3" id="thumbDiv">
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -242,6 +244,7 @@
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
     <script src="js/3dhopFunctions.js" charset="utf-8"></script>
+    <script src="assets/html2canvas.js" charset="utf-8"></script>
     <script src="js/model_add.js" charset="utf-8"></script>
   </body>
 </html>

@@ -4,6 +4,36 @@ session_start();
 class Model extends Conn{
   function __construct(){}
 
+  public function addModel($data, $file){
+    try {
+      // $this->handleFile($file['nxz'], 'nxz');
+      $this->handleFile($file['thumb'], 'png');
+      // $this->handleMetadata($data);
+      return $file;
+    } catch (\Exception $e) {
+      return ["res"=>0, "output"=>$e->getMessage()];
+    }
+  }
+
+  private function handleFile($file, $ext){
+    $folder = $ext == 'nxz' ? 'models/' : 'thumb/';
+    $type = $ext == 'nxz' ? 'application/octet-stream' : 'image/png';
+    $fileName = $file["name"];
+    $fileTmpLoc = $file["tmp_name"];
+    $fileLoc = $_SERVER['DOCUMENT_ROOT']."/adc/archive/".$folder.$fileName;
+    $fileType = $file["type"];
+    $fileSize = $file["size"];
+    $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
+    $fileErrorMsg = $file["error"];//0 false, 1 true
+    if (!$fileTmpLoc) { throw new \Exception("Please browse for a file before clicking the upload button.", 1); }
+    if ($fileExt !== $ext || $fileType !== $type) { throw new \Exception("Sorry but you can upload only ".$ext." files. You are trying to upload a ".$fileExt." file type", 1); }
+    if(!move_uploaded_file($fileTmpLoc, $fileLoc)){ throw new \Exception("move_uploaded_file function failed, view server log for more details", 1); }
+    // echo $fileName." upload is complete";
+    chmod($fileLoc, 0666);
+
+    return true;
+  }
+
   public function buildGallery(string $sortBy, $filterArr= array()){
     $filter = empty($filterArr) ? "" : " where ". join(" and ", $filterArr);
     $sql = "select artifact.id, artifact.name, coalesce(artifact.description, 'no description available','') description, class.id as category_id, class.value as category, material.id as material_id, coalesce(material.value, null, 'not defined') as material, artifact.start, artifact.end, model.nxz, model.thumb_256

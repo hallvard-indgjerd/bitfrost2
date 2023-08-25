@@ -1527,7 +1527,7 @@ _drawScene : function () {
 	gl.clearColor(bkg[0], bkg[1], bkg[2], bkg[3]);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 	gl.enable(gl.DEPTH_TEST);
-	
+
 	// draw non-transparent geometries
 	for (var inst in instances) {
 		var instance = instances[inst];
@@ -1805,17 +1805,17 @@ _drawScene : function () {
 		var entity = entities[ent];
 		if (!entity.visible) continue;
 		if (!entity.renderable) continue;
-			
+
 		xform.model.push();
 		xform.model.multiply(space.transform.matrix);
 		xform.model.multiply(entity.transform.matrix);
-		
+
 		var entityUniforms = {
 			"uWorldViewProjectionMatrix" : xform.modelViewProjectionMatrix,
 			"uPointSize"                 : config.pointSize,
 			"uColorID"                   : entity.color,
 			"uZOff"                      : entity.zOff,
-		};		
+		};
 
 		if(entity.useTransparency)
 		{
@@ -1837,7 +1837,7 @@ _drawScene : function () {
 			renderer.setModel(entity.renderable);
 			renderer.renderModel();
 		renderer.end();
-		
+
 		if(entity.useTransparency)
 		{
 			gl.depthMask(true);
@@ -2055,13 +2055,11 @@ _drawScene : function () {
 
 	// saving image, if necessary
 	if(this.isCapturingScreenshot){
-	    this.isCapturingScreenshot = false;
+	  this.isCapturingScreenshot = false;
 		this.screenshotData = this.ui._canvas.toDataURL('image/png',1).replace("image/png", "image/octet-stream");
-		if(this._scene.config.autoSaveScreenshot)
-		{
+		if(this._scene.config.autoSaveScreenshot){
 			var currentdate = new Date();
 			var fName = this._scene.config.screenshotBaseName + currentdate.getHours() + currentdate.getMinutes() + currentdate.getSeconds() + ".png";
-			
 			if(this.ui._canvas.msToBlob) // IE or EDGEhtml
 			{
 				console.error("IE and EDGEhtml cannot save images");
@@ -2477,7 +2475,7 @@ _createMeshModels : function () {
 			if(mesh.mType == null)
 			{
 				var ext = mesh.url.split('.').pop().split(/\#|\?/)[0].toLowerCase();
-				if((ext === "nxs") || (ext === "nxz")) 
+				if((ext === "nxs") || (ext === "nxz"))
 					mesh.mType = "nexus";
 				else if(ext === "ply")
 					mesh.mType = "ply";
@@ -2609,6 +2607,7 @@ onInitialize : function () {
 	this.installDefaultShaders();
 
 	// screenshot support
+	this.createThumb = false;
 	this.isCapturingScreenshot = false;
 	this.screenshotData = null;
 
@@ -2846,7 +2845,7 @@ onMouseWheel: function (wheelDelta, x, y, e) {
 	else {
 		// if locked trackball, just return.
 		if (this._scene.trackball.locked) return;
-		
+
 		var action = SGL_TRACKBALL_SCALE;
 
 		var factor = wheelDelta > 0.0 ? (0.90) : (1.10);
@@ -2973,7 +2972,7 @@ createEntity : function (eName, type, verticesList) {
 	else if(type == "lines")
 		modelDescriptor.primitives = ["lines"];
 	else if(type == "triangles")
-		modelDescriptor.primitives = ["triangles"];	
+		modelDescriptor.primitives = ["triangles"];
 	modelDescriptor.vertices = {};
 	modelDescriptor.vertices.position = [];
 	modelDescriptor.vertices.normal = [];
@@ -2985,24 +2984,24 @@ createEntity : function (eName, type, verticesList) {
 		modelDescriptor.vertices.position.push(verticesList[vInd][0]);
 		modelDescriptor.vertices.position.push(verticesList[vInd][1]);
 		modelDescriptor.vertices.position.push(verticesList[vInd][2]);
-		
+
 		modelDescriptor.vertices.normal.push(0.0);
 		modelDescriptor.vertices.normal.push(0.0);
 		modelDescriptor.vertices.normal.push(0.0);
 	}
 	var gl = this.ui.gl;
 	nEntity.renderable = new SglModel(gl, modelDescriptor);
-	
+
 	// setting
 	this._scene.entities[eName] = {};
 	this._scene.entities[eName] = nEntity;
 	return this._scene.entities[eName];
-	this.repaint();	
+	this.repaint();
 },
 
 deleteEntity : function (eName) {
 	delete this._scene.entities[eName];
-	this.repaint();	
+	this.repaint();
 },
 
 clearEntities : function () {

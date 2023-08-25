@@ -9,8 +9,9 @@ if(isset($funzione) && function_exists($funzione)) {
   echo $trigger;
 }
 
+function addModel($obj){return json_encode($obj->addModel($_POST, $_FILES));}
 function buildGallery($obj){return json_encode($obj->buildGallery($_POST['sort'], $_POST['filter']));}
-
 function getModelDashboardList($obj){return json_encode($obj->getModelDashboardList($_POST['search']));}
+
 
 ?>

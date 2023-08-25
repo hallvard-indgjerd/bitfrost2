@@ -1,3 +1,5 @@
+const uuid = self.crypto.randomUUID();
+var formdata = new FormData();
 const listTrigger='getSelectOptions';
 let listArray = [];
 let listAuthor = {
@@ -19,7 +21,7 @@ listArray.push(listAuthor,listOwner,listLicense)
 listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
 
 const uploadButton = document.getElementById('preview');
-const fileInput = document.getElementById('nxz');
+const nxz = document.getElementById('nxz');
 const endpoint = 'api/modelPreview.php';
 let file;
 $("#preview, #initParamObjectForm,#progressBar").hide()
@@ -30,15 +32,41 @@ $("[name=specular]").on('change', updateSpecular)
 $("[name=lighting]").on('change', updateLighting)
 $("[name=texture]").on('change', updateTexture)
 $("[name=solid]").on('change', updateTransparency)
-$("[name=screenshot]").on('click', function(){presenter.saveScreenshot();})
+// $("[name=screenshot]").on('click', function(){presenter.saveScreenshot();})
+$("[name=newArtifact]").on('click', function(el){saveArtifact(el)});
 
 uploadButton.addEventListener('click', uploadFile);
+
+function saveArtifact(el){
+  el.preventDefault();
+  formdata.append('trigger','addModel')
+  const canvas = document.getElementById('draw-canvas');
+  canvas.toBlob(function(blob) { formdata.append('thumb', blob, uuid+'.png'); });
+  $.ajax({
+    type: "POST",
+    enctype: 'multipart/form-data',
+    url: "api/model.php",
+    dataType: 'json',
+    data: formdata,
+    processData: false,
+    contentType: false,
+    cache: false,
+    timeout: 800000,
+    success: function (data) {
+      console.log(data);
+    },
+    error: function (e) {
+      console.log(e);
+    }
+  });
+}
+
 function el(el){return document.getElementById(el);}
 
 function uploadFile(){
-  file = fileInput.files[0];
-  var formdata = new FormData();
-  formdata.append("nxz", file, file.name);
+  file = nxz.files[0];
+  // formdata.append("nxz", file, file.name);
+  formdata.append("nxz", file, uuid+".nxz");
   var ajax = new XMLHttpRequest();
   $("#progressBar").show()
   ajax.upload.addEventListener("progress", progressHandler, false);
