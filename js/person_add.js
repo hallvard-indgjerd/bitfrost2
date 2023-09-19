@@ -1,4 +1,6 @@
 const addUser = $("[name=user]").val()
+const form = $("[name=newPersonForm]")[0];
+let dati={}
 let listInstitution = {
   settings:{trigger:'getSelectOptions',list:'institution'},
   htmlEl: 'institution',
@@ -23,5 +25,10 @@ if (addUser == 'true') {
 $("[name=newPerson]").on('click', (el) => {newPerson(el)})
 
 function newPerson(el){
-  // el.preventDefault();
+  if (form.checkValidity()) {
+    el.preventDefault();
+    dati.trigger = 'addPerson';
+    ajaxSettings.url=API+"artifact.php";
+    ajaxSettings.data = dati
+  }
 }
