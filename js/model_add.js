@@ -33,15 +33,20 @@ $("[name=lighting]").on('change', updateLighting)
 $("[name=texture]").on('change', updateTexture)
 $("[name=solid]").on('change', updateTransparency)
 // $("[name=screenshot]").on('click', function(){presenter.saveScreenshot();})
-$("[name=newArtifact]").on('click', function(el){saveArtifact(el)});
-
+$("[name=newArtifact]").on('click', function(el){
+  createFormdata(el,saveArtifact)
+});
 uploadButton.addEventListener('click', uploadFile);
 
-function saveArtifact(el){
+function createFormdata(el, callback){
   el.preventDefault();
   formdata.append('trigger','addModel')
   const canvas = document.getElementById('draw-canvas');
   canvas.toBlob(function(blob) { formdata.append('thumb', blob, uuid+'.png'); });
+  callback()
+}
+
+function saveArtifact(){
   $.ajax({
     type: "POST",
     enctype: 'multipart/form-data',
@@ -90,7 +95,7 @@ function completeHandler(event){
   el("status").innerHTML = event.target.responseText;
   el("progressBar").value = 0;
   scene = {
-    meshes: {"nxz" : { url: 'archive/models/preview/'+file.name }},
+    meshes: {"nxz" : { url: 'archive/models/preview/'+uuid+".nxz" }},
     modelInstances : instanceOpt,
     trackball: trackBallOpt,
     space: spaceOpt,
