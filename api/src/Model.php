@@ -66,7 +66,7 @@ class Model extends Conn{
     return $this->simple($sql)[0];
   }
 
-  public function getModelDashboardList(array $search){
+  public function getModels(array $search){
     $filter = [];
     if($search['status'] > 0){
       array_push($filter, "status = ".$search['status']);

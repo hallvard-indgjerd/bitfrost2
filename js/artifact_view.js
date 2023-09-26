@@ -97,18 +97,6 @@ function artifactMap(markerArr){
   };
   L.control.layers(baseLayers, null).addTo(map);
   let markerGroup = L.featureGroup().addTo(map);
-  var storagePlaceIco = L.icon({
-    iconUrl: 'img/ico/storagePlace.png',
-    iconSize:     [30, 30],
-    iconAnchor:   [15, 15],
-    popupAnchor:  [-3, -76]
-  });
-  var findplaceIco = L.icon({
-    iconUrl: 'img/ico/findPlace.png',
-    iconSize:     [30, 30],
-    iconAnchor:   [15, 15],
-    popupAnchor:  [-3, -76]
-  });
   storagePlaceMarker = L.marker(markerArr['storage'],{icon:storagePlaceIco}).addTo(markerGroup);
   map.fitBounds(markerGroup.getBounds())
 }

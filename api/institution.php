@@ -9,5 +9,5 @@ if(isset($funzione) && function_exists($funzione)) {
   echo $trigger;
 }
 
-function getInstitutionDashboardList($obj){return json_encode($obj->getInstitutionDashboardList());}
+function getInstitutions($obj){return json_encode($obj->getInstitutions());}
 ?>

@@ -5,7 +5,7 @@
         <h5 class="toastTitle text-success mb-3">Ok, record created successfully</h5>
       </div>
     </div>
-    <div class="row">
+    <div class="row mt-3" id="toastBtn">
       <div class="col">
         <a id="createNewRecord" href="" class="btn btn-secondary btn-sm">Create a new record</a>
         <a id="goToItemPage" href="" class="btn btn-secondary btn-sm">View new record page</a>
@@ -23,6 +23,12 @@
     <div class="row">
       <div class="col">
         <div class="errorOutput"></div>
+      </div>
+    </div>
+    <div class="row mt-3" id="toastErrorBtn">
+      <div class="col">
+        <a id="retryBtn" href="" class="btn btn-secondary btn-sm" onClick="window.location.reload();">Retry</a>
+        <a id="goToDash" href="dashboard.php" class="btn btn-secondary btn-sm">Go to dashboard</a>
       </div>
     </div>
   </div>

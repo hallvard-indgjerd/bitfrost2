@@ -1,30 +1,62 @@
 <?php
 namespace Adc;
 session_start();
+use \Adc\Person;
 use \PHPMailer\PHPMailer\PHPMailer;
 use \PHPMailer\PHPMailer\SMTP;
 use \PHPMailer\PHPMailer\Exception;
 
 class User extends Conn{
   public $mail;
+  public $person;
   function __construct(){
     $this->mail = new PHPMailer(true);
+    $this->person = new Person();
+  }
+
+  public function getUsers(){
+    $sql="WITH
+      artifact AS (select u.id, u.name, u.role_id, role.value role, u.is_active, count(artifact.id) tot from user u inner join list_user_role role on u.role_id = role.id left join artifact on artifact.author = u.id group by u.id, u.name),
+      model AS (select u.id, count(model.id) tot from user u left join model_metadata model on model.author = u.id group by u.id, u.name)
+    SELECT artifact.id, artifact.name, artifact.role, artifact.is_active, artifact.tot artifact, model.tot model FROM artifact JOIN model
+    WHERE artifact.id = model.id
+    ORDER BY artifact.name asc;";
+    return $this->simple($sql);
   }
 
   public function addUser(array $dati){
     try {
-      $pwd = $dati['password'];
-      $dati['password_hash'] = password_hash($pwd, PASSWORD_DEFAULT);
-      unset($dati['password']);
-      $sql = $this->buildInsert("user", $dati);
+      $this->pdo()->beginTransaction();
+      $pwd = $this->genPwd();
+      $usr = array(
+        "email"=>$dati['email'],
+        "name"=>$dati['first_name']." ".$dati['last_name'],
+        "password_hash"=>password_hash($pwd, PASSWORD_BCRYPT),
+        "role"=>$dati['role'],
+        "role_id"=>$dati['role_id'],
+        "is_active"=>$dati['is_active']
+      );
+      unset($dati['role'],$dati['role_id'],$dati['is_active']);
+      
+      $sql = $this->buildInsert("person", $dati);
       $this->prepared($sql, $dati);
-      //$datiMail=array("email"=>$dati['email'], "user"=>$dati['name'], "pwd"=>$pwd, "mailBody"=>1);
-      //$this->sendMail($datiMail);
-      return array("user created successfully", 1);
-    } catch (\Exception $e) {
-      return [$e->getMessage(), $e->getCode()];
-    }
+      
+      $sql = $this->buildInsert("user", $usr);
+      $this->prepared($sql, $usr);
 
+      $datiMail=array(
+        "email"=>$dati['email'], 
+        "name"=>$usr['name'], 
+        "pwd"=>$pwd, 
+        "mailBody"=>1
+      );
+      $this->sendMail($datiMail);
+      $this->pdo()->commit();
+      return ["res"=> 1, "output"=>'ok '.$pwd];
+    } catch (\Exception $e) {
+      $this->pdo()->rollBack();
+      return ["res"=>0, "output"=>$e->getMessage()];
+    }
   }
 
   public function checkAdmin(){
@@ -60,7 +92,7 @@ class User extends Conn{
     return true;
   }
 
-  public function rescuePwd(array $dati){
+/*   public function rescuePwd(array $dati){
     try {
       $usr = $this->checkEmail($dati['email']);
       $pwd = $this->genPwd();
@@ -71,7 +103,7 @@ class User extends Conn{
     } catch (\Exception $e) {
       return [$e->getMessage(), $e->getCode()];
     }
-  }
+  } */
 
   public function genPwd(){
     $pwd = "";
@@ -84,30 +116,34 @@ class User extends Conn{
     switch ($dati['mailBody']) {
       case 1:
         $titolo = "New account";
-        $body = file_get_contents('../config/mailBody/newUser.html');
-        $body = str_replace('%user%', $dati['name'], $body);
-        $body = str_replace('%password%', $pwd, $body);
+        $body = file_get_contents('config/mailBody/newUser.html');
+        $body = str_replace('%name%', $dati['name'], $body);
+        $body = str_replace('%password%', $dati['pwd'], $body);
       break;
       case 2:
-        $titolo="Invio password di ripristino per la Boulder Factory Community";
-        $body = file_get_contents('../assets/mail/rescuePwd.html');
-        $body = str_replace('%utente%', $dati['utente'], $body);
-        $body = str_replace('%password%', $dati['password'], $body);
+        $titolo="Send a new password";
+        $body = file_get_contents('config/mailBody/rescuePwd.html');
+        $body = str_replace('%name%', $dati['name'], $body);
+        $body = str_replace('%password%', $dati['pwd'], $body);
       break;
     }
-    $mailParams = parse_ini_file('mail.ini');
+    $mailParams = parse_ini_file('config/mail.ini');
     if ($mailParams === false) {
       throw new \Exception("Error reading mail configuration file",0);
     }
     $this->mail->isSMTP();
-    // $this->mail->SMTPDebug = SMTP::DEBUG_SERVER; //da usare solo per i test, non stampa messaggi a video ma solo in console, non usare in produzione!!!!
+    
+    //da usare solo per i test, non stampa messaggi a video ma solo in console, non usare in produzione!!!!
+    // $this->mail->SMTPDebug = SMTP::DEBUG_SERVER; 
+    
     $this->mail->Host = $mailParams['host'];
     $this->mail->Port = $mailParams['port'];
     $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $this->mail->SMTPAuth = true;
     $this->mail->Username = $mailParams['usr'];
     $this->mail->Password = $mailParams['pwd'];
-    $this->mail->setFrom($mailParams['usr'], 'ADC crew');
+    // $this->mail->setFrom($mailParams['usr'], 'ADC crew');
+    $this->mail->setFrom('omeka-ADC@ark.lu.se', 'Dynamic Collection Crew');
     $this->mail->addAddress($dati['email'], $dati['utente']);
     $this->mail->Subject = $titolo;
     $this->mail->msgHTML($body, __DIR__);

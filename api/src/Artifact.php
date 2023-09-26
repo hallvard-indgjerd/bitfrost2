@@ -39,7 +39,7 @@ class Artifact extends Conn{
     return $this->simple($sql);
   }
 
-  public function getArtifactDashboardList(array $search){
+  public function getArtifacts(array $search){
     $filter = [];
     if($search['status'] > 0){
       array_push($filter, "status_id = ".$search['status']);

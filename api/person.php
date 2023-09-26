@@ -9,6 +9,8 @@ if(isset($funzione) && function_exists($funzione)) {
   echo $trigger;
 }
 
-function getPersons($obj){return json_encode($obj->getPersons());}
-function getPersonDashboardList($obj){return json_encode($obj->getPersonDashboardList());}
+function addPerson($obj){ return json_encode($obj->addPerson($_POST)); }
+function getPerson($obj){return json_encode($obj->getPerson());}
+function getPersons($obj){return json_encode($obj->getPersons($_POST['search']));}
+
 ?>

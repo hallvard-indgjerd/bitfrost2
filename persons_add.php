@@ -1,6 +1,7 @@
 <?php
   require 'init.php';
   if (!isset($_SESSION['id'])) { header('Location: 403.php');}
+  $title = $_GET['user']=='false' ? 'Person' : 'User';
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -15,7 +16,7 @@
         <form name="newPersonForm">
           <input type="hidden" name="user" value="<?php echo $_GET['user']; ?>">
           <div class="row mb-3">
-            <h3 class="border-bottom">New Person</h3>
+            <h3 class="border-bottom">New <?php echo $title; ?></h3>
             <div class="form-text">* mandatory field</div>
           </div>
           <div class="row mb-3">
@@ -98,8 +99,11 @@
         </form>
       </div>
     </main>
-    <?php require("assets/menu.php"); ?>
-    <?php require("assets/js.html"); ?>
+    <?php 
+      require("assets/menu.php");
+      require("assets/toastDiv.html");
+      require("assets/js.html"); 
+    ?>
     <script src="js/person_add.js" charset="utf-8"></script>
   </body>
 </html>

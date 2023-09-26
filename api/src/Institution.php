@@ -4,7 +4,7 @@ session_start();
 class Institution extends Conn{
   function __construct(){}
 
-  public function getInstitutionDashboardList(){
+  public function getInstitutions(){
     $sql = "select i.id, i.name, i.abbreviation, cat.value category, city.name city, i.address, i.lat, i.lon, i.link, count(*) artifact
     from institution i
     inner join list_institution_category cat on i.category = cat.id

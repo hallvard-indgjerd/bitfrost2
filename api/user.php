@@ -9,10 +9,15 @@ if(isset($funzione) && function_exists($funzione)) {
   echo $trigger;
 }
 
+function addUser($obj){ return json_encode($obj->addUser($_POST)); }
 function checkAdmin($obj){return json_encode($obj->checkAdmin());}
 function login($obj){ return json_encode($obj->login($_POST)); }
-function addUser($obj){ return json_encode($obj->addUser($_POST)); }
 function genPwd($obj){ return json_encode($obj->genPwd()); }
+function getUsers($obj){return json_encode($obj->getUsers());}
+
+
+
+
 // function getUsr($obj){
 //   $usr = isset($_POST['usr']) ? $_POST['usr'] : null;
 //   return json_encode($obj->getUsr($usr));
