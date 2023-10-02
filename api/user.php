@@ -14,6 +14,8 @@ function checkAdmin($obj){return json_encode($obj->checkAdmin());}
 function login($obj){ return json_encode($obj->login($_POST)); }
 function genPwd($obj){ return json_encode($obj->genPwd()); }
 function getUsers($obj){return json_encode($obj->getUsers());}
+function changePassword($obj){return json_encode($obj->changePassword($_POST));}
+function rescuePwd($obj){ return json_encode($obj->rescuePwd($_POST['email'])); }
 
 
 
@@ -24,5 +26,4 @@ function getUsers($obj){return json_encode($obj->getUsers());}
 // }
 // function updateUsr($obj){ return json_encode($obj->updateUsr($_POST)); }
 // function updatePrivacy($obj){ return json_encode($obj->updatePrivacy($_POST)); }
-// function rescuePwd($obj){ return json_encode($obj->rescuePwd($_POST)); }
 ?>

@@ -53,6 +53,7 @@ function newPerson(el){
         $("#toastDivError .errorOutput").text(data.output);
         $("#toastDivError").removeClass("d-none");
       }else {
+        $(".toastTitle").text(toastMsgInsert)
         $("#toastDivSuccess").removeClass("d-none")
         $("#toastDivSuccess #createNewRecord").attr("href","persons_add.php?user="+addUser)
       }

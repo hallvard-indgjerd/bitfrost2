@@ -37,7 +37,7 @@ if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
         vocabulary
       </a>
       <span class="titleSection">my account</span>
-      <a href='#' class='animated'>
+      <a href='settings.php' class='animated'>
         <span class="mdi mdi-cog"></span>
         settings
       </a>
