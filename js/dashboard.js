@@ -62,11 +62,12 @@ function getArtifacts(){
   $.ajax(ajaxSettings).done(function(data){
     $('#artifactList .badge').text(data.length)
     data.forEach((item, i) => {
-      let li = $("<a/>", {class: 'list-group-item list-group-item-action'}).attr("href","artifact_view.php?item="+item.id).appendTo('#artifactList .listWrap');
-      $('<span/>').text(item.id).appendTo(li)
+      let li = $("<p/>", {class: 'list-group-item list-group-item-action'}).attr("href","artifact_view.php?item="+item.id).appendTo('#artifactList .listWrap');
       $('<span/>').text(item.name).appendTo(li)
       $('<span/>').text(item.description).appendTo(li)
       $('<span/>').text(item.last_update).appendTo(li)
+      let a = $('<span/>',{class:'text-center'}).appendTo(li)
+      $("<a/>",{class:'text-dark', title:'open artifact page'}).html('<span class="mdi mdi-arrow-right-bold fs-4"></span>').attr({"href":"artifact_view.php?item="+item.id, "data-bs-toggle":"tooltip"}).appendTo(a).tooltip();
     });
   });
 }

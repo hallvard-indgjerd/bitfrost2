@@ -17,32 +17,33 @@ class User extends Conn{
   public function addUser(array $dati){
     try {
       $this->pdo()->beginTransaction();
-      $pwd = $this->genPwd();
       $usr = array(
-        "email"=>$dati['email'],
-        "name"=>$dati['first_name']." ".$dati['last_name'],
-        "password_hash"=>password_hash($pwd, PASSWORD_BCRYPT),
         "role"=>$dati['role'],
-        "role_id"=>$dati['role_id'],
         "is_active"=>$dati['is_active']
       );
-      unset($dati['role'],$dati['role_id'],$dati['is_active']);
+      unset($dati['role'],$dati['is_active']);
       
-      $sql = $this->buildInsert("person", $dati);
-      $this->prepared($sql, $dati);
-      
-      $sql = $this->buildInsert("user", $usr);
-      $this->prepared($sql, $usr);
+      $personSql = $this->buildInsert("person", $dati);
+      $this->prepared($personSql, $dati);
+      $personId = $this->pdo()->lastInsertId();
+      $usr['person']=$personId;
+      $userSql = $this->buildInsert("user", $usr);
+      $this->prepared($userSql, $usr);
 
-      $datiMail=array(
+      $token = $this->genToken($dati['email']);
+      $tokenData = array("email"=>$dati['email'], "token"=>$token);
+      $tokenSql = $this->buildInsert("reset_password", $tokenData);
+      $this->prepared($tokenSql, $tokenData);
+
+      $datiMail = array(
         "email"=>$dati['email'], 
-        "name"=>$usr['name'], 
-        "pwd"=>$pwd, 
+        "name"=>$dati['first_name']." ".$dati['first_name'], 
+        "link"=>"https://dyncolldev.ht.lu.se/prototype/reset_password.php?key=".$token,
         "mailBody"=>1
       );
       $this->sendMail($datiMail);
       $this->pdo()->commit();
-      return ["res"=> 1, "output"=>'ok '.$pwd];
+      return ["res"=> 1, "output"=>'Ok, user has been successfully created.'];
     } catch (\Exception $e) {
       $this->pdo()->rollBack();
       return ["res"=>0, "output"=>$e->getMessage()];
@@ -58,7 +59,7 @@ class User extends Conn{
       $newdata = array("password_hash"=>$pwd, "id"=>$dati['id']);
       $sql = "update user set password_hash = :password_hash where id = :id";
       $this->prepared($sql, $newdata);
-      return ["res"=> 1, "output"=>'ok'];
+      return ["res"=> 1, "output"=>'Ok, password has been succesfully modified'];
     } catch (\Exception $e) {
       return ["res"=>0, "output"=>$e->getMessage()];
     }
@@ -71,7 +72,7 @@ class User extends Conn{
   }
 
   protected function checkEmail(string $email){
-    $sql = "select * from user where email = '".$email."' and is_active = 1;";
+    $sql = "select u.id, p.id person, p.email, u.role, u.password_hash from person p inner join user u on u.person = p.id where p.email = '".$email."' and u.is_active = 1;";
     $out = $this->simple($sql);
     $x = count($out);
     if ($x == 0) { throw new \Exception("The email is not in the database or your account is disabled. Please try again, if the problem persists please contact the project manager", 1); }
@@ -90,6 +91,17 @@ class User extends Conn{
     if ($x > 0) { throw new \Exception("Sorry, but there is already an active request for this email.<br>If you did not receive the email with the link to reset your password, please search in spam or contact the system administrator: giuseppe.naponiello@ark.lu.se", 1); }
     return $out[0];
   }
+  public function checkToken(string $token){
+    try {
+      $sql = "select * from reset_password where token = '".$token."';";
+      $out = $this->simple($sql);
+      if (count($out) == 0) { throw new \Exception("Sorry, but your token is expired! Please try requesting a new password again", 0); }
+      return ["res"=> 1, "output"=>$out[0]];
+    } catch (\Exception $e) {
+      return ["res"=>0, "output"=>$e->getMessage()];
+    }
+    return $out[0];
+  }
 
   public function genPwd(){
     $pwd = "";
@@ -98,13 +110,10 @@ class User extends Conn{
     return str_shuffle($pwd);
   }
 
+  protected function genToken(string $email){ return md5($email).rand(10,9999); }
+
   public function getUsers(){
-    $sql="WITH
-      artifact AS (select u.id, u.name, u.role_id, role.value role, u.is_active, count(artifact.id) tot from user u inner join list_user_role role on u.role_id = role.id left join artifact on artifact.author = u.id group by u.id, u.name),
-      model AS (select u.id, count(model.id) tot from user u left join model_metadata model on model.author = u.id group by u.id, u.name)
-    SELECT artifact.id, artifact.name, artifact.role, artifact.is_active, artifact.tot artifact, model.tot model FROM artifact JOIN model
-    WHERE artifact.id = model.id
-    ORDER BY artifact.name asc;";
+    $sql="select * from user_artifact_view order by name asc;";
     return $this->simple($sql);
   }
 
@@ -125,7 +134,7 @@ class User extends Conn{
       $usr = $this->checkEmail($email);
       $this->checkResetRequest($email);
       // create a token to sent
-      $token = md5($email).rand(10,9999);
+      $token = $this->genToken($email);
       // save request in reset_password table
       $resArr = array("email" => $email, "token" => $token);
       $sql = $this->buildInsert("reset_password", $resArr);
@@ -134,7 +143,7 @@ class User extends Conn{
       $datiMail=array(
         "email"=>$email, 
         "name"=>$usr['name'], 
-        "link"=>"https://dyncolldev.ht.lu.se/prototype/resetPwd.php?key=".$token, 
+        "link"=>"https://dyncolldev.ht.lu.se/prototype/reset_password.php?key=".$token, 
         "mailBody"=>2
       );
       $this->sendMail($datiMail);
@@ -144,9 +153,32 @@ class User extends Conn{
     }
   }
 
+  public function resetPassword(array $dati){
+    try {
+      $this->pdo()->beginTransaction();
+      $array = array(
+        "email" => $dati['email'],
+        "password_hash" => password_hash($dati['password_hash'], PASSWORD_BCRYPT)
+      );
+      $sql = "update person, user set user.password_hash = :password_hash where user.person = person.id and person.email = :email";
+      $this->prepared($sql, $array);
+      
+      $array = array( "token"=>$dati['token'], "email"=>$dati['email']);
+      $sql = "delete from reset_password where token = :token and email = :email;";
+      $this->prepared($sql, $array);
+
+      $this->pdo()->commit();
+      return ["res"=>1, "output" => 'Your password has been successfully reset, you can now log in.'];
+    } catch (\Exception $e) {
+      $this->pdo()->rollBack();
+      return ["res"=>0, "output"=>$e->getMessage()];
+    }
+  }
+
   private function setSession(array $dati){
     $_SESSION['id'] = $dati['id'];
-    $_SESSION['role'] = $dati['role_id'];
+    $_SESSION['person'] = $dati['person'];
+    $_SESSION['role'] = $dati['role'];
     $_SESSION['email'] = $dati['email'];
     return true;
   }
@@ -158,7 +190,7 @@ class User extends Conn{
         $titolo = "New account";
         $body = file_get_contents('config/mailBody/newUser.html');
         $body = str_replace('%name%', $dati['name'], $body);
-        $body = str_replace('%password%', $dati['pwd'], $body);
+        $body = str_replace('%link%', $dati['link'], $body);
       break;
       case 2:
         $titolo="Reset my password";
@@ -173,7 +205,7 @@ class User extends Conn{
     }
     $this->mail->isSMTP();
     
-    //da usare solo per i test, non stampa messaggi a video ma solo in console, non usare in produzione!!!!
+    // only for testing, print messages only in the console, do not use in production!!!!
     // $this->mail->SMTPDebug = SMTP::DEBUG_SERVER; 
     
     $this->mail->Host = $mailParams['host'];

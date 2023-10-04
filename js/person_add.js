@@ -1,8 +1,10 @@
-$("#goToItemPage").remove();
+// $("#goToItemPage").remove();
 const addUser = $("[name=user]").val()
 const connector = addUser == 'false' ? 'person.php' : 'user.php';
 const trigger = addUser == 'false' ? 'addPerson' : 'addUser';
 const form = $("[name=newPersonForm]")[0];
+const toastToolBar = $('#toastBtn');
+
 let dati={}
 let listInstitution = {
   settings:{trigger:'getSelectOptions',list:'institution'},
@@ -21,9 +23,7 @@ let listRole = {
 }
 getList(listInstitution.settings,listInstitution.htmlEl,listInstitution.label)
 getList(listPosition.settings,listPosition.htmlEl,listPosition.label)
-if (addUser == 'true') {
-  getList(listRole.settings,listRole.htmlEl,listRole.label)
-}
+if (addUser == 'true') { getList(listRole.settings,listRole.htmlEl,listRole.label) }
 
 $("[name=newPerson]").on('click', (el) => {newPerson(el)})
 
@@ -35,8 +35,7 @@ function newPerson(el){
     dati.last_name= $("#last_name").val();
     dati.email= $("#email").val();
     if(addUser == 'true'){
-      dati.role_id = $("#role").val();
-      dati.role = $("#role option:selected").text();
+      dati.role = $("#role").val();
       dati.is_active = $("#is_active").is(":checked") ? 1 : 2 ;
     }
     dati.institution= $("#institution").val();
@@ -53,9 +52,11 @@ function newPerson(el){
         $("#toastDivError .errorOutput").text(data.output);
         $("#toastDivError").removeClass("d-none");
       }else {
-        $(".toastTitle").text(toastMsgInsert)
+        $(".toastTitle").text(data.output)
+        gotoIndex.appendTo(toastToolBar);
+        gotoDashBoard.appendTo(toastToolBar);
+        newRecord.appendTo(toastToolBar);
         $("#toastDivSuccess").removeClass("d-none")
-        $("#toastDivSuccess #createNewRecord").attr("href","persons_add.php?user="+addUser)
       }
       $("#toastDivContent").removeClass('d-none')
     })

@@ -37,7 +37,7 @@
             </div>
           </div>
           <div class="list-group list-group-flush listDashBoard">
-            <a class="list-group-item pe-4 fw-bold disabled"><span>id</span><span>name</span><span>description</span><span>last update</span></a>
+            <p class="list-group-item pe-4 fw-bold"><span>name</span><span>description</span><span>last update</span><span></span></p>
             <div class="listWrap"></div>
           </div>
         </div>

@@ -10,12 +10,14 @@ if(isset($funzione) && function_exists($funzione)) {
 }
 
 function addUser($obj){ return json_encode($obj->addUser($_POST)); }
+function changePassword($obj){return json_encode($obj->changePassword($_POST));}
 function checkAdmin($obj){return json_encode($obj->checkAdmin());}
-function login($obj){ return json_encode($obj->login($_POST)); }
+function checkToken($obj){return json_encode($obj->checkToken($_POST['token']));}
 function genPwd($obj){ return json_encode($obj->genPwd()); }
 function getUsers($obj){return json_encode($obj->getUsers());}
-function changePassword($obj){return json_encode($obj->changePassword($_POST));}
+function login($obj){ return json_encode($obj->login($_POST)); }
 function rescuePwd($obj){ return json_encode($obj->rescuePwd($_POST['email'])); }
+function resetPassword($obj){ return json_encode($obj->resetPassword($_POST)); }
 
 
 

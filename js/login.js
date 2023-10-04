@@ -52,11 +52,10 @@ function rescuePwd(el){
     ajaxSettings.data = dati
     $.ajax(ajaxSettings)
     .done(function(data) {
-      console.log(data);
       form.find(".outputMsg").removeClass('text-success text-danger');
-      let classe = data['res'] == 1 ? 'text-success' : 'text-danger';
-      form.find(".outputMsg").addClass(classe).html(data['output']);
-      if(data['res'] == 1){window.setTimeout(function(){location.href = "index.php";}, 5000);}
+      let classe = data.res == 1 ? 'text-success' : 'text-danger';
+      form.find(".outputMsg").addClass(classe).html(data.output);
+      if(data.res == 1){window.setTimeout(function(){location.href = "index.php";}, 5000);}
     }).fail(function(data){
       console.log("error: "+data);
       form.find(".outputMsg").html(data);

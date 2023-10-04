@@ -2,19 +2,21 @@
   require 'init.php';
   if (!isset($_SESSION['id'])) { header('Location: 403.php');}
   $usr = $_GET['user'] ? $_GET['user']: $_SESSION['id'];
+  $personal = $_GET['user'] ? 0 : 1;
   $title = $_GET['user'] ? 'user': 'your';
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
     <?php require("assets/meta.php"); ?>
+    <link rel="stylesheet" href="css/person_add.css">
     <link rel="stylesheet" href="css/settings.css">
   </head>
   <body>
     <?php require("assets/header.php"); ?>
     <main class="<?php echo $mainClass; ?>">
       <div class="container">
-        <input type="hidden" id="user" value="<?php echo $usr; ?>">
+        <input type="hidden" id="user" data-personal="<?php echo $personal; ?>" value="<?php echo $usr; ?>">
         <div class="row mb-3">
           <h3 class="border-bottom">Manage <?php echo $title; ?> data profile</h3>
           <div class="form-text">* mandatory field</div>
@@ -26,6 +28,9 @@
             <div class="text-end mb-3">
               <button class="btn btn-secondary btn-sm w-auto" type="button" id="toggle-pwd">
                 toggle passwords visibility <i class="mdi mdi-eye"></i>
+              </button>
+              <button class="btn btn-secondary btn-sm w-auto" type="button" id="genPwd">
+                generate random password <i class="mdi mdi-reload"></i>
               </button>
             </div>
             <label for="current_pwd" class="col-sm-4 col-lg-3 col-form-label">* current password</label>

@@ -4,12 +4,9 @@ const spinner = "<div><div id='spinnerWrap' class='d-inline-block'><i class='mdi
 const toastEL = document.getElementById('toast')
 const toast = new bootstrap.Toast(toastEL)
 
-const toastToolBar = $('#toastBtn > div');
-const gotoDashBoard = $("<a/>",{href:'dashboard.php', class:'btn btn-secondary btn-sm'}).text('Go to dashboard').appendTo(toastToolBar);
-
-const toastMsgInsert = 'OK, the record has been successfully created';
-const toastMsgUpdate = 'OK, the record has been successfully updated';
-const toastMsgDelete = 'OK, the record has been successfully deleted';
+const gotoIndex = $("<a/>",{href:'index.php', class:'btn btn-secondary btn-sm mx-1'}).text('Go to index page')
+const gotoDashBoard = $("<a/>",{href:'dashboard.php', class:'btn btn-secondary btn-sm mx-1'}).text('Go to dashboard')
+const newRecord = $("<button/>",{type:'button', name:'newRecordBtn', class:'btn btn-secondary btn-sm mx-1'}).text('new record');
 
 
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
