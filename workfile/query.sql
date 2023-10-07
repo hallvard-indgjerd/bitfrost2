@@ -1,1 +1,1 @@
-select id, name, description, cast(last_update as date) as last_update from artifact_view where status_id > 0 order by last_update desc;
+select p.id, p.first_name, p.last_name, p.email, p.city, p.address, p.phone, p.institution institution_id, i.name institution, p.position position_id, l.value position from person p left join institution i on p.institution = i.id left join list_person_position l on p.position = l.id where p.id = 1

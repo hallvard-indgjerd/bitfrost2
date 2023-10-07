@@ -10,7 +10,8 @@ if(isset($funzione) && function_exists($funzione)) {
 }
 
 function addPerson($obj){ return json_encode($obj->addPerson($_POST)); }
-function getPerson($obj){return json_encode($obj->getPerson());}
+function getPerson($obj){return json_encode($obj->getPerson($_POST['id']));}
 function getPersons($obj){return json_encode($obj->getPersons($_POST['search']));}
+function updatePerson($obj){ return json_encode($obj->updatePerson($_POST)); }
 
 ?>

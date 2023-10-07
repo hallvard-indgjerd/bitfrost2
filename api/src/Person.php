@@ -14,10 +14,9 @@ class Person extends Conn{
     }
   }
 
-  public function getPerson(int $id = null){
-    $filter = $id == null ? '' : ' where id = '.$id;
-    $sql = "select p.id, concat(p.last_name,' ',p.first_name) as name, email, user_id from person p ".$filter." order by 2 asc;";
-    return $this->simple($sql);
+  public function getPerson(int $id){
+    $sql = "select p.id, p.first_name, p.last_name, p.email, p.city, p.address, p.phone, p.institution institution_id, i.name institution, p.position position_id, l.value position from person p left join institution i on p.institution = i.id left join list_person_position l on p.position = l.id where p.id = ".$id.";";
+    return $this->simple($sql)[0];
   }
 
   public function getPersons(array $search=NULL){
@@ -38,6 +37,18 @@ class Person extends Conn{
     $where = isset($search['filter']) ? "where ".$searchString : '';
     $sql = "select p.id, concat(p.first_name,' ',p.last_name) name, p.email, i.name institution, list.value position from person p left join institution i on p.institution = i.id left join list_person_position list on p.position = list.id ".$where." order by 2 asc;";
     return $this->simple($sql);
+  }
+
+  public function updatePerson(array $data){
+    try {
+      $filter = array("id"=>$data['id']);
+      unset($data['id']);
+      $sql = $this->buildUpdate("person",$filter, $data);
+      $this->prepared($sql, $data);
+      return ["res"=> 1, "output"=>'your data has been correctly updated'];
+    } catch (\Exception $e) {
+      return ["res"=>0, "output"=>$e->getMessage()];
+    }
   }
 }
 ?>

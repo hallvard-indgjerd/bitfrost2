@@ -17,3 +17,21 @@ const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {return n
 
 let ajaxSettings = {method: "POST", timeout: 0, dataType: 'json',}
 $("#backdrop").hide()
+
+
+// list
+const listInstitution = {
+  settings:{trigger:'getSelectOptions',list:'institution'},
+  htmlEl: 'institution',
+  label: 'value'
+}
+const listPosition = {
+  settings:{trigger:'getSelectOptions',list:'list_person_position'},
+  htmlEl: 'position',
+  label: 'value'
+}
+const listRole = {
+  settings:{trigger:'getSelectOptions',list:'list_user_role'},
+  htmlEl: 'role',
+  label: 'value'
+}
