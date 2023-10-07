@@ -5,9 +5,12 @@ const curPwd = document.getElementById("current_pwd");
 const newPwd = document.getElementById("new_pwd");
 const confPwd = document.getElementById("confirm_pwd");
 
-getPerson(person)
 getList(listInstitution.settings,listInstitution.htmlEl,listInstitution.label)
 getList(listPosition.settings,listPosition.htmlEl,listPosition.label)
+
+//set a fast timeout to make sure that list are fully loaded before setting the options selected according to the user's value
+setTimeout(function(){ getPerson(person) }, 500);
+
   
 $("#toggle-pwd").on('click',function() {
   $(this).find('i').toggleClass("mdi-eye mdi-eye-off");

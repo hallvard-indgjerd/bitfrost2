@@ -62,10 +62,7 @@ function changePersonMainField(btn) {
       last_name : $("#last_name").val(),
       email : $("#email").val()
     }
-    $.ajax(ajaxSettings)
-    .done(function(data){
-      console.log(data);
-    });
+    saveInfo(ajaxSettings)
   }
 }
 
@@ -79,10 +76,7 @@ function changePersonAffiliation(btn) {
       institution : $("#institution").val(),
       position : $("#position").val()
     }
-    $.ajax(ajaxSettings)
-    .done(function(data){
-      console.log(data);
-    });
+    saveInfo(ajaxSettings)
   }
 }
 
@@ -96,10 +90,24 @@ function changePersonInformation(btn) {
     address:$("#address").val(), 
     phone:$("#phone").val()
   }
+  saveInfo(ajaxSettings)
+}
+
+function saveInfo(ajaxSettings){
   $.ajax(ajaxSettings)
-  .done(function(data){
-    console.log(data);
-  }).fail(function(data){
-    console.log(data);
-  });
+    .done(function(data) {
+      console.log(data);
+      if (data.res==0) {
+        $("#toastDivError .errorOutput").text(data.output);
+        $("#toastDivError").removeClass("d-none");
+      }else {
+        $(".toastTitle").text(data.output)
+        $("#toastDivSuccess").removeClass("d-none")
+        setTimeout(function(){ window.location.reload(); }, 3000);
+      }
+      $("#toastDivContent").removeClass('d-none')
+    })
+    .fail(function(data){
+      form.find(".outputMsg").html(data);
+    });
 }
