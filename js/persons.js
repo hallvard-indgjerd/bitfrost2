@@ -4,31 +4,11 @@ const personMainFieldForm = document.getElementById('usrMainFieldForm')
 const personAffiliationForm = document.getElementById('usrAffiliationForm') 
 const personalInformationForm = document.getElementById('personalInformationForm') 
 const toastToolBar = $('#toastBtn');
-// initPersons();
 
-$("#changeUsrMainFieldBtn").on('click', function(el){ changePersonMainField(el); })
-$("#changeUsrAffiliationBtn").on('click', function(el){ changePersonAffiliation(el); })
-$("#changePersonalInformationBtn").on('click', function(el){ changePersonInformation(el); })
 
-// function initPersons(){
-//   ajaxSettings.url=apiPerson;
-//   ajaxSettings.data={trigger:'getPersons'}
-//   $.ajax(ajaxSettings)
-//   .done(function(data) {
-//     data.forEach((item, i) => {
-//       let tab = $("#personsList");
-//       let row = $("<tr/>").appendTo(tab);
-//       $("<td/>").text(item.id).appendTo(row);
-//       $("<td/>").text(item.name).appendTo(row);
-//       $("<td/>").text(item.email).appendTo(row);
-//       $("<td/>").text(item.user_id == 1 ? 'true' : 'false').appendTo(row);
-//       let act = $("<td/>").appendTo(row);
-//       let modBtn = $("<button/>",{type:'button', class:'btn btn-sm btn-light', title:'edit'}).html('<span class="mdi mdi-pencil text-primary"></span>').appendTo(act);
-//       let delBtn = $("<button/>",{type:'button', class:'btn btn-sm btn-light', title:'delete'}).html('<span class="mdi mdi-trash-can-outline text-danger"></span>').appendTo(act);
-//     });
-
-//   });
-// }
+$("#changeUsrMainFieldBtn").on('click', function(el){ changePersonMainField(el) })
+$("#changeUsrAffiliationBtn").on('click', function(el){ changePersonAffiliation(el) })
+$("#changePersonalInformationBtn").on('click', function(el){ changePersonInformation(el) })
 
 function getPerson(person) {
   ajaxSettings.url=apiPerson;

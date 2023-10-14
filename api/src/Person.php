@@ -16,7 +16,8 @@ class Person extends Conn{
 
   public function getPerson(int $id){
     $sql = "select p.id, p.first_name, p.last_name, p.email, p.city, p.address, p.phone, p.institution institution_id, i.name institution, p.position position_id, l.value position from person p left join institution i on p.institution = i.id left join list_person_position l on p.position = l.id where p.id = ".$id.";";
-    return $this->simple($sql)[0];
+    $out = $this->simple($sql)[0];
+    return $out;
   }
 
   public function getPersons(array $search=NULL){
@@ -49,6 +50,20 @@ class Person extends Conn{
     } catch (\Exception $e) {
       return ["res"=>0, "output"=>$e->getMessage()];
     }
+  }
+
+  public function getUsrFromPerson(int $person){
+    $sql = "select u.id, u.created, u.is_active, l.value role from user u inner join list_user_role l on u.role = l.id where u.person = ".$person.";";
+    return $this->simple($sql);
+  }
+
+  public function getUsrObjects(int $usr){
+    $out=[];
+    $artifactStatSql = "select count(*) tot from artifact inner join user on artifact.author = user.id where artifact.author = ".$usr.";";
+    $modelStatSql = "select count(*) tot from model_metadata inner join user on model_metadata.author = user.id where model_metadata.author = ".$usr.";";
+    $out['artifacts'] = $this->simple($artifactStatSql)[0];
+    $out['models'] = $this->simple($modelStatSql)[0];
+    return $out;
   }
 }
 ?>

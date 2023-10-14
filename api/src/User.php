@@ -49,6 +49,9 @@ class User extends Conn{
       return ["res"=>0, "output"=>$e->getMessage()];
     }
   }
+  public function addUsrFromPerson(array $dati){
+    
+  }
 
   public function changePassword(array $dati){
     try {

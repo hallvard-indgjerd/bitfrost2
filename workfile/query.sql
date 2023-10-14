@@ -1,1 +1,13 @@
-select p.id, p.first_name, p.last_name, p.email, p.city, p.address, p.phone, p.institution institution_id, i.name institution, p.position position_id, l.value position from person p left join institution i on p.institution = i.id left join list_person_position l on p.position = l.id where p.id = 1
+select 
+  concat(auth.first_name,' ',auth.last_name) auth, 
+  owner.name owner, 
+  license.license, 
+  license.acronym, 
+  license.link licenseLink, 
+  item.create_at, 
+  item.updated_at
+from model_metadata item
+inner join user on item.author = user.id
+inner join person auth on user.person = auth.id
+inner join institution owner on item.owner = owner.id
+inner join license on item.license = license.id

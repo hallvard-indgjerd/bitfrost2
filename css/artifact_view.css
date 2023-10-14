@@ -7,43 +7,49 @@
 #chronologySection span:first-child{width:50px;}
 #measureSection span:first-child, #findplaceSection span:first-child{width:80px;}
 #measureSection span:last-child, #findplaceSection span:last-child{width: calc(100% - 85px);}
-#artifactMetadataSection span:first-child{width: 100px;}
-#artifactMetadataSection span:last-child{width: calc(100% - 105px);}
+#artifactMetadataSection span:first-child, #model-metadata span:first-child{width: 100px;}
+#artifactMetadataSection span:last-child, #model-metadata span:last-child{width: calc(100% - 105px);}
+
+#model-param span:first-child {width: 150px;}
+#model-param span:last-child {width: calc(100% - 155px);}
+
 .tdhop{
+  position:relative; 
+  width:100%;
+  height:calc(100vh - 220px);
   background: rgb(255,255,255);
   background: -moz-linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(121,121,121,1) 100%);
   background: -webkit-linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(121,121,121,1) 100%);
   background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(121,121,121,1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff",endColorstr="#797979",GradientType=1);
 }
-.tdhop, #map, #alertMapWrap{position:relative; width:100%; height:300px;}
+.modelTools{ position:absolute; background-color: rgba(255, 255, 255, 0.9);}
+#modelToolsV{top:10px; right:10px; width:140px; padding:10px;}
+#wrapViewSpot{
+  top:10px;
+  left:10px;
+  width:200px;
+  padding:10px;
+}
+
+#map, #alertMapWrap{position:relative; width:100%; height:300px;}
 .tdhop>canvas:focus-visible{outline: none !important;}
 
 #alertModel{position:absolute; top:50%; left:50%; transform: translate(-50%,-50%);}
 
-#alertMapWrap{
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-#alertMapWrap > .alert{
-  width:300px;
-  z-index:2000;
-  margin:0;
-}
+#alertMapWrap{ display: flex; justify-content: center; align-content: center; flex-direction: row; flex-wrap: wrap;}
+#alertMapWrap > .alert{width:300px; z-index:2000; margin:0;}
 
 @media (min-width: 992px) {
-  .tdhop{height:300px;}
+  /* .tdhop{height:300px;} */
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  .tdhop{height:400px;}
+  /* .tdhop{height:400px;} */
 }
 
 /* XX-Large devices (larger desktops, 1400px and up) */
 @media (min-width: 1400px) {
-  .tdhop{height:550px;}
+  /* .tdhop{height:calc(100vh - 220px);} */
 }

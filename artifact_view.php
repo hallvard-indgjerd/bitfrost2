@@ -266,7 +266,102 @@
           <div class="col-md-8">
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">3d Object</h2>
             <div id="modelWrap">
-              <div id="3dhop" class="tdhop"><canvas id="draw-canvas"></div>
+              <div id="3dhop" class="tdhop">
+                <canvas id="draw-canvas"></canvas>
+                <div id="wrapViewSpot" class="modelTools rounded">
+                  <div class="bg-light">
+                    <button type="button" class="btn btn-sm btn-adc-dark w-100" name="toggleViewSpot" data-bs-toggle="collapse" data-bs-target="#viewSpotDiv">views & spots <span class="mdi mdi-chevron-down float-end"></span></button>
+                  </div>
+                  <div id="viewSpotDiv" class="collapse mt-3">
+                    <div id="viewsDiv" class="mb-4">
+                      <div class="border-bottom p-2">
+                        <h5 class="d-inline-block">views list</h5>
+                        <button type="button" class="btn btn-sm btn-success float-end" data-bs-toggle="tooltip" data-bs-placement="right" title="save views in the database, they will be loaded th enext time"><span class="mdi mdi-content-save"></span></button>
+                      </div>
+                      <div id="wrapViews">No views</div>
+                      <div>
+                        <button type="button" name="addViewBtn" class="btn btn-sm btn-dark w-100">add view</button>
+                      </div>
+                    </div>
+                    <div id="spotsDiv">
+                      <div class="border-bottom p-2">
+                        <h5 class="d-inline-block">spot list</h5>
+                        <button type="button" class="btn btn-sm btn-success float-end" data-bs-toggle="tooltip" data-bs-placement="right" title="save spots in the database, they will be loaded th enext time"><span class="mdi mdi-content-save"></span></button>
+                      </div>
+                      <div id="wrapSpots">No spots</div>
+                      <div>
+                        <button type="button" name="addSpotBtn" class="btn btn-sm btn-dark w-100">add spot</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="modelToolsV" class="rounded modelTools">
+                  <div class="d-grid gap-2 mb-5">
+                    <button type="button" name="resetViewBtn" class="toolBtn btn btn-sm btn-dark" title="restore initial">reset view</button>
+
+                    <div class="dropdown toolBtn" title="set view">
+                      <button class="btn btn-sm btn-dark dropdown-toggle w-100" type="button" id="dropdownViewList" data-bs-toggle="dropdown" aria-expanded="false">set view</button>
+                      <ul class="dropdown-menu">
+                      <li><button class="dropdown-item" name="viewside" value="0.0,90.0,0.0,0.0,0.0">top</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="0.0,-90.0,0.0,0.0,0.0">bottom</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="0.0,0.0,0.0,0.0,0.0">front</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="270.0,0.0,0.0,0.0,0.0">left</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="90.0,0.0,0.0,0.0,0.0">right</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="180.0,0.0,0.0,0.0,0.0">back</button></li>
+                      </ul>
+                    </div>
+
+                    <input type="checkbox" class="btn-check" name="ortho" id="ortho" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="ortho" title="switch orthogonal view">ortho</label>
+
+                    <input type="checkbox" class="btn-check" name="texture" id="i_solidColor" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_solidColor" title="view mesh with texture or in plain color">texture</label>
+
+                    <input type="checkbox" class="btn-check" name="solid" id="i_transparency" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_transparency" title="view transparent or solid model">solid</label>
+
+                    <input type="checkbox" class="btn-check" name="lighting" id="i_useLighting" autocomplete="off" checked>
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useLighting" title="lighting or unshaded object">lighting</label>
+
+                    <input type="checkbox" class="btn-check" name="specular" id="i_useSpecular" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useSpecular" title="light diffuse or specular">diffuse</label>
+
+                    <div class="dropdown toolBtn" id="gridListValue" title="chose grid type or set a box">
+                      <button class=" btn btn-sm btn-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" id="dropdownGridList" aria-expanded="false">base grid</button>
+                      <ul class="dropdown-menu">
+                      <li><button class="dropdown-item" name="changeGrid" value="gridOff">grid off</button></li>
+                      <li><button class="dropdown-item active" name="changeGrid" value="gridBase">base grid</button></li>
+                      <li><button class="dropdown-item" name="changeGrid" value="gridBox">box</button></li>
+                      <li><button class="dropdown-item" name="changeGrid" value="gridBB">fixed grid</button></li>
+                      </ul>
+                    </div>
+
+                    <input type="checkbox" class="btn-check" name="xyzAxes" id="i_axes" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_axes" title="view or hide XYZ axes">XYZ axes</label>
+
+                    <button type="button" name="screenshot" class="toolBtn btn btn-sm btn-dark" title="download a screenshot of the current view in png format">screenshot</button>
+                    
+                    <button type="button" class="toolBtn btn btn-sm btn-success" title="Save parameters in the database, they will be used the next time the model is loaded">save parameters</button>
+                  </div>
+
+                  <div class="d-grid gap-2" role="group" id="measureTool">
+                    <input type="checkbox" class="btn-check" id="light" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable light tool" for="light">light</label>
+
+                    <input type="checkbox" class="btn-check" id="measure" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable measure tool" for="measure">measure</label>
+
+                    <input type="checkbox" class="btn-check" id="pick" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable pick tool" for="pick">pick</label>
+
+                    <input type="checkbox" class="btn-check" id="angle" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable angle tool" for="angle">angle</label>
+
+                    <input type="checkbox" class="btn-check" id="section" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable section tool" for="section">section</label>
+                  </div>
+                </div>
+              </div>
             </div>
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Geographic information</h2>
             <div class="divSection mb-5" id="map">
@@ -291,8 +386,9 @@
     <script type="text/javascript" src="assets/3dhop/trackball_pantilt.js"></script>
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
-    <script type="text/javascript" src="js/3dhopFunctions.js"></script>
+    <!-- <script type="text/javascript" src="js/3dhopFunctions.js"></script> -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="js/artifact_view_3dhop.js"></script>
     <script src="js/geoConfig.js" charset="utf-8"></script>
     <script src="js/artifact_view.js" charset="utf-8"></script>
   </body>
