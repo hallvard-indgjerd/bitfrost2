@@ -49,7 +49,7 @@ class Model extends Conn{
   public function getModel(int $id){
     $out['model'] = $this->simple("select * from model where id = ".$id.";")[0];
     $out['model_biblio'] = $this->simple("select * from model_biblio where model = ".$id.";")[0];
-    $out['model_init'] = $this->simple("select * from model_init where model = ".$id.";")[0];
+    $out['model_view'] = $this->simple("select * from model_view where model = ".$id.";")[0];
     $out['model_param'] = $this->simple("select * from model_param where model = ".$id.";")[0];
     $out['model_metadata'] = $this->getModelMetadata($id);
 

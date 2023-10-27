@@ -274,32 +274,44 @@
                   </div>
                   <div id="viewSpotDiv" class="collapse mt-3">
                     <div id="viewsDiv" class="mb-4">
-                      <div class="border-bottom p-2">
-                        <h5 class="d-inline-block">views list</h5>
-                        <button type="button" class="btn btn-sm btn-success float-end" data-bs-toggle="tooltip" data-bs-placement="right" title="save views in the database, they will be loaded th enext time"><span class="mdi mdi-content-save"></span></button>
-                      </div>
                       <div id="wrapViews">No views</div>
-                      <div>
-                        <button type="button" name="addViewBtn" class="btn btn-sm btn-dark w-100">add view</button>
+                      <div class="mt-3">
+                        <button type="button" name="addViewBtn" class="btn btn-sm btn-dark">add view</button>
+                        <button type="button" name="saveViewBtn" class="btn btn-sm btn-success invisible">save views</button>
                       </div>
                     </div>
                     <div id="spotsDiv">
-                      <div class="border-bottom p-2">
-                        <h5 class="d-inline-block">spot list</h5>
-                        <button type="button" class="btn btn-sm btn-success float-end" data-bs-toggle="tooltip" data-bs-placement="right" title="save spots in the database, they will be loaded th enext time"><span class="mdi mdi-content-save"></span></button>
-                      </div>
                       <div id="wrapSpots">No spots</div>
                       <div>
-                        <button type="button" name="addSpotBtn" class="btn btn-sm btn-dark w-100">add spot</button>
+                        <button type="button" name="addSpotBtn" class="btn btn-sm btn-dark">add spot</button>
+                        <button type="button" name="saveSpotBtn" class="btn btn-sm btn-success invisible">save spots</button>
                       </div>
                     </div>
                   </div>
                 </div>
+                <div id="modelToolsH" class="rounded modelTools">
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="restore initial view" data-action="home">
+                      <span class="mdi mdi-home"></span>
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="zoom in" data-action="zoomin">
+                      <span class="mdi mdi-magnify-plus"></span>
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="zoom out" data-action="zoomout">
+                      <span class="mdi mdi-magnify-minus"></span>
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="toggle fullscreen mode" name="fullscreenToggle" data-action="fullscreen_out">
+                      <span class="mdi mdi-fullscreen"></span>
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="download a screenshot of the current view in png format" name="screenshot" data-action="screenshot">
+                      <span class="mdi mdi-monitor-screenshot"></span>
+                    </button>
+                  </div>
+                </div>
                 <div id="modelToolsV" class="rounded modelTools">
-                  <div class="d-grid gap-2 mb-5">
-                    <button type="button" name="resetViewBtn" class="toolBtn btn btn-sm btn-dark" title="restore initial">reset view</button>
-
-                    <div class="dropdown toolBtn" title="set view">
+                  <div class="d-grid gap-1 mb-4">
+                    <div class="alert bg-adc-dark p-1 m-0 text-center">Set parameters</div>
+                    <div class="dropdown toolBtn" id="viewsideListValue" title="set view">
                       <button class="btn btn-sm btn-dark dropdown-toggle w-100" type="button" id="dropdownViewList" data-bs-toggle="dropdown" aria-expanded="false">set view</button>
                       <ul class="dropdown-menu">
                       <li><button class="dropdown-item" name="viewside" value="0.0,90.0,0.0,0.0,0.0">top</button></li>
@@ -311,21 +323,6 @@
                       </ul>
                     </div>
 
-                    <input type="checkbox" class="btn-check" name="ortho" id="ortho" autocomplete="off">
-                    <label class="toolBtn btn btn-sm btn-outline-dark" for="ortho" title="switch orthogonal view">ortho</label>
-
-                    <input type="checkbox" class="btn-check" name="texture" id="i_solidColor" autocomplete="off">
-                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_solidColor" title="view mesh with texture or in plain color">texture</label>
-
-                    <input type="checkbox" class="btn-check" name="solid" id="i_transparency" autocomplete="off">
-                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_transparency" title="view transparent or solid model">solid</label>
-
-                    <input type="checkbox" class="btn-check" name="lighting" id="i_useLighting" autocomplete="off" checked>
-                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useLighting" title="lighting or unshaded object">lighting</label>
-
-                    <input type="checkbox" class="btn-check" name="specular" id="i_useSpecular" autocomplete="off">
-                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useSpecular" title="light diffuse or specular">diffuse</label>
-
                     <div class="dropdown toolBtn" id="gridListValue" title="chose grid type or set a box">
                       <button class=" btn btn-sm btn-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" id="dropdownGridList" aria-expanded="false">base grid</button>
                       <ul class="dropdown-menu">
@@ -336,31 +333,126 @@
                       </ul>
                     </div>
 
+                    <input type="checkbox" class="btn-check" name="ortho" id="ortho" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="ortho" title="switch orthogonal view">ortho</label>
+
                     <input type="checkbox" class="btn-check" name="xyzAxes" id="i_axes" autocomplete="off">
                     <label class="toolBtn btn btn-sm btn-outline-dark" for="i_axes" title="view or hide XYZ axes">XYZ axes</label>
-
-                    <button type="button" name="screenshot" class="toolBtn btn btn-sm btn-dark" title="download a screenshot of the current view in png format">screenshot</button>
                     
-                    <button type="button" class="toolBtn btn btn-sm btn-success" title="Save parameters in the database, they will be used the next time the model is loaded">save parameters</button>
-                  </div>
-
-                  <div class="d-grid gap-2" role="group" id="measureTool">
-                    <input type="checkbox" class="btn-check" id="light" autocomplete="off">
+                    <input type="checkbox" class="btn-check measureTool" name="light" id="light" autocomplete="off">
                     <label class="toolBtn btn btn-sm btn-outline-dark" title="enable light tool" for="light">light</label>
 
-                    <input type="checkbox" class="btn-check" id="measure" autocomplete="off">
+                    <input type="checkbox" class="btn-check" name="texture" id="i_solidColor" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_solidColor" title="view mesh with texture or in plain color">texture</label>
+
+                    <input type="checkbox" class="btn-check" name="solid" id="i_transparency" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_transparency" title="view transparent or solid model">solid</label>
+
+                    <input type="checkbox" class="btn-check" name="lighting" id="i_useLighting" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useLighting" title="lighting or unshaded object">lighting</label>
+
+                    <input type="checkbox" class="btn-check" name="specular" id="i_useSpecular" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useSpecular" title="light diffuse or specular">diffuse</label>
+
+                    <button type="button" name="saveModelParam" class="toolBtn btn btn-sm btn-success" title="Save parameters in the database, they will be used the next time the model is loaded">save default parameters</button>
+                  </div>
+
+                  <div class="d-grid gap-1" role="group" id="measureTool">
+                    <div class="alert bg-adc-dark p-1 m-0 text-center">Toolbar</div>
+                    <input type="checkbox" class="btn-check measureTool" id="measure" autocomplete="off">
                     <label class="toolBtn btn btn-sm btn-outline-dark" title="enable measure tool" for="measure">measure</label>
 
-                    <input type="checkbox" class="btn-check" id="pick" autocomplete="off">
+                    <input type="checkbox" class="btn-check measureTool" id="pick" autocomplete="off">
                     <label class="toolBtn btn btn-sm btn-outline-dark" title="enable pick tool" for="pick">pick</label>
 
-                    <input type="checkbox" class="btn-check" id="angle" autocomplete="off">
+                    <input type="checkbox" class="btn-check measureTool" id="angle" autocomplete="off">
                     <label class="toolBtn btn btn-sm btn-outline-dark" title="enable angle tool" for="angle">angle</label>
 
-                    <input type="checkbox" class="btn-check" id="section" autocomplete="off">
+                    <input type="checkbox" class="btn-check measureTool" id="section" autocomplete="off">
                     <label class="toolBtn btn btn-sm btn-outline-dark" title="enable section tool" for="section">section</label>
                   </div>
                 </div>
+
+                <div id="panel_instructions" class="rounded invisible"></div>
+
+                <div id="measure-box" class="rounded invisible text-center">
+                  <p id="measure-box-title" class="m-0 border-bottom border-secondary"></p>
+                  <h6 id="measure-output" class="m-0"></h6>
+                </div>
+
+                <div id="sections-box" class="container-fluid text-bg-dark rounded invisible">
+                  <div class="row">
+                    <div class="col-4">
+                      <small data-bs-toggle="tooltip" title="Enable or disable X, Y or Z Axis Section">
+                        <i class="mdi mdi-information-variant-circle"></i> Plane
+                      </small>
+                    </div>
+                    <div class="col-5">
+                      <small data-bs-toggle="tooltip" title="Move Axis Section Position">
+                        <i class="mdi mdi-information-variant-circle"></i> Position
+                      </small>
+                    </div>
+                    <div class="col-3 text-end">
+                      <small data-bs-toggle="tooltip" title="Flip Axis Section Direction">
+                        <i class="mdi mdi-information-variant-circle"></i> Flip
+                      </small>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <img id="xplane" class="img-fluid togglePlaneIco" src="img/ico/sectionX_off.png">
+                    </div>
+                    <div class="col-6">
+                      <input type="range" name="xplaneSlider" min="0" max="1" step="0.01" value="0.5" id="xplaneSlider">
+                    </div>
+                    <div class="col-3">
+                      <div class="form-check form-check-reverse form-control-sm m-0">
+                        <input class="form-check-input" type="checkbox" id="xplaneFlip" name="planeFlipCheckbox">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <img id="yplane" class="img-fluid togglePlaneIco" src="img/ico/sectionY_off.png">
+                    </div>
+                    <div class="col-6">
+                      <input type="range" name="yplaneSlider" min="0" max="1" step="0.01" value="0.5" id="yplaneSlider">
+                    </div>
+                    <div class="col-3">
+                      <div class="form-check form-check-reverse form-control-sm m-0">
+                        <input class="form-check-input" type="checkbox" id="yplaneFlip" name="planeFlipCheckbox">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <img id="zplane" class="img-fluid togglePlaneIco" src="img/ico/sectionZ_off.png">
+                    </div>
+                    <div class="col-6">
+                      <input type="range" name="zplaneSlider" min="0" max="1" step="0.01" value="0.5" id="zplaneSlider">
+                    </div>
+                    <div class="col-3">
+                      <div class="form-check form-check-reverse form-control-sm m-0">
+                        <input class="form-check-input" type="checkbox" id="zplaneFlip" name="planeFlipCheckbox">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row invisible" id="planesEdgesDiv">
+                    <div class="col-6">
+                      <div class="form-check form-check-reverse form-control-sm m-0" title="Toggle model section planes view" data-bs-toggle="tooltip">
+                        <input class="form-check-input" type="checkbox" id="showPlane" checked>
+                        <label class="form-check-label" for="reverseCheck1">Show planes</label>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-check form-check-reverse form-control-sm m-0" title="Toggle model section edges view" data-bs-toggle="tooltip">
+                        <input class="form-check-input" type="checkbox" id="showBorder" checked>
+                        <label class="form-check-label" for="reverseCheck1">Show edges</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Geographic information</h2>
