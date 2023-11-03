@@ -12,6 +12,8 @@
     <?php require("assets/header.php"); ?>
     <main class="<?php echo $mainClass; ?>">
       <input type="hidden" name="artifactId" value="<?php echo $_GET['item']; ?>">
+      <input type="hidden" name="activeUsr" value="<?php echo $_SESSION['id']; ?>">
+      <input type="hidden" name="role" value="<?php echo $_SESSION['role']; ?>">
       <nav class="itemTool">
         <div class="container-fluid">
           <div class="row">
@@ -354,7 +356,7 @@
                     <input type="checkbox" class="btn-check" name="specular" id="i_useSpecular" autocomplete="off">
                     <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useSpecular" title="light diffuse or specular">diffuse</label>
 
-                    <button type="button" name="saveModelParam" class="toolBtn btn btn-sm btn-success" title="Save parameters in the database, they will be used the next time the model is loaded">save default parameters</button>
+                    <button type="button" name="saveModelParam" class="toolBtn btn btn-sm btn-success invisible" title="Save parameters in the database, they will be used the next time the model is loaded">save default parameters</button>
                   </div>
 
                   <div class="d-grid gap-1" role="group" id="measureTool">
@@ -467,8 +469,11 @@
         </div>
       </div>
     </main>
-    <?php require("assets/menu.php"); ?>
-    <?php require("assets/js.html"); ?>
+    <?php 
+      require("assets/menu.php");
+      require("assets/toastDiv.html"); 
+      require("assets/js.html"); 
+    ?>
     <script type="text/javascript" src="assets/3dhop/spidergl.js"></script>
     <script type="text/javascript" src="assets/3dhop/presenter.js"></script>
     <script type="text/javascript" src="assets/3dhop/nexus.js"></script>

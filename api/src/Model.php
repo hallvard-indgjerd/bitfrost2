@@ -49,7 +49,7 @@ class Model extends Conn{
   public function getModel(int $id){
     $out['model'] = $this->simple("select * from model where id = ".$id.";")[0];
     $out['model_biblio'] = $this->simple("select * from model_biblio where model = ".$id.";")[0];
-    $out['model_view'] = $this->simple("select * from model_view where model = ".$id.";")[0];
+    $out['model_view'] = $this->simple("select * from model_view where model = ".$id." and default_view = true;")[0];
     $out['model_param'] = $this->simple("select * from model_param where model = ".$id.";")[0];
     $out['model_metadata'] = $this->getModelMetadata($id);
 
@@ -74,6 +74,16 @@ class Model extends Conn{
     $sql = "select m.id, m.nxz, m.thumb_256 thumb, u.id author_id, concat (p.first_name, ' ', p.last_name) name, m.description,  meta.updated_at from model m inner join model_metadata meta on meta.model= m.id inner join user u on meta.author = u.id inner join person p on u.person = p.id ".$filter." order by meta.updated_at desc;";
 
     return $this->simple($sql);
+  }
+
+  public function saveModelParam(array $dati){
+    try {
+      $sql = $this->buildInsert('model_view', $dati);
+      $this->prepared($sql, $dati);
+      return ["res"=>1, "msg"=>'ok, parameters saved'];
+    } catch (\Exception $e) {
+      return ["res"=>0, "msg"=>$e->getMessage()];
+    }
   }
 }
 ?>

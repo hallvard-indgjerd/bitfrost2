@@ -1,3 +1,6 @@
+const artifactId = $("[name=artifactId]").val()
+const activeUser = $("[name=activeUsr]").val()
+const role = $("[name=role]").val()
 const canvas = document.getElementById("draw-canvas");
 const instanceOpt = {"nxz" : {
   mesh : "nxz",
@@ -33,13 +36,7 @@ const configOpt = {
 const sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
 
 let presenter, scene, paradata, gStep;
-// let VIEW_STATE = {
-// 	"solid" : false,
-// 	"transparency" : false,
-// 	"lighting" : true,
-// 	"specular" : false,
-// 	"lightDir" : [-0.17,-0.17],
-// };
+
 //angle measurement
 let angleStage = 0;
 let anglePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]];
@@ -49,14 +46,14 @@ let lightDir = [0,0];
 
 //collect views and spots
 let viewList = {}
-let viewIndex = 1;
+let viewIndex = 0;
 let spotList = {}
-let spotIndex = 1;
+let spotIndex = 0;
 
 
 
 function initModel(model){
-  console.log(model);
+  setInitModelParam(model.model_view);
   paradata = model.model_param
   scene = {
     meshes: {"nxz" : { url: 'archive/models/'+model.model.nxz }},
@@ -80,8 +77,11 @@ function initModel(model){
   }
 }
 
+function setInitModelParam(param){
+  console.log(param);
+}
+
 function actionsToolbar(action) {
-  console.log(action);
   switch (action) {
     case "home": home(); break;
     case "zoomin": presenter.zoomIn(); break;
@@ -219,7 +219,6 @@ function viewFrom(direction){
   let dir = direction.split(',');
   dir.push(distance);
   presenter.animateToTrackballPosition(dir);
-  console.log(dir);
 }
 
 // ortho checkbox
@@ -393,45 +392,39 @@ function addBoxGrid() {
 	var gridBox;
 	var linesBuffer = [];	
 	//--------------------X
-	for (ii=0; ii<=Ysteps; ii+=1)
-	{
+	for (ii=0; ii<=Ysteps; ii+=1){
 			linesBuffer.push([boxG[3], boxG[4]+(gStep*ii), boxG[2]]);
 			linesBuffer.push([boxG[3], boxG[4]+(gStep*ii), boxG[5]]);
 			linesBuffer.push([boxG[0], boxG[4]+(gStep*ii), boxG[2]]);
 			linesBuffer.push([boxG[0], boxG[4]+(gStep*ii), boxG[5]]);
 	}
-	for (ii=0; ii<=Zsteps; ii+=1)
-	{
+	for (ii=0; ii<=Zsteps; ii+=1){
 			linesBuffer.push([boxG[3], boxG[1], boxG[5]+(gStep*ii)]);
 			linesBuffer.push([boxG[3], boxG[4], boxG[5]+(gStep*ii)]);
 			linesBuffer.push([boxG[0], boxG[1], boxG[5]+(gStep*ii)]);
 			linesBuffer.push([boxG[0], boxG[4], boxG[5]+(gStep*ii)]);
 	}
 	//--------------------Y
-	for (ii =0; ii <= Xsteps; ii+=1)
-	{
+	for (ii =0; ii <= Xsteps; ii+=1){
 			linesBuffer.push([boxG[3]+(gStep*ii), boxG[4], boxG[2]]);
 			linesBuffer.push([boxG[3]+(gStep*ii), boxG[4], boxG[5]]);
 			linesBuffer.push([boxG[3]+(gStep*ii), boxG[1], boxG[2]]);
 			linesBuffer.push([boxG[3]+(gStep*ii), boxG[1], boxG[5]]);
 	}
-	for (ii = 0; ii <= Zsteps; ii+=1)
-	{
+	for (ii = 0; ii <= Zsteps; ii+=1){
 			linesBuffer.push([boxG[0], boxG[4], boxG[5]+(gStep*ii)]);
 			linesBuffer.push([boxG[3], boxG[4], boxG[5]+(gStep*ii)]);
 			linesBuffer.push([boxG[0], boxG[1], boxG[5]+(gStep*ii)]);
 			linesBuffer.push([boxG[3], boxG[1], boxG[5]+(gStep*ii)]);
 	}
 	//--------------------Z
-	for (ii =0; ii <= Xsteps; ii+=1)
-	{
+	for (ii =0; ii <= Xsteps; ii+=1){
 			linesBuffer.push([boxG[3]+(gStep*ii), boxG[1], boxG[5]]);
 			linesBuffer.push([boxG[3]+(gStep*ii), boxG[4], boxG[5]]);
 			linesBuffer.push([boxG[3]+(gStep*ii), boxG[1], boxG[2]]);
 			linesBuffer.push([boxG[3]+(gStep*ii), boxG[4], boxG[2]]);
 	}
-	for (ii = 0; ii <= Ysteps; ii+=1)
-	{
+	for (ii = 0; ii <= Ysteps; ii+=1){
 			linesBuffer.push([boxG[0], boxG[4]+(gStep*ii), boxG[5]]);
 			linesBuffer.push([boxG[3], boxG[4]+(gStep*ii), boxG[5]]);
 			linesBuffer.push([boxG[0], boxG[4]+(gStep*ii), boxG[2]]);
@@ -455,8 +448,7 @@ function addBBGrid() {
 	var linesBuffer = [];
 	var gridBB;
 	
-	for (gg = -numDiv; gg <= numDiv; gg+=1)
-	{
+	for (gg = -numDiv; gg <= numDiv; gg+=1){
 			linesBuffer.push([XC + (gg*gStep), YC + (-gStep*numDiv), ZC]);
 			linesBuffer.push([XC + (gg*gStep), YC + ( gStep*numDiv), ZC]);
 			linesBuffer.push([XC + (-gStep*numDiv), YC + (gg*gStep), ZC]);
@@ -470,9 +462,7 @@ function addBBGrid() {
 }
 
 function changeGrid(currentGrid,newGrid) {
-  if (currentGrid !== 'gridOff') {
-    presenter.deleteEntity(currentGrid)
-  }
+  if (currentGrid !== 'gridOff') { presenter.deleteEntity(currentGrid); }
   switch (newGrid) {
     case 'gridBase': addBaseGrid(); break;
     case 'gridBox': addBoxGrid(); break;
@@ -499,7 +489,7 @@ function onEndPick(point) {
 	var x = tpoint[0].toFixed(clampTo);
 	var y = tpoint[1].toFixed(clampTo);
 	var z = tpoint[2].toFixed(clampTo);
-    $('#measure-output').html("[ "+x+" , "+y+" , "+z+" ]");
+  $('#measure-output').html("[ "+x+" , "+y+" , "+z+" ]");
 }
 
 function enableAngleMeasurement(state){
@@ -636,6 +626,7 @@ function togglePlanesEdgesTool(){
 
 // views
 function addView(){
+  viewIndex++;
   let newView = {}
   newView.view = null;
 	newView.state = {};
@@ -644,7 +635,6 @@ function addView(){
 	viewList[viewIndex] = newView;
 	updateView(viewIndex);
 	fillViewsPanel();
-  viewIndex++;
 }
 
 function updateView(view){
@@ -687,6 +677,7 @@ function updateView(view){
 
 function deleteView(view){
   if(confirm('A view is being deleted, are you sure?')){
+    viewIndex--;
     delete viewList[view];
     fillViewsPanel();
   }
@@ -708,8 +699,7 @@ function gotoView(view){
 		setInstructions("pick two points A-B on the object to measure their distance");		
 		onEndMeasure(SglVec3.length(SglVec3.sub(presenter._pointA, presenter._pointB)), presenter._pointA, presenter._pointB);
 		presenter.repaint();
-	}
-	else if(viewList[view].tools.pickPoint){
+	}	else if(viewList[view].tools.pickPoint){
 		toolsReset();
 		presenter._isMeasuringPickpoint = true;
 		presenter._pickValid = true;
@@ -718,8 +708,7 @@ function gotoView(view){
 		setInstructions("pick a point A on the object to read its coordinates");		
 		onEndPick(presenter._pickedPoint);
 		presenter.repaint();		
-	}
-	else if(viewList[view].tools.angleMeasure){
+	}	else if(viewList[view].tools.angleMeasure){
 		toolsReset();
 		enableAngleMeasurement(true);
 		setInstructions("pick three points A-O-B on the object to calculate the angle A&Ocirc;B");		
@@ -735,7 +724,13 @@ function gotoView(view){
 
 function fillViewsPanel(){
   const wrapDiv = $("#wrapViews");
+  if(viewIndex == 0){
+    wrapDiv.html('No views');
+    $("[name=saveViewBtn").addClass('invisible')
+    return false;
+  }
   wrapDiv.html('');
+
   for (const view in viewList) {
     let viewDiv = $("<div/>", {class:'view mb-3'}).appendTo(wrapDiv);
     let viewToolbar = $("<div/>", {class:'viewToolbar'}).appendTo(viewDiv);
@@ -753,6 +748,7 @@ function fillViewsPanel(){
       deleteView(view)
     })
   }
+  if(activeUser){$("[name=saveViewBtn").removeClass('invisible');}
 }
 
 function track2view(trackState){
@@ -788,6 +784,7 @@ function track2view(trackState){
 		view.fov = presenter._scene.space.cameraFOV;
 	return view;
 }
+
 function view2track(view){
 	var trackState = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 	
@@ -856,7 +853,6 @@ function getLight(event) {
     let ly = (YY / radius)/2.0;
     lightDir = [lx,ly];
   }
-  console.log(lightDir);
 }
 function checkLight(state) {
   if(state){

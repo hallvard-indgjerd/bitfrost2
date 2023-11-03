@@ -1,18 +1,8 @@
-const wrapViewSpot = $("#wrapViewSpot");
-const viewsDiv = $("#viewsDiv");
-const wrapViews = $("#wrapViews");
-const addViewBtn = $("[name=addViewBtn")
-const spotsDiv = $("#spotsDiv");
-const wrapSpots = $("#wrapSpots");
-const addSpotsBtn = $("[name=addSpotsBtn")
-const viewBtn = $("[name=viewBtn")
-const spotBtn = $("[name=spotBtn")
-
 let storagePlaceMarker, findplaceMarker;
 let markerArr = {}
 
 ajaxSettings.url=API+"artifact.php";
-ajaxSettings.data={trigger:'getArtifact', id:$("[name=artifactId]").val()};
+ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 
 $("[name=toggleViewSpot]").on('click', function(){
   $(this).find('span').toggleClass('mdi-chevron-down mdi-chevron-up');
@@ -76,8 +66,6 @@ $("[name=changeGrid]").on('click', function(){
 $("[name=xyzAxes]").on('click', function(){
   $(this).is(':checked') ? addAxes() : removeAxes();
 })
-
-// $("[name=screenshot]").on('click', function(){ presenter.saveScreenshot() })
 
 $(".measureTool").on('click', function(){
   let func = $(this).prop('id')
@@ -204,6 +192,11 @@ $.ajax(ajaxSettings)
   if(data.model){
     let model = data.model;
     let metadata = model.model_metadata
+    if((role && role < 5) || (activeUser && metadata.auth_id === activeUser)){
+      $("[name=saveModelParam]").removeClass('invisible').on('click', function(){
+        saveModelParam(model.model.id)
+      })
+    }
     if (model.model.nxz) {
       initModel(model)
       $("#model-auth").html("<a href='person_view.php?person="+metadata.auth_id+"'>"+metadata.auth+"</a>");
@@ -234,8 +227,6 @@ $.ajax(ajaxSettings)
 
 });
 
-
-
 function artifactMap(markerArr){
   map = L.map('map',{maxBounds:mapExt})//.fitBounds(mapExt)
   map.setMinZoom(4);
@@ -253,4 +244,35 @@ function artifactMap(markerArr){
   let markerGroup = L.featureGroup().addTo(map);
   storagePlaceMarker = L.marker(markerArr['storage'],{icon:storagePlaceIco}).addTo(markerGroup);
   map.fitBounds(markerGroup.getBounds())
+}
+
+function saveModelParam(model){
+  let dati = {
+    trigger:'saveModelParam',
+    model:model,
+    default_view: 1,
+    viewside: presenter.getTrackballPosition().join(','),
+    grid: $("#gridListValue").find('.active').val(),
+    ortho: $("[name=ortho]").is(':checked') ? 1 : 0,
+    xyz: $("[name=xyzAxes]").is(':checked') ? 1 : 0,
+    lightDir: lightDir.join(','),
+    texture: $("[name=texture]").is(':checked') ? 1 : 0,
+    solid: $("[name=solid]").is(':checked') ? 1 : 0,
+    lighting: $("[name=lighting]").is(':checked') ? 1 : 0,
+    specular: $("[name=specular]").is(':checked') ? 1 : 0,
+  }
+  ajaxSettings.url=API+"model.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings)
+  .done(function(data){
+    if (data.res==0) {
+      $("#toastDivError .errorOutput").text(data.msg);
+      $("#toastDivError").removeClass("d-none");
+    }else {
+      $(".toastTitle").text(data.msg)
+      closeToast.appendTo("#toastBtn");
+      $("#toastDivSuccess").removeClass("d-none")
+    }
+    $("#toastDivContent").removeClass('d-none')
+  })
 }
