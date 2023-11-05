@@ -1,4 +1,6 @@
 const addUser = $("[name=user]").val()
+let trigger = addUser == 'false' ? 'addPerson' : 'addUser';
+console.log(trigger);
 const form = $("[name=newPersonForm]")[0];
 let dati={}
 let listInstitution = {

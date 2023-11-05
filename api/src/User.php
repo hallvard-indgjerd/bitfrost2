@@ -13,8 +13,7 @@ class User extends Conn{
 
   public function addUser(array $dati){
     try {
-      $pwd = $dati['password'];
-      $dati['password_hash'] = password_hash($pwd, PASSWORD_DEFAULT);
+      $dati['password_hash'] = password_hash($dati['password'], PASSWORD_DEFAULT);
       unset($dati['password']);
       $sql = $this->buildInsert("user", $dati);
       $this->prepared($sql, $dati);
