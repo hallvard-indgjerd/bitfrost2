@@ -1,0 +1,30 @@
+<form id="pwdForm" class="mb-3">
+  <div class="row">
+    <h5 class="bg-light p-2 border rounded">Change password</h5>
+    <div class="text-end mb-3">
+      <button class="btn btn-secondary btn-sm w-auto" type="button" id="toggle-pwd">
+        toggle passwords visibility <i class="mdi mdi-eye"></i>
+      </button>
+      <button class="btn btn-secondary btn-sm w-auto" type="button" id="genPwd">
+        generate random password <i class="mdi mdi-reload"></i>
+      </button>
+    </div>
+    <label for="current_pwd" class="col-sm-4 col-lg-3 col-form-label">* current password</label>
+    <div class="col-sm-8 col-lg-9 mb-3">
+      <input type="password" class="form-control form-control-sm pwd" id="current_pwd" name="current_pwd" required>
+    </div>
+    <label for="new_pwd" class="col-sm-4 col-lg-3 col-form-label">* new password</label>
+    <div class="col-sm-8 col-lg-9 mb-3">
+      <input type="password" class="form-control form-control-sm pwd" id="new_pwd" name="new_pwd" required>
+      <div id="password-strength"><span></span></div> 
+      <div id="pwdMsg" class="form-text"></div>
+    </div>
+    <label for="confirm_pwd" class="col-sm-4 col-lg-3 col-form-label">* confirm password</label>
+    <div class="col-sm-8 col-lg-9 mb-3">
+      <input type="password" class="form-control form-control-sm pwd" id="confirm_pwd" name="confirm_pwd" required>
+    </div>
+    <div class="text-end mb-3">
+      <button class="btn btn-adc-dark btn-sm w-auto" type="submit" id="pwdChangeBtn">save password</button>
+    </div>
+  </div>
+</form>  

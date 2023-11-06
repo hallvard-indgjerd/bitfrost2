@@ -1,0 +1,79 @@
+<form id="usrMainFieldForm" class="mb-3">
+  <div class="row mb-3">
+    <h5 class="bg-light p-2 border rounded">Main field</h5>
+    <label for="first_name" class="col-sm-2 col-form-label">* First name</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control form-control-sm" id="first_name" name="first_name" required>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <label for="last_name" class="col-sm-2 col-form-label">* Last name</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control form-control-sm" id="last_name" name="last_name" required>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <label for="email" class="col-sm-2 col-form-label">* Email</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control form-control-sm" id="email" name="email" required>
+      <p class="form-text text-muted">Attention, the email is the same that you use to login, if you change it remember to use the new email at your next login</p>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col text-end">
+      <button type="submit" class="btn btn-adc-dark btn-sm w-auto" id="changeUsrMainFieldBtn">Save info</button>
+    </div>
+  </div>
+</form>
+
+<form id="usrAffiliationForm" class="mb-3">
+  <div class="row mb-3">
+    <h5 class="bg-light p-2 border rounded">Affiliation and job position</h5>
+    <label for="institution" class="col-sm-2 col-form-label">* Institution</label>
+    <div class="col-sm-10">
+      <select class="form-select form-select-sm" id="institution" name="institution" required>
+        <option value="">-- select a value --</option>
+      </select>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <label for="position" class="col-sm-2 col-form-label">* Position</label>
+    <div class="col-sm-10">
+      <select class="form-select form-select-sm" id="position" name="position" required>
+        <option value="">-- select a value --</option>
+      </select>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col text-end">
+      <button type="submit" class="btn btn-adc-dark btn-sm w-auto" id="changeUsrAffiliationBtn">Save info</button>
+    </div>
+  </div>
+</form>
+
+<form id="personalInformationForm" class="mb-3">
+  <div class="row mb-3">
+    <h5 class="bg-light p-2 border rounded">Personal information</h5>
+    <label for="city" class="col-sm-2 col-form-label">City</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control form-control-sm" id="city" name="city">
+    </div>
+  </div>
+  <div class="row mb-3">
+    <label for="address" class="col-sm-2 col-form-label">Address</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control form-control-sm" id="address" name="address">
+    </div>
+  </div>
+  <div class="row mb-3">
+    <label for="phone" class="col-sm-2 col-form-label">Phone</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control form-control-sm" id="phone" name="phone">
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col text-end">
+      <button type="submit" class="btn btn-adc-dark btn-sm w-auto" id="changePersonalInformationBtn">Save info</button>
+    </div>
+  </div>
+</form>

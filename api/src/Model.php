@@ -49,7 +49,7 @@ class Model extends Conn{
   public function getModel(int $id){
     $out['model'] = $this->simple("select * from model where id = ".$id.";")[0];
     $out['model_biblio'] = $this->simple("select * from model_biblio where model = ".$id.";")[0];
-    $out['model_init'] = $this->simple("select * from model_init where model = ".$id.";")[0];
+    $out['model_view'] = $this->simple("select * from model_view where model = ".$id." and default_view = true;")[0];
     $out['model_param'] = $this->simple("select * from model_param where model = ".$id.";")[0];
     $out['model_metadata'] = $this->getModelMetadata($id);
 
@@ -57,16 +57,11 @@ class Model extends Conn{
   }
 
   private function getModelMetadata(int $id){
-    $sql = "select auth.name auth, owner.name owner, license.license, license.acronym, license.link licenseLink, item.create_at, item.updated_at
-    from model_metadata item
-    inner join user auth on item.author = auth.id
-    inner join institution owner on item.owner = owner.id
-    inner join license on item.license = license.id
-    where item.model = ".$id.";";
+    $sql = "select auth.id auth_id, concat(auth.first_name,' ',auth.last_name) auth, owner.id owner_id, owner.name owner, license.license, license.acronym, license.link licenseLink, item.create_at, item.updated_at from model_metadata item inner join user on item.author = user.id inner join person auth on user.person = auth.id inner join institution owner on item.owner = owner.id inner join license on item.license = license.id where item.model = ".$id.";";
     return $this->simple($sql)[0];
   }
 
-  public function getModelDashboardList(array $search){
+  public function getModels(array $search){
     $filter = [];
     if($search['status'] > 0){
       array_push($filter, "status = ".$search['status']);
@@ -76,9 +71,19 @@ class Model extends Conn{
     if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
     if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
 
-    $sql = "select m.id, m.nxz, m.thumb_256 thumb, u.id author_id, u.name, m.description,  meta.updated_at from model m inner join model_metadata meta on meta.model= m.id inner join user u on meta.author = u.id ".$filter." order by meta.updated_at desc;";
+    $sql = "select m.id, m.nxz, m.thumb_256 thumb, u.id author_id, concat (p.first_name, ' ', p.last_name) name, m.description,  meta.updated_at from model m inner join model_metadata meta on meta.model= m.id inner join user u on meta.author = u.id inner join person p on u.person = p.id ".$filter." order by meta.updated_at desc;";
 
     return $this->simple($sql);
+  }
+
+  public function saveModelParam(array $dati){
+    try {
+      $sql = $this->buildInsert('model_view', $dati);
+      $this->prepared($sql, $dati);
+      return ["res"=>1, "msg"=>'ok, parameters saved'];
+    } catch (\Exception $e) {
+      return ["res"=>0, "msg"=>$e->getMessage()];
+    }
   }
 }
 ?>

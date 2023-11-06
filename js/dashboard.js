@@ -1,14 +1,16 @@
 const usrId = $("[name=usrId]").val()
 const usrCls = $("[name=usrCls]").val()
-getArtifactDashboardList()
-getModelDashboardList()
-getInstitutionDashboardList()
-getPersonDashboardList()
+dashboardMap()
+getArtifacts()
+getModels()
+getInstitutions()
+getUsers()
+getPersons()
 
 $("#modelDashboardGallery").css("height",$(".listDashBoard").height())
 
-$("[name=artifactStatus]").on('change', getArtifactDashboardList)
-$("[name=modelStatus]").on('change', getModelDashboardList)
+$("[name=artifactStatus]").on('change', getArtifacts)
+$("[name=modelStatus]").on('change', getModels)
 
 $("[name=searchByDescriptionBtn]").on('click', function(){
   let q = $("[name=searchByDescription]").val()
@@ -16,16 +18,31 @@ $("[name=searchByDescriptionBtn]").on('click', function(){
     alert('You have to enter 3 characters at least')
     return false;
   }
-  getArtifactDashboardList()
+  getArtifacts()
   $("[name=resetDescriptionBtn]").removeClass('d-none');
 })
 $("[name=resetDescriptionBtn]").on('click', function(e){
   $("[name=searchByDescription]").val('');
-  getArtifactDashboardList()
+  getArtifacts()
   $(this).addClass('d-none')
 })
 
-function getArtifactDashboardList(){
+$("[name=searchByPersonNameBtn]").on('click', function(){
+  let q = $("[name=searchByPersonName]").val()
+  if(q.length < 3){
+    alert('You have to enter 3 characters at least')
+    return false;
+  }
+  getPersons()
+  $("[name=resetPersonNameBtn]").removeClass('d-none');
+})
+$("[name=resetPersonNameBtn]").on('click', function(e){
+  $("[name=searchByPersonName]").val('');
+  getPersons()
+  $(this).addClass('d-none')
+})
+
+function getArtifacts(){
   let search={}
   let dati={}
   let txt = ''
@@ -38,23 +55,24 @@ function getArtifactDashboardList(){
   }
   $("#artifactStatusTitle").text(txt);
   $('#artifactList .listWrap').html('')
-  dati.trigger='getArtifactDashboardList';
+  dati.trigger='getArtifacts';
   dati.search = search;
   ajaxSettings.url=API+"artifact.php";
   ajaxSettings.data = dati
   $.ajax(ajaxSettings).done(function(data){
     $('#artifactList .badge').text(data.length)
     data.forEach((item, i) => {
-      let li = $("<a/>", {class: 'list-group-item list-group-item-action'}).attr("href","artifact_view.php?item="+item.id).appendTo('#artifactList .listWrap');
-      $('<span/>').text(item.id).appendTo(li)
+      let li = $("<p/>", {class: 'list-group-item list-group-item-action'}).attr("href","artifact_view.php?item="+item.id).appendTo('#artifactList .listWrap');
       $('<span/>').text(item.name).appendTo(li)
       $('<span/>').text(item.description).appendTo(li)
       $('<span/>').text(item.last_update).appendTo(li)
+      let a = $('<span/>',{class:'text-center'}).appendTo(li)
+      $("<a/>",{class:'text-dark', title:'open artifact page'}).html('<span class="mdi mdi-arrow-right-bold fs-4"></span>').attr({"href":"artifact_view.php?item="+item.id, "data-bs-toggle":"tooltip"}).appendTo(a).tooltip();
     });
   });
 }
 
-function getModelDashboardList(){
+function getModels(){
   let search = {}
   let dati={}
   let cardWrap = $("#modelDashboardGallery");
@@ -66,7 +84,7 @@ function getModelDashboardList(){
   }
   $("#modelStatusTitle").text(txt);
   cardWrap.html('')
-  dati.trigger='getModelDashboardList';
+  dati.trigger='getModels';
   dati.search = search;
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data = dati
@@ -88,16 +106,15 @@ function getModelDashboardList(){
   });
 }
 
-function getInstitutionDashboardList(){
+function getInstitutions(){
+  let institutionGroup = L.featureGroup().addTo(map);
   let dati={}
   let cardWrap = $("#institutionDasboardList");
-  $("#modelStatusTitle").text(txt);
   cardWrap.html('')
-  dati.trigger='getInstitutionDashboardList';
+  dati.trigger='getInstitutions';
   ajaxSettings.url=API+"institution.php";
   ajaxSettings.data = dati
   $.ajax(ajaxSettings).done(function(data){
-    console.log(data);
     $('#institutionList .badge').text(data.length)
     data.forEach((item, i) => {
       let card = $("<div/>",{class:"card mb-3"}).appendTo(cardWrap)
@@ -109,23 +126,30 @@ function getInstitutionDashboardList(){
       $("<h5/>",{class:'card-title fw-bold'}).text(item.name+" ("+item.abbreviation+")").appendTo(body)
       $("<a/>",{href:'http://maps.google.com/maps?q='+item.name.replace(/ /g,"+"), title:'view on Google Maps', target:'_blank', class:'card-link d-block'}).html('<i class="mdi mdi-map-marker"></i> '+item.address).appendTo(body)
       $("<a/>",{href:item.link, title:'Official Webpage', target:'_blank', class:'card-link d-block m-0'}).html('<i class="mdi mdi-link-variant"></i> '+item.link).appendTo(body)
-      $("<p/>",{class:'card-text m-0'}).text("Number of artifact stored by Institute: "+item.artifact).appendTo(body)
+      $("<p/>",{class:'card-text m-0'}).text("Number of artifacts stored by Institute: "+item.artifact).appendTo(body)
+
+      L.marker([parseFloat(item.lat), parseFloat(item.lon)],{icon:storagePlaceIco})
+        .bindPopup("<div class='text-center'><h6 class='p-0 m-0'>"+item.name+"</h6><p class='p-0 m-0'>Artifacts stored: <strong>"+item.artifact+"</strong></p></div>")
+        .addTo(institutionGroup);
     });
+    map.fitBounds(institutionGroup.getBounds())
   });
 }
 
-function getPersonDashboardList(){
+function getUsers(){
   let search={}
   let dati={}
-  $('#artifactList .listWrap').html('')
-  dati.trigger='getPersonDashboardList';
+  $('#userList .listWrap').html('')
+  dati.trigger='getUsers';
   dati.search = search;
-  ajaxSettings.url=API+"person.php";
+  ajaxSettings.url=API+"user.php";
   ajaxSettings.data = dati
   $.ajax(ajaxSettings).done(function(data){
-    $('#personList .badge').text(data.length)
+    $('#userList .badge').text(data.length)
     data.forEach((item, i) => {
-      let li = $("<a/>", {class: 'list-group-item list-group-item-action'}).attr("href","person_view.php?person="+item.id).appendTo('#personList .listWrap');
+      let css = item.is_active == 1 ? 'text-success' : 'text-danger';
+      let li = $("<a/>", {class: 'list-group-item list-group-item-action ' +
+    css}).attr("href","person_view.php?person="+item.id).appendTo('#userList .listWrap');
       $('<span/>').text(item.name).appendTo(li)
       $('<span/>').text(item.role).appendTo(li)
       $('<span/>').text(item.is_active == 1 ? 'true' : 'false').appendTo(li)
@@ -133,4 +157,43 @@ function getPersonDashboardList(){
       $('<span/>').text(item.model).appendTo(li)
     });
   });
+}
+function getPersons(){
+  let search={}
+  let dati={}
+  let q = $("[name=searchByPersonName]").val();
+  if(q){search.filter = q}
+  $('#personList .listWrap').html('')
+  dati.trigger='getPersons';
+  dati.search = search;
+  ajaxSettings.url=API+"person.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings).done(function(data){
+    $('#personList .badge').text(data.length)
+    data.forEach((item, i) => {
+      let institute = item.institution !== null ? item.institution : 'not present';
+      let position = item.position !== null ? item.position : 'not present';
+      let li = $("<li/>", {class: 'list-group-item list-group-item-action '}).appendTo('#personList .listWrap');
+      $('<a/>', {class:'alert alert-warning p-2 m-0 fs-6 d-block'}).text(item.name).attr("href","person_view.php?person="+item.id).appendTo(li)
+      $('<span/>').html("Institution: <strong>"+institute+"</strong>").appendTo(li)
+      $('<span/>').html('Position: <strong>'+position+"</strong>").appendTo(li)
+      $('<span/>').html("Email: <strong>" +item.email+"</strong>").appendTo(li)
+    });
+  });
+}
+
+function dashboardMap(){
+  map = L.map('map',{maxBounds:mapExt})//.fitBounds(mapExt)
+  map.setMinZoom(4);
+  osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
+  gStreets = L.tileLayer(gStreetTile,{maxZoom: 18, subdomains:gSubDomains });
+  gSat = L.tileLayer(gSatTile,{maxZoom: 18, subdomains:gSubDomains});
+  gTerrain = L.tileLayer(gTerrainTile,{maxZoom: 18, subdomains:gSubDomains});
+  baseLayers = {
+    "OpenStreetMap": osm,
+    "Google Terrain":gTerrain,
+    "Google Satellite": gSat,
+    "Google Street": gStreets
+  };
+  L.control.layers(baseLayers, null).addTo(map);
 }

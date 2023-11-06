@@ -1,0 +1,61 @@
+.list-group-item > span{display: inline-block;}
+.list-group-item > span:first-child{width: 100px;}
+
+.myCard{
+  position:relative;
+  border:1px solid #875e299d;
+  height:100px;
+}
+.myArtifacts > .myCardBg {background-image: url('../img/ico/axe.png');}
+.myModels > .myCardBg {background-image: url('../img/ico/cube-outline.png');}
+.myCardBg{
+  position:absolute;
+  top:0;
+  left:5px;
+  width:50%;
+  height:100%;
+  
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.3;
+  z-index: 1;
+}
+.myCardBody{
+  position: absolute;
+  top:0;
+  right:0;
+  width:70%;
+  height:100%;
+  padding:20px 10px;
+  text-align: center;
+}
+.myCardBody>div{
+  display: block;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  main{width:50%; margin-left:auto; margin-right:auto;}
+  #usrFromPersonForm{width:300px;}
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  main{width:50%; margin-left:auto; margin-right:auto;}
+  #usrFromPersonForm{width:300px;}
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  main{width:50%; margin-left:auto; margin-right:auto;}
+  #usrFromPersonForm{width:300px;}
+}

@@ -57,6 +57,18 @@ function cutString(string, length) {
   return short;
 }
 
+function generateRandomPassword(){
+  ajaxSettings.url=API+'user.php';
+  ajaxSettings.data = {trigger:'genPwd'};
+  $.ajax(ajaxSettings)
+  .done(function(data){
+    $("#toggle-pwd > i").removeClass('mdi-eye').addClass('mdi-eye-off')
+    $(".pwd").attr("type",'text')
+    $("#new_pwd, #confirm_pwd").val(data)
+    getPwdStrength()
+  });
+}
+
 function getCity(query){
   let countyVal = $("#county").val();
   let county = countyVal ? ' county = '+countyVal+' and ': ' ';
@@ -133,6 +145,26 @@ function getList(settings,selName,label){
       }
     });
   })
+}
+
+function getPwdStrength(){
+  const pwdVal = document.getElementById("new_pwd").value;
+  let result = zxcvbn(pwdVal);  
+  document.getElementById("password-strength").className = "strength-" + result.score;
+  document.getElementById("pwdMsg").innerHTML = getPwdMsg(result.score)
+}
+
+function getPwdMsg(score){
+  let msg='';
+  switch (score) {
+    case 0: msg = 'too weak'; break;
+    case 1: msg = 'very weak'; break;
+    case 2: msg = 'moderately weak'; break;
+    case 3: msg = 'fairly strong'; break;
+    case 4: msg = 'very strong'; break;
+    default: msg = ''; break;
+  }
+  return msg;
 }
 
 function handleCategoryChange(){

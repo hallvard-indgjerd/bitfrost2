@@ -51,9 +51,16 @@ function setup3dhop(scene){
   presenter.setScene(scene);
 }
 
-function updateOrtho(){
-  $("[name=ortho]").is(':checked') ? presenter.setCameraPerspective() : presenter.setCameraOrthographic();
-}
+// function home(){
+// 	presenter.rsetTrackball();
+// 	// put back light as we want it, as resetTrackball() function resets it
+// 	// presenter.rotateLight(VIEW_STATE.lightDir[0],-VIEW_STATE.lightDir[1]); // inverted y
+// 	// updateLightController(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
+// }
+
+// function updateOrtho(){
+//   $("[name=ortho]").is(':checked') ? presenter.setCameraPerspective() : presenter.setCameraOrthographic();
+// }
 
 function viewFrom(direction){
   let distance = 1.3;

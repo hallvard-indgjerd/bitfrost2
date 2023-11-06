@@ -25,3 +25,15 @@ let cityStyle = {
   fillColor: 'rgb(220,53,69)',
   fillOpacity: 0.2
 }
+const storagePlaceIco = L.icon({
+  iconUrl: 'img/ico/storagePlace.png',
+  iconSize:     [30, 30],
+  iconAnchor:   [15, 15],
+  popupAnchor:  [0,-15]
+});
+const findplaceIco = L.icon({
+  iconUrl: 'img/ico/findPlace.png',
+  iconSize:     [30, 30],
+  iconAnchor:   [15, 15],
+  popupAnchor:  [-3, -76]
+});

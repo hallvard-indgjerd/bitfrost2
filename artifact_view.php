@@ -12,6 +12,8 @@
     <?php require("assets/header.php"); ?>
     <main class="<?php echo $mainClass; ?>">
       <input type="hidden" name="artifactId" value="<?php echo $_GET['item']; ?>">
+      <input type="hidden" name="activeUsr" value="<?php echo $_SESSION['id']; ?>">
+      <input type="hidden" name="role" value="<?php echo $_SESSION['role']; ?>">
       <nav class="itemTool">
         <div class="container-fluid">
           <div class="row">
@@ -266,7 +268,194 @@
           <div class="col-md-8">
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">3d Object</h2>
             <div id="modelWrap">
-              <div id="3dhop" class="tdhop"><canvas id="draw-canvas"></div>
+              <div id="3dhop" class="tdhop">
+                <canvas id="draw-canvas"></canvas>
+                <div id="wrapViewSpot" class="modelTools rounded">
+                  <div class="bg-light">
+                    <button type="button" class="btn btn-sm btn-adc-dark w-100" name="toggleViewSpot" data-bs-toggle="collapse" data-bs-target="#viewSpotDiv">views & spots <span class="mdi mdi-chevron-down float-end"></span></button>
+                  </div>
+                  <div id="viewSpotDiv" class="collapse mt-3">
+                    <div id="viewsDiv" class="mb-4">
+                      <div id="wrapViews">No views</div>
+                      <div class="mt-3">
+                        <button type="button" name="addViewBtn" class="btn btn-sm btn-dark">add view</button>
+                        <button type="button" name="saveViewBtn" class="btn btn-sm btn-success invisible">save views</button>
+                      </div>
+                    </div>
+                    <div id="spotsDiv">
+                      <div id="wrapSpots">No spots</div>
+                      <div>
+                        <button type="button" name="addSpotBtn" class="btn btn-sm btn-dark">add spot</button>
+                        <button type="button" name="saveSpotBtn" class="btn btn-sm btn-success invisible">save spots</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="modelToolsH" class="rounded modelTools">
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="restore initial view" data-action="home">
+                      <span class="mdi mdi-home"></span>
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="zoom in" data-action="zoomin">
+                      <span class="mdi mdi-magnify-plus"></span>
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="zoom out" data-action="zoomout">
+                      <span class="mdi mdi-magnify-minus"></span>
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="toggle fullscreen mode" name="fullscreenToggle" data-action="fullscreen_out">
+                      <span class="mdi mdi-fullscreen"></span>
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="download a screenshot of the current view in png format" name="screenshot" data-action="screenshot">
+                      <span class="mdi mdi-monitor-screenshot"></span>
+                    </button>
+                  </div>
+                </div>
+                <div id="modelToolsV" class="rounded modelTools">
+                  <div class="d-grid gap-1 mb-4">
+                    <div class="alert bg-adc-dark p-1 m-0 text-center">Set parameters</div>
+                    <div class="dropdown toolBtn" id="viewsideListValue" title="set view">
+                      <button class="btn btn-sm btn-dark dropdown-toggle w-100" type="button" id="dropdownViewList" data-bs-toggle="dropdown" aria-expanded="false">set view</button>
+                      <ul class="dropdown-menu">
+                      <li><button class="dropdown-item" name="viewside" value="0.0,90.0,0.0,0.0,0.0">top</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="0.0,-90.0,0.0,0.0,0.0">bottom</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="0.0,0.0,0.0,0.0,0.0">front</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="270.0,0.0,0.0,0.0,0.0">left</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="90.0,0.0,0.0,0.0,0.0">right</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="180.0,0.0,0.0,0.0,0.0">back</button></li>
+                      </ul>
+                    </div>
+
+                    <div class="dropdown toolBtn" id="gridListValue" title="chose grid type or set a box">
+                      <button class=" btn btn-sm btn-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" id="dropdownGridList" aria-expanded="false">base grid</button>
+                      <ul class="dropdown-menu">
+                      <li><button class="dropdown-item" name="changeGrid" value="gridOff">grid off</button></li>
+                      <li><button class="dropdown-item active" name="changeGrid" value="gridBase">base grid</button></li>
+                      <li><button class="dropdown-item" name="changeGrid" value="gridBox">box</button></li>
+                      <li><button class="dropdown-item" name="changeGrid" value="gridBB">fixed grid</button></li>
+                      </ul>
+                    </div>
+
+                    <input type="checkbox" class="btn-check" name="ortho" id="ortho" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="ortho" title="switch orthogonal view">ortho</label>
+
+                    <input type="checkbox" class="btn-check" name="xyzAxes" id="i_axes" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_axes" title="view or hide XYZ axes">XYZ axes</label>
+                    
+                    <input type="checkbox" class="btn-check measureTool" name="light" id="light" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable light tool" for="light">light</label>
+
+                    <input type="checkbox" class="btn-check" name="texture" id="i_solidColor" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_solidColor" title="view mesh with texture or in plain color">texture</label>
+
+                    <input type="checkbox" class="btn-check" name="solid" id="i_transparency" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_transparency" title="view transparent or solid model">solid</label>
+
+                    <input type="checkbox" class="btn-check" name="lighting" id="i_useLighting" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useLighting" title="lighting or unshaded object">lighting</label>
+
+                    <input type="checkbox" class="btn-check" name="specular" id="i_useSpecular" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useSpecular" title="light diffuse or specular">diffuse</label>
+
+                    <button type="button" name="saveModelParam" class="toolBtn btn btn-sm btn-success invisible" title="Save parameters in the database, they will be used the next time the model is loaded">save default parameters</button>
+                  </div>
+
+                  <div class="d-grid gap-1" role="group" id="measureTool">
+                    <div class="alert bg-adc-dark p-1 m-0 text-center">Toolbar</div>
+                    <input type="checkbox" class="btn-check measureTool" id="measure" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable measure tool" for="measure">measure</label>
+
+                    <input type="checkbox" class="btn-check measureTool" id="pick" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable pick tool" for="pick">pick</label>
+
+                    <input type="checkbox" class="btn-check measureTool" id="angle" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable angle tool" for="angle">angle</label>
+
+                    <input type="checkbox" class="btn-check measureTool" id="section" autocomplete="off">
+                    <label class="toolBtn btn btn-sm btn-outline-dark" title="enable section tool" for="section">section</label>
+                  </div>
+                </div>
+
+                <div id="panel_instructions" class="rounded invisible"></div>
+
+                <div id="measure-box" class="rounded invisible text-center">
+                  <p id="measure-box-title" class="m-0 border-bottom border-secondary"></p>
+                  <h6 id="measure-output" class="m-0"></h6>
+                </div>
+
+                <div id="sections-box" class="container-fluid text-bg-dark rounded invisible">
+                  <div class="row">
+                    <div class="col-4">
+                      <small data-bs-toggle="tooltip" title="Enable or disable X, Y or Z Axis Section">
+                        <i class="mdi mdi-information-variant-circle"></i> Plane
+                      </small>
+                    </div>
+                    <div class="col-5">
+                      <small data-bs-toggle="tooltip" title="Move Axis Section Position">
+                        <i class="mdi mdi-information-variant-circle"></i> Position
+                      </small>
+                    </div>
+                    <div class="col-3 text-end">
+                      <small data-bs-toggle="tooltip" title="Flip Axis Section Direction">
+                        <i class="mdi mdi-information-variant-circle"></i> Flip
+                      </small>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <img id="xplane" class="img-fluid togglePlaneIco" src="img/ico/sectionX_off.png">
+                    </div>
+                    <div class="col-6">
+                      <input type="range" name="xplaneSlider" min="0" max="1" step="0.01" value="0.5" id="xplaneSlider">
+                    </div>
+                    <div class="col-3">
+                      <div class="form-check form-check-reverse form-control-sm m-0">
+                        <input class="form-check-input" type="checkbox" id="xplaneFlip" name="planeFlipCheckbox">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <img id="yplane" class="img-fluid togglePlaneIco" src="img/ico/sectionY_off.png">
+                    </div>
+                    <div class="col-6">
+                      <input type="range" name="yplaneSlider" min="0" max="1" step="0.01" value="0.5" id="yplaneSlider">
+                    </div>
+                    <div class="col-3">
+                      <div class="form-check form-check-reverse form-control-sm m-0">
+                        <input class="form-check-input" type="checkbox" id="yplaneFlip" name="planeFlipCheckbox">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <img id="zplane" class="img-fluid togglePlaneIco" src="img/ico/sectionZ_off.png">
+                    </div>
+                    <div class="col-6">
+                      <input type="range" name="zplaneSlider" min="0" max="1" step="0.01" value="0.5" id="zplaneSlider">
+                    </div>
+                    <div class="col-3">
+                      <div class="form-check form-check-reverse form-control-sm m-0">
+                        <input class="form-check-input" type="checkbox" id="zplaneFlip" name="planeFlipCheckbox">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row invisible" id="planesEdgesDiv">
+                    <div class="col-6">
+                      <div class="form-check form-check-reverse form-control-sm m-0" title="Toggle model section planes view" data-bs-toggle="tooltip">
+                        <input class="form-check-input" type="checkbox" id="showPlane" checked>
+                        <label class="form-check-label" for="reverseCheck1">Show planes</label>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-check form-check-reverse form-control-sm m-0" title="Toggle model section edges view" data-bs-toggle="tooltip">
+                        <input class="form-check-input" type="checkbox" id="showBorder" checked>
+                        <label class="form-check-label" for="reverseCheck1">Show edges</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Geographic information</h2>
             <div class="divSection mb-5" id="map">
@@ -280,8 +469,11 @@
         </div>
       </div>
     </main>
-    <?php require("assets/menu.php"); ?>
-    <?php require("assets/js.html"); ?>
+    <?php 
+      require("assets/menu.php");
+      require("assets/toastDiv.html"); 
+      require("assets/js.html"); 
+    ?>
     <script type="text/javascript" src="assets/3dhop/spidergl.js"></script>
     <script type="text/javascript" src="assets/3dhop/presenter.js"></script>
     <script type="text/javascript" src="assets/3dhop/nexus.js"></script>
@@ -291,8 +483,9 @@
     <script type="text/javascript" src="assets/3dhop/trackball_pantilt.js"></script>
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
-    <script type="text/javascript" src="js/3dhopFunctions.js"></script>
+    <!-- <script type="text/javascript" src="js/3dhopFunctions.js"></script> -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="js/artifact_view_3dhop.js"></script>
     <script src="js/geoConfig.js" charset="utf-8"></script>
     <script src="js/artifact_view.js" charset="utf-8"></script>
   </body>

@@ -6,6 +6,7 @@
 <html lang="en" dir="ltr">
   <head>
     <?php require("assets/meta.php"); ?>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
     <link rel="stylesheet" href="css/dashboard.css">
   </head>
   <body>
@@ -36,7 +37,7 @@
             </div>
           </div>
           <div class="list-group list-group-flush listDashBoard">
-            <a class="list-group-item pe-4 fw-bold disabled"><span>id</span><span>name</span><span>description</span><span>last update</span></a>
+            <p class="list-group-item pe-4 fw-bold"><span>name</span><span>description</span><span>last update</span><span></span></p>
             <div class="listWrap"></div>
           </div>
         </div>
@@ -56,21 +57,38 @@
           </div>
           <div class="dashboardFlex" id="modelDashboardGallery"></div>
         </div>
+        <div id="mapWrap" class="border rounded shadow p-3 mb-5 w-100">
+          <h3>Collection Map</h3>
+          <div id="map"></div>
+        </div>
+        <div id="userList" class="border rounded shadow p-3">
+          <h3>User <span class="badge text-bg-dark float-end"></span></h3>
+          <div class="list-group list-group-flush listDashBoard">
+            <a class="list-group-item pe-4 fw-bold disabled"><span>name</span><span>role</span><span>active</span><span>artifact</span><span>model</span></a>
+            <div class="listWrap"></div>
+          </div>
+        </div>
         <div id="institutionList" class="border rounded shadow p-3">
-            <h3>Institution <span class="badge text-bg-dark float-end"></span></h3>
-            <div class="listWrap" id="institutionDasboardList"></div>
+          <h3>Institution <span class="badge text-bg-dark float-end"></span></h3>
+          <div class="listWrap" id="institutionDasboardList"></div>
         </div>
         <div id="personList" class="border rounded shadow p-3">
-            <h3>Person <span class="badge text-bg-dark float-end"></span></h3>
-            <div class="list-group list-group-flush listDashBoard">
-              <a class="list-group-item pe-4 fw-bold disabled"><span>name</span><span>role</span><span>active</span><span>artifact</span><span>model</span></a>
-              <div class="listWrap"></div>
+          <h3>Person <span class="badge text-bg-dark float-end"></span></h3>
+          <div class="toolbarDiv border-bottom">
+            <div class="input-group input-group-sm">
+              <input type="text" class="form-control" placeholder="search by name institution or position " name="searchByPersonName">
+              <button class="btn btn-outline-secondary" type="button" name="searchByPersonNameBtn">search</button>
+              <button class="btn btn-outline-secondary d-none" type="button" name="resetPersonNameBtn">reset</button>
             </div>
+          </div>
+          <ul class="list-group list-group-flush listDashBoard listWrap"></ul>
         </div>
       </div>
     </main>
     <?php require("assets/menu.php"); ?>
     <?php require("assets/js.html"); ?>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script src="js/geoConfig.js" charset="utf-8"></script>
     <script src="js/dashboard.js" charset="utf-8"></script>
   </body>
 </html>
