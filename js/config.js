@@ -7,10 +7,7 @@ const toast = new bootstrap.Toast(toastEL)
 const gotoIndex = $("<a/>",{href:'index.php', class:'btn btn-secondary btn-sm mx-1'}).text('Go to index page')
 const gotoDashBoard = $("<a/>",{href:'dashboard.php', class:'btn btn-secondary btn-sm mx-1'}).text('Go to dashboard')
 const newRecord = $("<button/>",{type:'button', name:'newRecordBtn', class:'btn btn-secondary btn-sm mx-1'}).text('new record');
-const closeToast = $("<button/>",{type:'button', name:'closeToastBtn', class:'btn btn-secondary btn-sm mx-1'}).text('close').attr("data-bs-dismiss","toast").on('click', function(){
-  $("#toastDivError, #toastDivSuccess, #toastDivContent").addClass("d-none");
-  $("#toastBtn").html('');
-});
+const closeToast = $("<button/>",{type:'button', name:'closeToastBtn', class:'btn btn-secondary btn-sm mx-1'}).text('close');
 
 
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))

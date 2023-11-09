@@ -85,5 +85,17 @@ class Model extends Conn{
       return ["res"=>0, "msg"=>$e->getMessage()];
     }
   }
+
+  public function updateModelParam(array $dati){
+    try {
+      $filter = ["model"=>$dati['model']];
+      unset($dati['model']);
+      $sql = $this->buildUpdate("model_view", $filter, $dati);
+      $this->prepared($sql, $dati);
+      return ["res"=>1, "msg"=>'ok, parameters updated'];
+    } catch (\Exception $e) {
+      return ["res"=>0, "msg"=>$e->getMessage()];
+    }
+  }
 }
 ?>

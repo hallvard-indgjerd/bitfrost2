@@ -316,12 +316,12 @@
                     <div class="dropdown toolBtn" id="viewsideListValue" title="set view">
                       <button class="btn btn-sm btn-dark dropdown-toggle w-100" type="button" id="dropdownViewList" data-bs-toggle="dropdown" aria-expanded="false">set view</button>
                       <ul class="dropdown-menu">
-                      <li><button class="dropdown-item" name="viewside" value="0.0,90.0,0.0,0.0,0.0">top</button></li>
-                      <li><button class="dropdown-item" name="viewside" value="0.0,-90.0,0.0,0.0,0.0">bottom</button></li>
-                      <li><button class="dropdown-item" name="viewside" value="0.0,0.0,0.0,0.0,0.0">front</button></li>
-                      <li><button class="dropdown-item" name="viewside" value="270.0,0.0,0.0,0.0,0.0">left</button></li>
-                      <li><button class="dropdown-item" name="viewside" value="90.0,0.0,0.0,0.0,0.0">right</button></li>
-                      <li><button class="dropdown-item" name="viewside" value="180.0,0.0,0.0,0.0,0.0">back</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="0,90,0.0,0.0,0.0,1.3">top</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="0,-90,0.0,0.0,0.0,1.3">bottom</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="0,0,0.0,0.0,0.0,1.3">front</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="-90,0,0.0,0.0,0.0,1.3">left</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="90,0,0.0,0.0,0.0,1.3">right</button></li>
+                      <li><button class="dropdown-item" name="viewside" value="180,0,0.0,0.0,0.0,1.3">back</button></li>
                       </ul>
                     </div>
 
@@ -356,7 +356,7 @@
                     <input type="checkbox" class="btn-check" name="specular" id="i_useSpecular" autocomplete="off">
                     <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useSpecular" title="light diffuse or specular">diffuse</label>
 
-                    <button type="button" name="saveModelParam" class="toolBtn btn btn-sm btn-success invisible" title="Save parameters in the database, they will be used the next time the model is loaded">save default parameters</button>
+                    <button type="button" name="saveModelParam" class="toolBtn btn btn-sm btn-success invisible" title="Save parameters in the database, they will be used the next time the model is loaded">update default parameters</button>
                   </div>
 
                   <div class="d-grid gap-1" role="group" id="measureTool">
@@ -483,9 +483,8 @@
     <script type="text/javascript" src="assets/3dhop/trackball_pantilt.js"></script>
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
-    <!-- <script type="text/javascript" src="js/3dhopFunctions.js"></script> -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-    <script src="js/artifact_view_3dhop.js"></script>
+    <script src="js/3dhop_function.js"></script>
     <script src="js/geoConfig.js" charset="utf-8"></script>
     <script src="js/artifact_view.js" charset="utf-8"></script>
   </body>

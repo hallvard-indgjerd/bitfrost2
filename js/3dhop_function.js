@@ -2,85 +2,221 @@ const artifactId = $("[name=artifactId]").val()
 const activeUser = $("[name=activeUsr]").val()
 const role = $("[name=role]").val()
 const canvas = document.getElementById("draw-canvas");
-const instanceOpt = {"nxz" : {
-  mesh : "nxz",
-  tags: ['Group'],
-  color : [0.5, 0.5, 0.5],
-  backfaceColor : [0.5, 0.5, 0.5, 3.0],
-  specularColor : [0.0, 0.0, 0.0, 256.0]
-}}
-const trackBallOpt = {
-  type : TurntablePanTrackball,
-  trackOptions : {
-    startPhi: 15.0,
-    startTheta: 15.0,
-    startDistance: 2.0,
-    minMaxPhi: [-180, 180],
-    minMaxTheta: [-90.0, 90.0],
-    minMaxDist: [0.1, 3.0]
-  }
-}
-const spaceOpt = {
-  centerMode: "scene",
-  radiusMode: "scene",
-  cameraNearFar: [0.01, 5.0],
-}
-const configOpt = {
-  pickedpointColor    : [1.0, 0.0, 1.0],
-  measurementColor    : [0.5, 1.0, 0.5],
-  showClippingPlanes  : true,
-  showClippingBorder  : true,
-  clippingBorderSize  : 0.5,
-  clippingBorderColor : [0.0, 1.0, 1.0]
-}
+const instanceOpt = {"nxz":{ mesh:"nxz", tags: ['Group'], color: [0.5, 0.5, 0.5], backfaceColor: [0.5, 0.5, 0.5, 3.0], specularColor: [0.0, 0.0, 0.0, 256.0]}}
+const trackBallOpt = { type: TurntablePanTrackball, trackOptions: {startPhi: 15.0, startTheta: 15.0, startDistance: 2.0, minMaxPhi: [-180, 180], minMaxTheta: [-90.0, 90.0], minMaxDist: [0.1, 3.0] }}
+const spaceOpt = {centerMode: "scene", radiusMode: "scene", cameraNearFar: [0.01, 5.0]}
+const configOpt = {pickedpointColor: [1.0, 0.0, 1.0], measurementColor: [0.5, 1.0, 0.5], showClippingPlanes: true, showClippingBorder: true, clippingBorderSize: 0.5, clippingBorderColor: [0.0, 1.0, 1.0]}
 const sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
+const defaultViewSide = '15,15,0,0,0,2';
 
 let presenter, scene, paradata, gStep;
-
-//angle measurement
 let angleStage = 0;
 let anglePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]];
-
-//current light direction
 let lightDir = [0,0];
-
-//collect views and spots
 let viewList = {}
 let viewIndex = 0;
 let spotList = {}
 let spotIndex = 0;
 
+$("[name=toggleViewSpot]").on('click', function(){
+  $(this).find('span').toggleClass('mdi-chevron-down mdi-chevron-up');
+})
 
+var toolBtnList = [].slice.call(document.querySelectorAll('.toolBtn'))
+var tooltipBtnList = toolBtnList.map(function (tooltipBtn) { return new bootstrap.Tooltip(tooltipBtn,{trigger:'hover', html: true, placement:'left' })})
+$("[name=fullscreenToggle]").on('click', function(){
+  let act = $(this).data('action') == 'fullscreen_in' ? 'fullscreen_out' : 'fullscreen_in';
+  $(this).find('span').toggleClass('mdi-fullscreen mdi-fullscreen-exit')
+  $(this).data('action', act);
+})
+$("#modelToolsH button").on('click', function(){
+  actionsToolbar($(this).data('action'))
+})
+
+$("[name=resetViewBtn]").on('click', function(){
+  home()
+  $("[name=viewside]").removeClass('active')
+  $("#dropdownViewList").text('set view')
+})
+$("[name=viewside]").on('click', function(){ 
+  let label = $(this).text()
+  $(this).addClass('active')
+  $("[name=viewside]").not(this).removeClass('active')
+  viewFrom($(this).val()) 
+  $("#dropdownViewList").text(label)
+})
+$("[name=ortho]").on('click', function(){updateOrtho()})
+$("[name=texture]").on('click', function(){
+  let label = $(this).is(':checked') ? 'plain color' : 'texture';
+  $(this).next('label').text(label);
+  updateTexture()
+})
+$("[name=solid]").on('click', function(){
+  let label = $(this).is(':checked') ? 'transparent' : 'solid';
+  $(this).next('label').text(label);
+  updateTransparency()
+})
+$("[name=lighting]").on('click', function(){
+  let label = $(this).is(':checked') ? 'unshaded' : 'lighting';
+  $(this).next('label').text(label);
+  updateLighting()
+})
+$("[name=specular]").on('click', function(){
+  let label = $(this).is(':checked') ? 'specular' : 'diffuse';
+  $(this).next('label').text(label);
+  updateSpecular()
+})
+
+$("[name=changeGrid]").on('click', function(){ 
+  let label = $(this).text()
+  let newGrid = $(this).val()
+  let currentGrid = $("#gridListValue").find('.active').val();
+  $(this).addClass('active')
+  $("[name=changeGrid]").not(this).removeClass('active')
+  $("#dropdownGridList").text(label)
+  changeGrid(currentGrid,newGrid);
+})
+
+$("[name=xyzAxes]").on('click', function(){
+  $(this).is(':checked') ? addAxes() : removeAxes();
+})
+
+$(".measureTool").on('click', function(){
+  let func = $(this).prop('id')
+  if(func !== 'section'){
+    disableToolsFunction()
+    if($(this).is(':checked')){ 
+      $(".measureTool").not(this).not("#section").prop('checked', false) 
+    }
+  }
+  let act = $(this).is(':checked') ? func+'_on' : func+'_off';
+  actionsToolbar(act);
+})
+
+$(".togglePlaneIco").on('click', function(){
+  let plane = $(this).prop('id').substring(0, 1);
+  let currentSrc = $(this).prop('src').split('/').pop();
+  let state;
+  switch (plane) {
+    case 'x':
+      state = currentSrc == 'sectionX_off.png' ? true : false;
+      sectionxSwitch(state)
+    break;   
+    case 'y':
+      state = currentSrc == 'sectionY_off.png' ? true : false;
+      sectionySwitch(state)
+    break;  
+    case 'z':
+      state = currentSrc == 'sectionZ_off.png' ? true : false;
+      sectionzSwitch(state)
+    break;
+  }
+})
+
+$("#sections-box input[type=range]").on('input', function(){
+  let plane = $(this).attr('name').substring(0, 1)
+  let val = $(this).val()
+  switch (plane) {
+    case 'x':
+      sectionxSwitch(true); 
+      presenter.setClippingPointX(val);   
+    break;
+    case 'y':
+      sectionySwitch(true); 
+      presenter.setClippingPointY(val); 
+    break;
+    case 'z':
+      sectionzSwitch(true); 
+      presenter.setClippingPointZ(val); 
+    break;
+  }
+})
+
+$("[name=planeFlipCheckbox").on('click', function(){
+  let plane = $(this).attr('id').substring(0, 1)
+  switch (plane) {
+    case 'x':
+      sectionxSwitch(true);
+      let clipXVal = $('#xplaneFlip').is(':checked') ? -1 : 1;
+      presenter.setClippingX(clipXVal);   
+      break;
+      case 'y':
+        sectionySwitch(true);
+      let clipYVal = $('#yplaneFlip').is(':checked') ? -1 : 1;
+      presenter.setClippingY(clipYVal); 
+      break;
+      case 'z':
+        sectionzSwitch(true);
+        let clipZVal = $('#zplaneFlip').is(':checked') ? -1 : 1;
+      presenter.setClippingZ(clipZVal); 
+    break;
+  }
+})
+
+$("#showPlane").on('click', function(){
+  presenter.setClippingRendermode($(this).is(':checked'), presenter.getClippingRendermode()[1]);
+})
+
+$("#showBorder").on('click', function(){
+  presenter.setClippingRendermode(presenter.getClippingRendermode()[0], $(this).is(':checked'));
+})
+$("[name=addViewBtn]").on('click',addView)
+
+
+/////////////////////////////////////////////////////////////
+//////////////// FUNCTIONS //////////////////////////////////
+/////////////////////////////////////////////////////////////
 
 function initModel(model){
-  setInitModelParam(model.model_view);
   paradata = model.model_param
-  scene = {
-    meshes: {"nxz" : { url: 'archive/models/'+model.model.nxz }},
-    modelInstances : instanceOpt,
-    trackball: trackBallOpt,
-    space: spaceOpt,
-    config: configOpt
-  }
+  let param = model.model_view
+  scene = {meshes: {"nxz" : {url: 'archive/models/'+model.model.nxz }}, modelInstances: instanceOpt, trackball: trackBallOpt, space: spaceOpt, config: configOpt}
   init3dhop();
   presenter = new Presenter("draw-canvas");
   presenter.setScene(scene);
   presenter._onEndMeasurement = onEndMeasure;
   presenter._onEndPickingPoint = onEndPick;
   presenter.setClippingPointXYZ(0.5, 0.5, 0.5);
-  startupGrid()
-
+  
   switch (paradata.measure_unit) {
     case 'mm': gStep = 10.0; break;
     case 'm': gStep = 0.01; break;
     default: gStep = 1.0; break;
   }
+  
+  startupGrid(model.model_view.grid)
+  presenter.animateToTrackballPosition(model.model_view.viewside.split(',').map(Number))
+  lightDir = model.model_view.lightdir.split(',').map(Number)
+  presenter.rotateLight(lightDir[0],-lightDir[1])
+  let viewsideLabel = getViewside(param.viewside)
+  if(param.viewside !== defaultViewSide && viewsideLabel !== ''){
+    $("[name=viewside][value='"+param.viewside+"']").addClass('active')
+    $("#dropdownViewList").text(viewsideLabel)
+  }
+  $("[name=changeGrid][value=gridBase").removeClass('active')
+  $("[name=changeGrid][value="+param.grid+"]").addClass('active')
+  let gridLabel = $("[name=changeGrid][value="+param.grid+"]").text()
+  $("#dropdownGridList").text(gridLabel)
+  if(param.ortho==1){ $("[name=ortho]").trigger('click') }
+  if(param.xyz==1){ setTimeout(function(){ $("[name=xyzAxes]").trigger('click') },100) }
+  if (param.texture == 1) { $("[name=texture]").trigger('click') }
+  if(param.solid ==1){$("[name=solid]").trigger('click')}
+  if(param.lighting == 1){$("[name=lighting]").trigger('click')}
+  if(param.specular == 1){$("[name=specular]").trigger('click')}
 }
 
-function setInitModelParam(param){
-  console.log(param);
+function getViewside(viewside){
+  let viewsideLabel='';
+  switch (viewside) {
+    case '0,90,0.0,0.0,0.0,1.3': viewsideLabel='top'; break;
+    case '0,-90,0.0,0.0,0.0,1.3': viewsideLabel='bottom'; break;
+    case '0,0,0.0,0.0,0.0,1.3': viewsideLabel='front'; break;
+    case '-90,0,0.0,0.0,0.0,1.3': viewsideLabel='left'; break;
+    case '90,0,0.0,0.0,0.0,1.3': viewsideLabel='right'; break;
+    case '180,0,0.0,0.0,0.0,1.3': viewsideLabel='back'; break;
+  }
+  return viewsideLabel;
 }
-
 function actionsToolbar(action) {
   switch (action) {
     case "home": home(); break;
@@ -214,12 +350,7 @@ function home(){
 }
 
 // set view dropdown
-function viewFrom(direction){
-	var distance = 1.3;
-  let dir = direction.split(',');
-  dir.push(distance);
-  presenter.animateToTrackballPosition(dir);
-}
+function viewFrom(direction){ presenter.animateToTrackballPosition(direction.split(',')) }
 
 // ortho checkbox
 function updateOrtho(){
@@ -300,16 +431,20 @@ function removeAxes(){
 }
 
 //// Grid functions ////////////////////////////////////
-function startupGrid(){
+function startupGrid(grid){
   for(inst in presenter._scene.modelInstances){
     let vv = presenter._scene.meshes[presenter._scene.modelInstances[inst].mesh].renderable.mesh.basev;
     if (typeof vv === 'undefined') {
-      setTimeout(startupGrid, 50);
+      setTimeout(function(){startupGrid(grid)},50)
       return;
     }
   }
   // computeEncumbrance();
-  addBaseGrid();
+  switch (grid) {
+    case 'gridBase': addBaseGrid(); break;
+    case 'gridBox': addBoxGrid(); break;
+    case 'gridBB': addBBGrid(); break;
+  }
 }
 
 function getBBox(instance) {
@@ -321,12 +456,12 @@ function getBBox(instance) {
   for(var vi=1; vi<(vv.length / 3); vi++){
     point = [vv[(vi*3)+0], vv[(vi*3)+1], vv[(vi*3)+2], 1.0]
     tpoint = SglMat4.mul4(presenter._scene.modelInstances[instance].transform.matrix, point);
-    if(tpoint[0] > bbox[0]) bbox[0] = tpoint[0];
-    if(tpoint[1] > bbox[1]) bbox[1] = tpoint[1];
-    if(tpoint[2] > bbox[2]) bbox[2] = tpoint[2];
-    if(tpoint[0] < bbox[3]) bbox[3] = tpoint[0];
-    if(tpoint[1] < bbox[4]) bbox[4] = tpoint[1];
-    if(tpoint[2] < bbox[5]) bbox[5] = tpoint[2];
+    if(tpoint[0] > sceneBB[0]) sceneBB[0] = tpoint[0];
+    if(tpoint[1] > sceneBB[1]) sceneBB[1] = tpoint[1];
+    if(tpoint[2] > sceneBB[2]) sceneBB[2] = tpoint[2];
+    if(tpoint[0] < sceneBB[3]) sceneBB[3] = tpoint[0];
+    if(tpoint[1] < sceneBB[4]) sceneBB[4] = tpoint[1];
+    if(tpoint[2] < sceneBB[5]) sceneBB[5] = tpoint[2];
   }
   return bbox;
 }
@@ -852,6 +987,7 @@ function getLight(event) {
     let lx = (XX / radius)/2.0;
     let ly = (YY / radius)/2.0;
     lightDir = [lx,ly];
+    console.log(lightDir);
   }
 }
 function checkLight(state) {

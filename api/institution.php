@@ -10,4 +10,6 @@ if(isset($funzione) && function_exists($funzione)) {
 }
 
 function getInstitutions($obj){return json_encode($obj->getInstitutions());}
+function addInstitution($obj){return json_encode($obj->addInstitution($_POST, $_FILES));}
+function editInstitution($obj){return json_encode($obj->editInstitution($_POST));}
 ?>

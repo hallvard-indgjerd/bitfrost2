@@ -11,7 +11,7 @@ a{text-decoration:none;transition: all 0.25s linear;}
 .open{right: 0;}
 .close{right: -250px;}
 
-header{position: fixed; top: 0; left: 0; width: 100vw; height:80px; padding:10px; color:#875e29;background-color: #f0eee5;z-index:1000;}
+header{position: fixed; top: 0; left: 0; width: 100vw; /*height:80px;*/ padding:10px; color:#875e29;background-color: #f0eee5;z-index:1000;}
 header img{width:50px;}
 header h2{font-size: 1rem;}
 header .headerLink{text-align: center;}
@@ -37,6 +37,11 @@ body > nav > #linkWrap > a{color:#fff; padding:5px 20px; border-bottom: 1px soli
   --bs-tooltip-bg: var(--bs-white);
   --bs-tooltip-color: var(--bs-black);
 }
+#map > #mapAlert, #map > #resetMapDiv{position: absolute; z-index: 2000;}
+#map > #mapAlert{top: 10px; left: 0;right: 0; max-width:300px; margin: 0 auto; padding: 5px; width:auto; text-align: center;}
+#map > #resetMapDiv{left:10px; bottom:10px;}
+#resetMapDiv > button {border: 2px solid rgba(0,0,0,0.2);}
+#resetMapDiv > button:hover {background-color: #f4f4f4;}
 
 #toastDivContent{
   position: fixed;

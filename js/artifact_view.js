@@ -4,150 +4,6 @@ let markerArr = {}
 ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 
-$("[name=toggleViewSpot]").on('click', function(){
-  $(this).find('span').toggleClass('mdi-chevron-down mdi-chevron-up');
-})
-
-var toolBtnList = [].slice.call(document.querySelectorAll('.toolBtn'))
-var tooltipBtnList = toolBtnList.map(function (tooltipBtn) { return new bootstrap.Tooltip(tooltipBtn,{trigger:'hover', html: true, placement:'left' })})
-$("[name=fullscreenToggle]").on('click', function(){
-  let act = $(this).data('action') == 'fullscreen_in' ? 'fullscreen_out' : 'fullscreen_in';
-  $(this).find('span').toggleClass('mdi-fullscreen mdi-fullscreen-exit')
-  $(this).data('action', act);
-})
-$("#modelToolsH button").on('click', function(){
-  actionsToolbar($(this).data('action'))
-})
-
-$("[name=resetViewBtn]").on('click', function(){
-  home()
-  $("[name=viewside]").removeClass('active')
-  $("#dropdownViewList").text('set view')
-})
-$("[name=viewside]").on('click', function(){ 
-  let label = $(this).text()
-  $(this).addClass('active')
-  $("[name=viewside]").not(this).removeClass('active')
-  viewFrom($(this).val()) 
-  $("#dropdownViewList").text(label)
-})
-$("[name=ortho]").on('click', function(){updateOrtho()})
-$("[name=texture]").on('click', function(){
-  let label = $(this).is(':checked') ? 'plain color' : 'texture';
-  $(this).next('label').text(label);
-  updateTexture()
-})
-$("[name=solid]").on('click', function(){
-  let label = $(this).is(':checked') ? 'transparent' : 'solid';
-  $(this).next('label').text(label);
-  updateTransparency()
-})
-$("[name=lighting]").on('click', function(){
-  let label = $(this).is(':checked') ? 'unshaded' : 'lighting';
-  $(this).next('label').text(label);
-  updateLighting()
-})
-$("[name=specular]").on('click', function(){
-  let label = $(this).is(':checked') ? 'specular' : 'diffuse';
-  $(this).next('label').text(label);
-  updateSpecular()
-})
-
-$("[name=changeGrid]").on('click', function(){ 
-  let label = $(this).text()
-  let newGrid = $(this).val()
-  let currentGrid = $("#gridListValue").find('.active').val();
-  $(this).addClass('active')
-  $("[name=changeGrid]").not(this).removeClass('active')
-  $("#dropdownGridList").text(label)
-  changeGrid(currentGrid,newGrid);
-})
-
-$("[name=xyzAxes]").on('click', function(){
-  $(this).is(':checked') ? addAxes() : removeAxes();
-})
-
-$(".measureTool").on('click', function(){
-  let func = $(this).prop('id')
-  if(func !== 'section'){
-    disableToolsFunction()
-    if($(this).is(':checked')){ 
-      $(".measureTool").not(this).not("#section").prop('checked', false) 
-    }
-  }
-  let act = $(this).is(':checked') ? func+'_on' : func+'_off';
-  actionsToolbar(act);
-})
-
-$(".togglePlaneIco").on('click', function(){
-  let plane = $(this).prop('id').substring(0, 1);
-  let currentSrc = $(this).prop('src').split('/').pop();
-  let state;
-  switch (plane) {
-    case 'x':
-      state = currentSrc == 'sectionX_off.png' ? true : false;
-      sectionxSwitch(state)
-    break;   
-    case 'y':
-      state = currentSrc == 'sectionY_off.png' ? true : false;
-      sectionySwitch(state)
-    break;  
-    case 'z':
-      state = currentSrc == 'sectionZ_off.png' ? true : false;
-      sectionzSwitch(state)
-    break;
-  }
-})
-
-$("#sections-box input[type=range]").on('input', function(){
-  let plane = $(this).attr('name').substring(0, 1)
-  let val = $(this).val()
-  switch (plane) {
-    case 'x':
-      sectionxSwitch(true); 
-      presenter.setClippingPointX(val);   
-    break;
-    case 'y':
-      sectionySwitch(true); 
-      presenter.setClippingPointY(val); 
-    break;
-    case 'z':
-      sectionzSwitch(true); 
-      presenter.setClippingPointZ(val); 
-    break;
-  }
-})
-
-$("[name=planeFlipCheckbox").on('click', function(){
-  let plane = $(this).attr('id').substring(0, 1)
-  switch (plane) {
-    case 'x':
-      sectionxSwitch(true);
-      let clipXVal = $('#xplaneFlip').is(':checked') ? -1 : 1;
-      presenter.setClippingX(clipXVal);   
-      break;
-      case 'y':
-        sectionySwitch(true);
-      let clipYVal = $('#yplaneFlip').is(':checked') ? -1 : 1;
-      presenter.setClippingY(clipYVal); 
-      break;
-      case 'z':
-        sectionzSwitch(true);
-        let clipZVal = $('#zplaneFlip').is(':checked') ? -1 : 1;
-      presenter.setClippingZ(clipZVal); 
-    break;
-  }
-})
-
-$("#showPlane").on('click', function(){
-  presenter.setClippingRendermode($(this).is(':checked'), presenter.getClippingRendermode()[1]);
-})
-
-$("#showBorder").on('click', function(){
-  presenter.setClippingRendermode(presenter.getClippingRendermode()[0], $(this).is(':checked'));
-})
-$("[name=addViewBtn]").on('click',addView)
-
 $.ajax(ajaxSettings)
 .done(function(data) {
   let artifact = data.artifact;
@@ -194,7 +50,7 @@ $.ajax(ajaxSettings)
     let metadata = model.model_metadata
     if((role && role < 5) || (activeUser && metadata.auth_id === activeUser)){
       $("[name=saveModelParam]").removeClass('invisible').on('click', function(){
-        saveModelParam(model.model.id)
+        saveModelParam(model.model.id, 'updateModelParam')
       })
     }
     if (model.model.nxz) {
@@ -246,9 +102,9 @@ function artifactMap(markerArr){
   map.fitBounds(markerGroup.getBounds())
 }
 
-function saveModelParam(model){
+function saveModelParam(model, trigger){
   let dati = {
-    trigger:'saveModelParam',
+    trigger:trigger,
     model:model,
     default_view: 1,
     viewside: presenter.getTrackballPosition().join(','),
@@ -265,12 +121,16 @@ function saveModelParam(model){
   ajaxSettings.data = dati
   $.ajax(ajaxSettings)
   .done(function(data){
+    console.log(data);
     if (data.res==0) {
       $("#toastDivError .errorOutput").text(data.msg);
       $("#toastDivError").removeClass("d-none");
     }else {
       $(".toastTitle").text(data.msg)
-      closeToast.appendTo("#toastBtn");
+      closeToast.appendTo("#toastBtn").on('click', function(){
+        $("#toastDivError, #toastDivSuccess, #toastDivContent").addClass("d-none");
+        $("#toastBtn").html('');
+      });
       $("#toastDivSuccess").removeClass("d-none")
     }
     $("#toastDivContent").removeClass('d-none')

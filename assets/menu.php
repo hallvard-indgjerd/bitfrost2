@@ -19,7 +19,7 @@ if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
         <span class="mdi mdi-cube-outline"></span>
         model
       </a>
-      <a href='#' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="research insitutions, museum, university etc.">
+      <a href='institution_add.php' class='animated' data-bs-toggle="tooltip" data-bs-placement="left" title="research insitutions, museum, university etc.">
         <span class="mdi mdi-bank"></span>
         institution
       </a>

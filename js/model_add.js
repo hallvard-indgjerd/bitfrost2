@@ -32,7 +32,6 @@ $("[name=specular]").on('change', updateSpecular)
 $("[name=lighting]").on('change', updateLighting)
 $("[name=texture]").on('change', updateTexture)
 $("[name=solid]").on('change', updateTransparency)
-// $("[name=screenshot]").on('click', function(){presenter.saveScreenshot();})
 $("[name=newArtifact]").on('click', function(el){
   createFormdata(el,saveArtifact)
 });

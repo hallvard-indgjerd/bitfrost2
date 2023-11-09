@@ -70,8 +70,11 @@ function generateRandomPassword(){
 }
 
 function getCity(query){
-  let countyVal = $("#county").val();
-  let county = countyVal ? ' county = '+countyVal+' and ': ' ';
+  let county='';
+  if($("#county").length){
+    let countyVal = $("#county").val();
+    county = countyVal ? ' county = '+countyVal+' and ': ' ';
+  }
   ajaxSettings.url=API+"get.php";
   listCity.settings.filter = county+"name like '%"+query+"%'"
   ajaxSettings.data=listCity.settings;
@@ -84,7 +87,7 @@ function getCity(query){
       data.forEach((item, i) => {
         let cityBtn = $("<button/>", {class:'list-group-item list-group-item-action', type:'button'}).text(item.name).appendTo(citySuggested)
         cityBtn.on('click', function(){
-          if(!countyVal){
+          if($("#county").length && !countyVal){
             $("#county").val(item.county).trigger('change');
           }
           $("[name=city]").val(item.name).attr({"data-cityId":item.id})
@@ -113,12 +116,20 @@ function getCityFromLonLat(ll){
     }
     if (marker != undefined) { map.removeLayer(marker)};
     marker = L.marker([ll[1], ll[0]]).addTo(map);
-    $("#county").val(data[0].county).trigger('change');
+    if($("#county").length){ $("#county").val(data[0].county).trigger('change'); }
     $("[name=city]").val(data[0].name).attr({"data-cityId":data[0].id})
     $("#longitude").val(ll[0].toFixed(4));
     $("#latitude").val(ll[1].toFixed(4));
     setMapExtent('jsonCity',data[0].id)
   })
+
+  //reverse address geocoding
+  if($("#address").length){
+    let geoapi = osmReverse+'lat='+ll[1]+'&lon='+ll[0];
+    $.getJSON( geoapi, function( data ) {
+      $("#address").val(data.address.road+' '+data.address.house_number)
+    });
+  }
 }
 
 function getDate(){

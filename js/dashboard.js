@@ -125,7 +125,7 @@ function getInstitutions(){
       let body =$("<div/>",{class:'card-body'}).appendTo(col2)
       $("<h5/>",{class:'card-title fw-bold'}).text(item.name+" ("+item.abbreviation+")").appendTo(body)
       $("<a/>",{href:'http://maps.google.com/maps?q='+item.name.replace(/ /g,"+"), title:'view on Google Maps', target:'_blank', class:'card-link d-block'}).html('<i class="mdi mdi-map-marker"></i> '+item.address).appendTo(body)
-      $("<a/>",{href:item.link, title:'Official Webpage', target:'_blank', class:'card-link d-block m-0'}).html('<i class="mdi mdi-link-variant"></i> '+item.link).appendTo(body)
+      $("<a/>",{href:item.url, title:'Official Webpage', target:'_blank', class:'card-link d-block m-0'}).html('<i class="mdi mdi-link-variant"></i> '+item.url).appendTo(body)
       $("<p/>",{class:'card-text m-0'}).text("Number of artifacts stored by Institute: "+item.artifact).appendTo(body)
 
       L.marker([parseFloat(item.lat), parseFloat(item.lon)],{icon:storagePlaceIco})

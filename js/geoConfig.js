@@ -5,6 +5,16 @@ const gSatTile = 'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}';
 const gHybridTile = 'http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}';
 const gTerrainTile = 'http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
 const gSubDomains = ['mt0','mt1','mt2','mt3'];
+let osmReverse = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&'
+//osm reverse param
+//append to api -> lat=x.xx&lon=x.xx
+//json variables to use -> address.road, address.house_number
+
+let geoNamesReverse = 'http://api.geonames.org/addressJSON?username=darklab&'
+//geoNames reverse param
+//append to api -> lat=x.xx&lng=x.xx
+//json variables to use -> address.street, address.houseNumber
+
 let baseLayers, osm, gStreets, gSat, gTerrain;
 let mapClick = false;
 
