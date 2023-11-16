@@ -127,7 +127,11 @@ function getCityFromLonLat(ll){
   if($("#address").length){
     let geoapi = osmReverse+'lat='+ll[1]+'&lon='+ll[0];
     $.getJSON( geoapi, function( data ) {
-      $("#address").val(data.address.road+' '+data.address.house_number)
+      let addr = data.address.road;
+      if(data.address.house_number && data.address.house_number !== 'undefined'){
+        addr = addr+" "+data.address.house_number;
+      }
+      $("#address").val(addr)
     });
   }
 }

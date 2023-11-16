@@ -63,6 +63,11 @@
         </div>
         <div id="userList" class="border rounded shadow p-3">
           <h3>User <span class="badge text-bg-dark float-end"></span></h3>
+          <div class="toolbarDiv border-bottom">
+            <div>
+              <a href="persons_add.php?user=true" class="btn btn-sm btn-outline-secondary">add institution</a>
+            </div>
+          </div>
           <div class="list-group list-group-flush listDashBoard">
             <a class="list-group-item pe-4 fw-bold disabled"><span>name</span><span>role</span><span>active</span><span>artifact</span><span>model</span></a>
             <div class="listWrap"></div>
@@ -70,15 +75,25 @@
         </div>
         <div id="institutionList" class="border rounded shadow p-3">
           <h3>Institution <span class="badge text-bg-dark float-end"></span></h3>
+          <div class="toolbarDiv border-bottom">
+            <div>
+              <a href="institution_add.php" class="btn btn-sm btn-outline-secondary">add institution</a>
+            </div>
+          </div>
           <div class="listWrap" id="institutionDasboardList"></div>
         </div>
         <div id="personList" class="border rounded shadow p-3">
           <h3>Person <span class="badge text-bg-dark float-end"></span></h3>
           <div class="toolbarDiv border-bottom">
-            <div class="input-group input-group-sm">
-              <input type="text" class="form-control" placeholder="search by name institution or position " name="searchByPersonName">
-              <button class="btn btn-outline-secondary" type="button" name="searchByPersonNameBtn">search</button>
-              <button class="btn btn-outline-secondary d-none" type="button" name="resetPersonNameBtn">reset</button>
+            <div>
+              <a href="persons_add.php?user=false" class="btn btn-sm btn-outline-secondary">add person</a>
+            </div>
+            <div>
+              <div class="input-group input-group-sm">
+                <input type="text" class="form-control" placeholder="search by name institution or position " name="searchByPersonName">
+                <button class="btn btn-outline-secondary" type="button" name="searchByPersonNameBtn">search</button>
+                <button class="btn btn-outline-secondary d-none" type="button" name="resetPersonNameBtn">reset</button>
+              </div>
             </div>
           </div>
           <ul class="list-group list-group-flush listDashBoard listWrap"></ul>

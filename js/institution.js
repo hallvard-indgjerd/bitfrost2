@@ -1,8 +1,11 @@
+if($("[name=institution]").length > 0){ getInstitution($("[name=institution]").val()) }
+const trigger = $("[name=trigger]").val() 
 const form = $("[name=newInstitutionForm]")[0];
 const fd = new FormData();
 const listTrigger='getSelectOptions';
 const citySuggested = $("#citySuggested");
 const endpoint = API+'institution.php'
+const toastToolBar = $('#toastBtn');
 
 let autocompleted = false;
 let listArray = [];
@@ -50,6 +53,7 @@ $(document).on('click', (event) => {
 
 const logoInput = document.getElementById('logo');
 const logoPreview = document.getElementById('logoPreview');
+$("#imgPlaceholder").hide()
 const cropWidth = 200;
 const cropHeight = 200;
 let cropX, cropY;
@@ -91,7 +95,7 @@ logoInput.addEventListener('change', event => {
         // crops but not scale
         // croppedCtx.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
         logoPreview.src = croppedCanvas.toDataURL('image/png');
-        logoPreview.classList.remove("invisible");
+        $("#imgPlaceholder").show()
       };
 
     }
@@ -104,16 +108,16 @@ $("[type=submit]").on('click', (el) => {addInstitution(el)})
 function addInstitution(el){
   if(form.checkValidity()){
     el.preventDefault();
-    fd.append('trigger', 'addInstitution')
+    fd.append('trigger', trigger)
+    if($("[name=institution]").length > 0){fd.append('id', $("[name=institution]").val()) }
     fd.append('category', $("#category").val())
     fd.append('name', $("#name").val())
     fd.append('abbreviation', $("#abbreviation").val())
     fd.append('city', $("#city").data('cityid'))
     fd.append('address', $("#address").val())
-    fd.append('longitude', $("#longitude").val())
-    fd.append('latitude', $("#latitude").val())
+    fd.append('lon', $("#longitude").val())
+    fd.append('lat', $("#latitude").val())
     fd.append('url', $("#url").val())
-    fd.append('folder', 'img/logo/')
     if(logoInput.files.length > 0){fd.append('logo', logoInput.files[0])}
     $.ajax({
       type: "POST",
@@ -126,11 +130,47 @@ function addInstitution(el){
       cache: false,
       timeout: 800000,
       success: function (data) {
-        console.log(data);
+        if (data.res==0) {
+          $("#toastDivError .errorOutput").text(data.output);
+          $("#toastDivError").removeClass("d-none");
+        }else {
+          $(".toastTitle").text(data.output)
+          gotoIndex.appendTo(toastToolBar);
+          gotoDashBoard.appendTo(toastToolBar);
+          $("#toastDivSuccess").removeClass("d-none")
+        }
+        $("#toastDivContent").removeClass('d-none')
       },
       error: function (e) {
         console.log(e);
       }
     });
   }
+}
+
+function getInstitution(id){
+  ajaxSettings.url=API+"institution.php";
+  ajaxSettings.data = {trigger:'getInstitution', id:id}
+  $.ajax(ajaxSettings).done(function(data){
+    console.log(data);
+    $("#category").find("option[value="+data.catid+"]").attr('selected', true)
+    $("#name").val(data.name)
+    $("#abbreviation").val(data.abbreviation)
+    $("#city").val(data.city).attr("data-cityid",data.cityid)
+    $("#address").val(data.address)
+    $("#longitude").val(data.lon)
+    $("#latitude").val(data.lat)
+    $("#url").val(data.url)
+
+    if (marker != undefined) { map.removeLayer(marker)};
+    marker = L.marker([data.lat, data.lon]).addTo(map);
+    map.flyTo([data.lat, data.lon], 17, {animate: true, duration: 2})
+
+    if (data.logo) {
+      $("#logoPreview").attr({"src":'img/logo/'+data.logo, "width":300})
+      $("#imgPlaceholder").show()
+    }else{
+
+    }
+  })
 }

@@ -19,6 +19,7 @@ CREATE TABLE person(
   city varchar(256),
   address varchar(256),
   phone VARCHAR(100),
+  uuid varchar(36) DEFAULT (uuid()),
   CONSTRAINT FOREIGN KEY (institution) REFERENCES institution (id) ON DELETE CASCADE,
   CONSTRAINT FOREIGN KEY (position) REFERENCES list_person_position (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

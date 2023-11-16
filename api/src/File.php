@@ -17,6 +17,7 @@ class File {
   public function __construct() {}
 
   public function upload($file, $folder, $name){
+    // return [$file, $folder, $name];
     try {
       $this->checkError($file['error']);
       $this->checkType($file['name'], $file['type']);
@@ -56,11 +57,16 @@ class File {
   }
 
   protected function moveFile($file, $folder, $name){
-    $fileLoc = $_SERVER['DOCUMENT_ROOT']."/adc/".$folder.$name;
+    $fileLoc = $_SERVER['DOCUMENT_ROOT']."/adc".$folder.$name;
     if(!move_uploaded_file($file["tmp_name"], $fileLoc)){ 
       throw new \Exception("Sorry but there was an error while uploading the file to the server, please try again or contact the system administrator", 1); 
     }
     chmod($fileLoc, 0666);
+    return true;
+  }
+
+  public function deleteFile(string $fileName){
+    if(!unlink($fileName)){ throw new \Exception("Error: file has not been deleted", 1); }
     return true;
   }
 }

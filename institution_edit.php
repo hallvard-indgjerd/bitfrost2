@@ -13,20 +13,18 @@
     <?php require("assets/header.php"); ?>
     <main class="<?php echo $mainClass; ?>">
       <div class="container">
-        
         <form name="newInstitutionForm" enctype="multipart/form-data">
           <input type="hidden" name="user" value="<?php echo $_SESSION['id']; ?>">
-          <input type="hidden" name="trigger" value="addInstitution">
+          <input type="hidden" name="institution" value="<?php echo $_GET['item']; ?>">
+          <input type="hidden" name="trigger" value="editInstitution">
           <div class="row mb-3">
-            <h3 class="border-bottom txt-adc-dark fw-bold">New Institution</h3>
+            <h3 class="border-bottom txt-adc-dark fw-bold">Edit Institution information</h3>
             <div class="form-text">* mandatory field</div>
           </div>
           <div class="row">
             <div class="col-md-3 mb-3">
               <label for="category">* Category</label>
-              <select name="category" id="category" class="form-select" required>
-                <option value="" selected disabled>-- select a value --</option>
-              </select>            
+              <select name="category" id="category" class="form-select" required></select>            
             </div>
             <div class="col-md-6 mb-3">
               <label for="name">* Name</label>
@@ -41,7 +39,6 @@
             <div class="col-md-3 mb-3">
               <label for="city">* City</label>
               <input id="city" type="text" name="city" class="form-control" value="" placeholder="digit city name" data-cityid='' required>
-              <!-- <div id="cityMsg" class="form-text text-danger">No city selected</div> -->
               <div class="list-group" id="citySuggested"></div>
             </div>
             <div class="col-md-5 mb-3">
@@ -50,11 +47,11 @@
             </div>
             <div class="col-md-2 mb-3">
               <label for="longitude">* Longitude</label>
-              <input type="number" id="longitude" step="0.0001" class="form-control" value="" min="-180.0000" max="180.0000" required>
+              <input type="number" id="longitude" step="0.000001" class="form-control" value="" min="-180.000000" max="180.000000" required>
             </div>
             <div class="col-md-2 mb-3">
               <label for="latitude">* Latitude</label>
-              <input type="number" id="latitude" step="0.0001" class="form-control" value="" min="-90.0000" max="90.0000" required>
+              <input type="number" id="latitude" step="0.000001" class="form-control" value="" min="-90.000000" max="90.000000" required>
             </div>
           </div>
           <div class="row mb-3">

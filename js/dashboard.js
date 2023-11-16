@@ -117,16 +117,26 @@ function getInstitutions(){
   $.ajax(ajaxSettings).done(function(data){
     $('#institutionList .badge').text(data.length)
     data.forEach((item, i) => {
-      let card = $("<div/>",{class:"card mb-3"}).appendTo(cardWrap)
+      let logo = item.logo ? item.logo : 'default.jpg';
+      let card = $("<div/>",{class:"card mb-3"}).appendTo(cardWrap)  
       let row = $("<div/>", {class:'row g-0'}).appendTo(card)
-      let col1 = $("<div/>", {class:'col-md-4 bg-success text-center'}).appendTo(row)
-      $("<span/>",{class:"mdi mdi-camera font text-white"}).css("font-size", "60px").appendTo(col1)
+      $("<div/>", {class:'cardLogo col-md-4'}).css("background-image", "url(img/logo/"+logo+")").appendTo(row)
       let col2 = $("<div/>", {class:'col-md-8'}).appendTo(row)
       let body =$("<div/>",{class:'card-body'}).appendTo(col2)
       $("<h5/>",{class:'card-title fw-bold'}).text(item.name+" ("+item.abbreviation+")").appendTo(body)
-      $("<a/>",{href:'http://maps.google.com/maps?q='+item.name.replace(/ /g,"+"), title:'view on Google Maps', target:'_blank', class:'card-link d-block'}).html('<i class="mdi mdi-map-marker"></i> '+item.address).appendTo(body)
-      $("<a/>",{href:item.url, title:'Official Webpage', target:'_blank', class:'card-link d-block m-0'}).html('<i class="mdi mdi-link-variant"></i> '+item.url).appendTo(body)
+      $("<p/>",{class:'card-text m-0'}).html('category: <span class="fw-bold">'+item.category+"</span>").appendTo(body)
+      $("<a/>",{href:'http://maps.google.com/maps?q='+item.name.replace(/ /g,"+"), title:'view on Google Maps', target:'_blank', class:'card-link d-block'}).html('<i class="mdi mdi-map-marker"></i> '+item.address+', '+item.city).appendTo(body)
+      if(item.url){
+        $("<a/>",{href:item.url, title:'Official Webpage', target:'_blank', class:'card-link d-block m-0'}).html('<i class="mdi mdi-link-variant"></i> '+item.url).appendTo(body)
+      }
       $("<p/>",{class:'card-text m-0'}).text("Number of artifacts stored by Institute: "+item.artifact).appendTo(body)
+
+      let btnDiv = $("<div/>", {class:'mt-3'}).appendTo(body)
+
+      $("<a/>",{href:'institution_edit.php?item='+item.id, class:'btn btn-sm btn-outline-secondary'}).html('<span class="mdi mdi-pencil"></span> edit').appendTo(btnDiv)
+      if(item.artifact == 0){
+        $("<button/>",{class:'btn btn-sm btn-outline-danger ms-3'}).html('<span class="mdi mdi-delete-forever"></span> delete').appendTo(btnDiv).on('click',function(){deleteInstitution(item.id)})
+      }
 
       L.marker([parseFloat(item.lat), parseFloat(item.lon)],{icon:storagePlaceIco})
         .bindPopup("<div class='text-center'><h6 class='p-0 m-0'>"+item.name+"</h6><p class='p-0 m-0'>Artifacts stored: <strong>"+item.artifact+"</strong></p></div>")
@@ -196,4 +206,17 @@ function dashboardMap(){
     "Google Street": gStreets
   };
   L.control.layers(baseLayers, null).addTo(map);
+}
+
+
+function deleteInstitution(inst){
+  let conf = confirm('You are going to permanently delete a record from the database, are you sure?')
+  if(conf == true){
+    ajaxSettings.url=API+"institution.php";
+    ajaxSettings.data = {trigger:'deleteInstitution', id:inst}
+    $.ajax(ajaxSettings).done(function(data){
+      alert(data.output)
+      if(data.res = 1){ getInstitutions() }
+    })
+  }
 }
