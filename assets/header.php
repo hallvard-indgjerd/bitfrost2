@@ -12,8 +12,8 @@
         <div class="headerLink d-none d-xl-inline-block">
           <a href="index.php" class="animated">home</a>
           <a href="#" class="animated">about</a>
-          <a href="#" class="animated">milestones</a>
           <a href="#" class="animated">partners</a>
+          <a href="db_model.php" class="animated">db model</a>
           <?php if (!isset($_SESSION['id'])) {?><a href="login.php" class="animated">login</a><?php } ?>
         </div>
         </div>

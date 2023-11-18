@@ -126,10 +126,15 @@
                     <div class="accordion-body">
                       <ul class="list-group list-group-flush">
                         <li class="list-group-item">
-                          <div>Storage place</div>
-                          <p id="storage_name" class="m-1"></p>
-                          <a href="" class="d-block" target="_blank" id="gMapLink" data-bs-toggle="tooltip" data-bs-title="view on Google Maps <br /> [link open a new tab or page]"><i class="mdi mdi-map-marker"></i><span id="storage_address"></span></a>
-                          <a href="" class="d-block" target="_blank" id="storage_link" data-bs-toggle="tooltip" data-bs-title="go to official website <br /> [link open a new tab or page]"></a>
+                          <h4 id="storage_name" class="m-1"></h4>
+                          <div id="institutionLogo">
+                            <img src="" class="img-fluid rounded" alt="">
+                          </div>
+                          <div id="institutionInfo">
+                            <a href="" class="d-block" target="_blank" id="gMapLink" data-bs-toggle="tooltip" data-bs-title="view on Google Maps <br /> [link open a new tab or page]"><i class="mdi mdi-map-marker"></i><span id="storage_address"></span></a>
+                            <a href="" class="d-block my-2" target="_blank" id="storage_link" data-bs-toggle="tooltip" data-bs-title="go to official website <br /> [link open a new tab or page]"></a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" data-bs-title="available veeeery soon!">view institution collection</button>
+                          </div>
                         </li>
                         <li class="list-group-item"><span>Inventory</span><span id="inventory"></span></li>
                         <li class="list-group-item"><span>Conservation state</span><span id="conservation_state"></span></li>

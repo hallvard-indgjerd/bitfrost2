@@ -6,6 +6,7 @@ ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 
 $.ajax(ajaxSettings)
 .done(function(data) {
+  // console.log(data.model.model_object);
   let artifact = data.artifact;
   Object.keys(artifact).forEach(function(key) {
     if(!artifact[key]){artifact[key] = 'not defined'}
@@ -13,7 +14,7 @@ $.ajax(ajaxSettings)
     if(key == 'from'){ $("#start_period").text(artifact['from']['definition'])}
     if(key == 'to'){ $("#end_period").text(artifact['to']['definition'])}
     let statusClass = artifact['status_id'] == 1 ? 'alert-danger' : 'alert-success';
-    $("#status").addClass(statusClass).text("The item status is: "+artifact.status);
+    $("#status").addClass(statusClass).text(artifact.status);
     artifact['is_museum_copy'] = artifact['is_museum_copy'] == 0 ? false : true;
     $("#"+key).text(artifact[key])
   })
@@ -25,6 +26,7 @@ $.ajax(ajaxSettings)
 
   let institution = data.storage_place;
   let gMapLink = 'http://maps.google.com/maps?q='+institution.name.replace(/ /g,"+");
+  $("#institutionLogo>img").attr("src", "img/logo/"+institution.logo)
   $("#storage_name").text(institution.name)
   $("#gMapLink").attr("href",gMapLink)
   $("#storage_address").text(institution.address)
@@ -46,20 +48,19 @@ $.ajax(ajaxSettings)
   $("#artifact_license>a").attr("href",metadata.license.link).text(metadata.license.license+" ("+metadata.license.acronym+")")
 
   if(data.model){
-    let model = data.model;
-    let metadata = model.model_metadata
-    if((role && role < 5) || (activeUser && metadata.auth_id === activeUser)){
+    let model = data.model.model_object;
+    if((role && role < 5) || (activeUser && model.author_id === activeUser)){
       $("[name=saveModelParam]").removeClass('invisible').on('click', function(){
-        saveModelParam(model.model.id, 'updateModelParam')
+        saveModelParam(model.id, 'updateModelParam')
       })
     }
-    if (model.model.nxz) {
-      initModel(model)
-      $("#model-auth").html("<a href='person_view.php?person="+metadata.auth_id+"'>"+metadata.auth+"</a>");
-      $("#model-owner").html("<a href='institution_view.php?inst="+metadata.owner_id+"' class='disabled'>"+metadata.owner+"</a>");
-      $("#model-license").html("<a href='"+metadata.licenseLink+"' target='_blank'>"+metadata.license+" ("+metadata.acronym+")</a>");
-      $("#model-create_at").text(metadata.create_at)
-      $("#model-updated_at").text(metadata.updated_at)
+    if (model.object) {
+      initModel(data.model)
+      $("#model-auth").html("<a href='person_view.php?person="+model.author_id+"'>"+model.author+"</a>");
+      $("#model-owner").html("<a href='institution_view.php?inst="+model.owner_id+"' class='disabled'>"+model.owner+"</a>");
+      $("#model-license").html("<a href='"+model.license_link+"' target='_blank'>"+model.license+" ("+model.license_acronym+")</a>");
+      $("#model-create_at").text(model.create_at)
+      $("#model-updated_at").text(model.updated_at)
     
       Object.keys(paradata).forEach(function(key) {
         if(paradata[key]){$("#model-"+key).text(paradata[key])}

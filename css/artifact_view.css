@@ -49,6 +49,9 @@
 #alertMapWrap{ display: flex; justify-content: center; align-content: center; flex-direction: row; flex-wrap: wrap;}
 #alertMapWrap > .alert{width:300px; z-index:2000; margin:0;}
 
+#institutionLogo{display: inline-block; width: 35%; vertical-align: top;}
+#institutionInfo{display: inline-block; width: 60%; vertical-align: top; padding-left:20px;}
+
 @media (min-width: 992px) {
 }
 

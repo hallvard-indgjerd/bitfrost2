@@ -168,9 +168,10 @@ $("[name=addViewBtn]").on('click',addView)
 /////////////////////////////////////////////////////////////
 
 function initModel(model){
+  console.log(model);
   paradata = model.model_param
   let param = model.model_view
-  scene = {meshes: {"nxz" : {url: 'archive/models/'+model.model.nxz }}, modelInstances: instanceOpt, trackball: trackBallOpt, space: spaceOpt, config: configOpt}
+  scene = {meshes: {"nxz" : {url: 'archive/models/'+model.model_object.object }}, modelInstances: instanceOpt, trackball: trackBallOpt, space: spaceOpt, config: configOpt}
   init3dhop();
   presenter = new Presenter("draw-canvas");
   presenter.setScene(scene);
@@ -184,8 +185,8 @@ function initModel(model){
     default: gStep = 1.0; break;
   }
   
-  startupGrid(model.model_view.grid)
-  presenter.animateToTrackballPosition(model.model_view.viewside.split(',').map(Number))
+  startupGrid(param.grid)
+  presenter.animateToTrackballPosition(param.viewside.split(',').map(Number))
   lightDir = model.model_view.lightdir.split(',').map(Number)
   presenter.rotateLight(lightDir[0],-lightDir[1])
   let viewsideLabel = getViewside(param.viewside)

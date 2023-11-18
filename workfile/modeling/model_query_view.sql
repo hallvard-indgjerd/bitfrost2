@@ -1,3 +1,4 @@
+create or replace view model_query_view as
 select 
   obj.id,
   obj.model,
@@ -34,5 +35,4 @@ inner join list_item_status status on obj.status = status.id
 inner join user on obj.author = user.id
 inner join person on user.person = person.id
 inner join license on obj.license = license.id
-inner join list_model_acquisition method on param.acquisition_method = method.id
-where obj.model = 294\G
+inner join list_model_acquisition method on param.acquisition_method = method.id;

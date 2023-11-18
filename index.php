@@ -33,7 +33,7 @@
           <div class="d-inline-block me-1">
             <div class="input-group input-group-sm">
               <input type="search" class="form-control w-auto" id="byDescription" value="">
-              <button class="btn btn-light buildGallery" type="button"><span class="mdi mdi-magnify"></span></button>
+              <button class="btn btn-light byDescription" type="button"><span class="mdi mdi-magnify"></span></button>
             </div>
           </div>
           <div class="d-inline-block me-1">

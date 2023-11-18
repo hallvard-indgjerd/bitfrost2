@@ -13,7 +13,8 @@ $("a.sortBy").on('click', function(){
   getFilter();
 })
 
-$(".buildGallery").on('click', function(){ getFilter(); })
+$(".buildGallery").on('change', function(){ getFilter(); })
+$(".byDescription").on('click', function(){ getFilter(); })
 $("#resetGallery").on('click', function(){
   filter = [];
   sort = "rand()";
@@ -46,13 +47,13 @@ function getFilterList(){
   $.ajax(ajaxSettings)
   .done(function(data) {
     data.category.forEach((item, i) => {
-      $("<option/>").text(item.value + " ("+item.tot+")").val(item.id).appendTo(byCategory);
+      $("<option/>").text(item.value).val(item.id).appendTo(byCategory);
     });
     data.material.forEach((item, i) => {
-      $("<option/>").text(item.value + " ("+item.tot+")").val(item.id).appendTo(byMaterial);
+      $("<option/>").text(item.value).val(item.id).appendTo(byMaterial);
     });
     data.chronology.forEach((item, i) => {
-      $("<option/>").text(item.period + " ("+item.tot+")").val(item.start+"|"+item.end).appendTo(byChronology);
+      $("<option/>").text(item.period).val(item.start+"|"+item.end).appendTo(byChronology);
     });
   })
 }
@@ -63,7 +64,7 @@ function gallery(data, wrapDiv){
   data.forEach((item, i) => {
     let div = $("<div/>",{class:'card m-1 '+cardClass}).data("item",item.id).appendTo(wrapDiv);
     $("<div/>", {class:'card-header'})
-    .css({"background-image":"url('archive/thumb_256/"+item.thumb_256+"')"})
+    .css({"background-image":"url('archive/thumb_512/"+item.thumbnail+"')"})
     .appendTo(div);
     let body = $("<div/>",{class:'card-body'}).appendTo(div);
     $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
