@@ -14,6 +14,10 @@ class Get extends Conn{
       case 'person':
         $field = "id, concat(last_name, ' ',first_name) as name";
       break;
+      case 'user':
+        $field = "u.id, concat(p.last_name, ' ',p.first_name) as name";
+        $list = "user u inner join person p on u.person = p.id ";
+      break;
       case 'license':
         $field = "id, concat(acronym, ' - ',license) as name";
       break;
@@ -53,6 +57,10 @@ class Get extends Conn{
   public function getCountyByCity(int $city){
     $sql = "select county.id, county.name from county, city where city.id = ".$city." and city.county = county.id;";
     return $this->simple($sql)[0];
+  }
+  public function checkName(array $data){
+    $sql = "select id from ".$data['element']." where name = '".$data['name']."';";
+    return $this->simple($sql);
   }
 }
 ?>

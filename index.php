@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="css/artifacts.css">
   </head>
   <body>
-    <?php require("assets/header.php"); ?>
+    <?php 
+      require("assets/header.php"); 
+      require("assets/loadingDiv.html"); 
+    ?>
     <main class="<?php echo $mainClass; ?>">
       <nav class="itemTool <?php echo $itemToolClass; ?>">
         <div class="container-fluid">

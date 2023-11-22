@@ -1,3 +1,4 @@
+let btnHome, btnFullscreen;
 let collected = [];
 let filter = [];
 let sort = "rand()";
@@ -46,6 +47,19 @@ function buildGallery(){
   })
 }
 
+function checkName(data){
+  let dati = {}
+  dati.trigger='checkName';
+  dati.name = data.name;
+  dati.element = data.element;
+  ajaxSettings.url=API+"get.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings).done(function(data){
+    let output = data.length==0 ? '<div class="alert alert-success">Ok, the value is not present in the database, you can use this name</div>':'<div class="alert alert-danger">The value already exists in the database, you cannot use it</div>';
+    $("#checkNameResult").html(output);
+  });
+}
+
 function countItems(){
   collected.length > 0 ? $("#viewCollection").show() : $("#viewCollection").hide()
 }
@@ -87,7 +101,7 @@ function getCity(query){
       data.forEach((item, i) => {
         let cityBtn = $("<button/>", {class:'list-group-item list-group-item-action', type:'button'}).text(item.name).appendTo(citySuggested)
         cityBtn.on('click', function(){
-          if($("#county").length && !countyVal){
+          if($("#county").length && !$("#county").val()){
             $("#county").val(item.county).trigger('change');
           }
           $("[name=city]").val(item.name).attr({"data-cityId":item.id})
@@ -237,7 +251,7 @@ function handleMaterialTechnique(){
 }
 
 function mapInit(){
-  map = L.map('map',{maxBounds:mapExt}).fitBounds(mapExt)
+  map = L.map('map',{maxBounds:mapExt})
   map.setMinZoom(4);
   osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
   gStreets = L.tileLayer(gStreetTile,{maxZoom: 18, subdomains:gSubDomains });
@@ -283,13 +297,16 @@ function mapInit(){
     options: { position: 'topleft'},
     onAdd: function (map) {
       let container = L.DomUtil.create('div', 'extentControl leaflet-bar leaflet-control leaflet-touch');
-      let btnHome = $("<a/>",{href:'#', title:'max zoom', id:'maxZoomBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
+      btnHome = $("<a/>",{href:'#', title:'max zoom', id:'maxZoomBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
       $("<i/>",{class:'mdi mdi-earth'}).appendTo(btnHome)
-      btnHome.on('click', function (e) {
+      btnFullscreen = $("<a/>",{href:'#', title:'toggle fullscreen mode', id:'toggleFullscreenBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
+      $("<i/>",{class:'mdi mdi-fullscreen'}).appendTo(btnFullscreen)
+      btnFullscreen.on('click', function(e){
         e.preventDefault()
         e.stopPropagation()
-        map.fitBounds(mapExt);
-      });
+        toggleFullScreen('map')
+      })
+      
       return container;
     }
   })
@@ -354,6 +371,15 @@ function setMapExtent(group, id){
     }
     mapClick = false;
   })
+}
+
+function toggleFullScreen(id) {
+  let element = document.getElementById(id)
+  if (!document.fullscreenElement) {
+    element.requestFullscreen();
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
 }
 
 $.extend({

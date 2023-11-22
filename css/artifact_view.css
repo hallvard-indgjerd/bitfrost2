@@ -1,48 +1,21 @@
 #wrapData{position:relative; margin-top: 150px;}
-
+#artifactCol{height:auto; max-height: 65vh; margin-bottom:20px; padding-right:5px; overflow-x: hidden; overflow-y: auto;}
+.artifactCol::-webkit-scrollbar { width: 5px;}
+.artifactCol::-webkit-scrollbar-track { background: #f1f1f1; }
+.artifactCol::-webkit-scrollbar-thumb { background: #888; }
+.artifactCol::-webkit-scrollbar-thumb:hover { background: #555; }
 .accordion .list-group-item div:first-child, .accordion .list-group-item span:first-child {font-weight: bold;}
 .accordion .list-group-item span{display: inline-block; vertical-align: top;}
-
 #mainSection span, #conservationSection span{ width:49%;}
 #chronologySection span:first-child{width:50px;}
 #measureSection span:first-child, #findplaceSection span:first-child{width:80px;}
 #measureSection span:last-child, #findplaceSection span:last-child{width: calc(100% - 85px);}
 #artifactMetadataSection span:first-child, #model-metadata span:first-child{width: 100px;}
 #artifactMetadataSection span:last-child, #model-metadata span:last-child{width: calc(100% - 105px);}
-
 #model-param span:first-child {width: 150px;}
 #model-param span:last-child {width: calc(100% - 155px);}
 
-.tdhop{
-  position:relative; 
-  width:100%;
-  height:calc(100vh - 220px);
-  background: rgba(222, 226, 230,0.5);
-  background: -moz-linear-gradient(180deg, rgba(222, 226, 230,0.5) 0%, #2b3035 100%);
-  background: -webkit-linear-gradient(180deg, rgba(222, 226, 230,0.5) 0%, #2b3035 100%);
-  background: linear-gradient(180deg, rgba(222,226,230,0.5) 0%, #2b3035 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff",endColorstr="#797979",GradientType=1);
-}
-.modelTools{ position:absolute; background-color: rgba(255, 255, 255, 0.9);}
-#modelToolsV{top:10px; right:10px; width:140px; padding:10px;}
-#modelToolsH{top:10px; padding:10px; left:50%; width:auto; transform: translateX(-50%);}
-#panel_instructions, #measure-box{ position:absolute; background-color: rgba(255, 255, 255, 0.7); bottom:10px; padding:5px 10px; font-size: 12px;}
-#panel_instructions{left: 50%; transform: translateX(-50%); width: 35%;}
-#measure-box{left:10px;}
-#sections-box{position: absolute; bottom: 10px; right: 10px; width: 30%;}
-
-#wrapViewSpot{top:10px; left:10px; width:200px; padding:10px;}
-#viewSpotDiv{position: relative; height: auto; max-height: 500px; overflow: auto;}
-#viewSpotDiv::-webkit-scrollbar { width: .2em;}
-#viewSpotDiv::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);}
-#viewSpotDiv::-webkit-scrollbar-thumb {background-color: darkgrey;outline: 1px solid slategrey;}
-
-.view > div, .spot > div{display: inline-block; vertical-align: middle;}
-.view > .viewToolbar, .spot > .spotToolbar{width:35px;}
-.view > .viewDescription, .spot > .spotDescription{width: calc(100% - 40px); padding-right:5px;}
-.view textarea, .spot textarea{font-size:12px;}
 #map, #alertMapWrap{position:relative; width:100%; height:300px;}
-.tdhop>canvas:focus-visible{outline: none !important;}
 
 #alertModel{position:absolute; top:50%; left:50%; transform: translate(-50%,-50%);}
 
@@ -50,7 +23,7 @@
 #alertMapWrap > .alert{width:300px; z-index:2000; margin:0;}
 
 #institutionLogo{display: inline-block; width: 35%; vertical-align: top;}
-#institutionInfo{display: inline-block; width: 60%; vertical-align: top; padding-left:20px;}
+#institutionInfo{display: inline-block; width: 64%; vertical-align: top; padding-left:20px;}
 
 @media (min-width: 992px) {
 }

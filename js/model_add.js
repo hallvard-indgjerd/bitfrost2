@@ -24,17 +24,31 @@ const uploadButton = document.getElementById('preview');
 const nxz = document.getElementById('nxz');
 const endpoint = 'api/modelPreview.php';
 let file;
-$("#preview, #initParamObjectForm,#progressBar").hide()
+
+$("#closeTip").on('click', function(){
+  $(this).text($(this).text()==='view tip' ? 'hide tip' : 'view tip')
+})
+$("#preview, #progressBar").hide()
 $("[name=nxz]").on('change', function(){$("#preview").show()});
-$("[name=ortho]").on('change',updateOrtho)
-$("[name=view]").on('change', function(){ viewFrom($(this).val()) })
-$("[name=specular]").on('change', updateSpecular)
-$("[name=lighting]").on('change', updateLighting)
-$("[name=texture]").on('change', updateTexture)
-$("[name=solid]").on('change', updateTransparency)
 $("[name=newArtifact]").on('click', function(el){
-  createFormdata(el,saveArtifact)
+  createFormdata(el,saveModel)
 });
+$("[name=checkNameBtn]").on('click', function(){
+  let name = $("#name").val()
+  if(!name){
+    alert('The field is empty, enter a value and retry')
+    return false;
+  }
+  if(name.length < 5){
+    alert('The name must be 5 characters at least')
+    return false;
+  }
+  checkName({name:name,element:'artifact'})
+})
+
+$("[name=saveModelParam").remove()
+
+
 uploadButton.addEventListener('click', uploadFile);
 
 function createFormdata(el, callback){
@@ -45,7 +59,7 @@ function createFormdata(el, callback){
   callback()
 }
 
-function saveArtifact(){
+function saveModel(){
   $.ajax({
     type: "POST",
     enctype: 'multipart/form-data',
@@ -69,7 +83,6 @@ function el(el){return document.getElementById(el);}
 
 function uploadFile(){
   file = nxz.files[0];
-  // formdata.append("nxz", file, file.name);
   formdata.append("nxz", file, uuid+".nxz");
   var ajax = new XMLHttpRequest();
   $("#progressBar").show()
@@ -88,9 +101,7 @@ function progressHandler(event){
   el("status").innerHTML = Math.round(percent)+"% uploaded... please wait";
 }
 function completeHandler(event){
-  $("#initParamObjectForm").show();
   $("#progressBar").hide()
-  $("#3dhop").addClass('tdhopBg');
   el("status").innerHTML = event.target.responseText;
   el("progressBar").value = 0;
   scene = {
@@ -100,19 +111,26 @@ function completeHandler(event){
     space: spaceOpt,
     config: configOpt
   }
-  if(!presenter){
-    init3dhop();
-    setup3dhop(scene);
-    updateOrtho();
-    updateTexture()
-    updateTransparency()
-  }else {
-    presenter.setScene(scene);
-  }
-  setupLightController();
-  updateLightController(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
-  setTimeout(startupGrid, 200);
-  // console.log(presenter);
+  init3dhop();
+  presenter = new Presenter("draw-canvas");
+  presenter.setScene(scene);
+  presenter._onEndMeasurement = onEndMeasure;
+  presenter._onEndPickingPoint = onEndPick;
+  presenter.setClippingPointXYZ(0.5, 0.5, 0.5);
+  gStep = 1.0;
+  startupGrid('gridBase')
+  // if(!presenter){
+  //   init3dhop();
+  //   setup3dhop(scene);
+  //   updateOrtho();
+  //   updateTexture()
+  //   updateTransparency()
+  // }else {
+  //   presenter.setScene(scene);
+  // }
+  // setupLightController();
+  // updateLightController(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
+  // setTimeout(startupGrid, 200);
 }
 function errorHandler(event){el("status").innerHTML = "Upload Failed";}
 function abortHandler(event){el("status").innerHTML = "Upload Aborted";}

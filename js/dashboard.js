@@ -1,6 +1,6 @@
 const usrId = $("[name=usrId]").val()
 const usrCls = $("[name=usrCls]").val()
-dashboardMap()
+mapInit()
 getArtifacts()
 getModels()
 getInstitutions()
@@ -89,19 +89,22 @@ function getModels(){
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data = dati
   $.ajax(ajaxSettings).done(function(data){
+    console.log(data);
     $('#modelList .badge').text(data.length)
     data.forEach((item, i) => {
       let card = $("<div/>",{class:' card modelCardSmall'}).appendTo(cardWrap);
-      let img = $("<div/>", {class:'thumbDiv card-header'}).css("background-image", "url(archive/thumb_256/"+item.thumb+")").appendTo(card)
+      $("<div/>", {class:'thumbDiv card-header'}).css("background-image", "url(archive/thumb_512/"+item.thumbnail+")").appendTo(card)
       let divDati = $("<div/>",{class:'card-body'}).appendTo(card)
       $("<p/>", {class:'m-0'}).text(item.description).appendTo(divDati)
       if(usrCls < 4){
-        $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Author</span><span>"+item.name+"</span>").appendTo(divDati)
+        $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Author</span><span>"+item.author+"</span>").appendTo(divDati)
       }
-      $("<p/>", {class:'mt-1'}).html("<span class='fw-bold me-2'>Last update</span><span>"+item.updated_at+"</span>").appendTo(divDati)
+      $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Last update</span><span>"+item.updated_at+"</span>").appendTo(divDati)
+      let alertClass = item.status_id == 0 ? 'alert-success' : 'alert-danger';
+      $("<div/>", {class:'p-1 m-0 alert '+alertClass, role:'alert'}).text(item.status).appendTo(divDati)
 
-      let footer = $("<div/>",{class:'card-footer'}).appendTo(card);
-      $("<a/>",{class:'btn btn-sm btn-adc-dark', href:'model_view.php?model='+item.id}).text('edit model').appendTo(footer)
+      let footer = $("<div/>",{class:'card-footer bg-white border-0'}).appendTo(card);
+      $("<a/>",{class:'btn btn-sm btn-adc-dark d-block', href:'model_view.php?model='+item.id}).text('edit model').appendTo(footer)
     });
   });
 }
@@ -143,6 +146,11 @@ function getInstitutions(){
         .addTo(institutionGroup);
     });
     map.fitBounds(institutionGroup.getBounds())
+    btnHome.on('click', function (e) {
+      e.preventDefault()
+      e.stopPropagation()
+      map.fitBounds(institutionGroup.getBounds());
+    });
   });
 }
 
@@ -191,24 +199,6 @@ function getPersons(){
     });
   });
 }
-
-function dashboardMap(){
-  map = L.map('map',{maxBounds:mapExt})//.fitBounds(mapExt)
-  map.setMinZoom(4);
-  osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
-  gStreets = L.tileLayer(gStreetTile,{maxZoom: 18, subdomains:gSubDomains });
-  gSat = L.tileLayer(gSatTile,{maxZoom: 18, subdomains:gSubDomains});
-  gTerrain = L.tileLayer(gTerrainTile,{maxZoom: 18, subdomains:gSubDomains});
-  baseLayers = {
-    "OpenStreetMap": osm,
-    "Google Terrain":gTerrain,
-    "Google Satellite": gSat,
-    "Google Street": gStreets
-  };
-  L.control.layers(baseLayers, null).addTo(map);
-}
-
-
 function deleteInstitution(inst){
   let conf = confirm('You are going to permanently delete a record from the database, are you sure?')
   if(conf == true){

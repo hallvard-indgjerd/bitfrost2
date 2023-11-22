@@ -34,10 +34,10 @@ class Artifact extends Conn{
 
   }
 
-  public function checkName(string $name){
-    $sql = "select id from artifact where name = '".$name."';";
-    return $this->simple($sql);
-  }
+  // public function checkName(string $name){
+  //   $sql = "select id from artifact where name = '".$name."';";
+  //   return $this->simple($sql);
+  // }
 
   public function getArtifacts(array $search){
     $filter = [];

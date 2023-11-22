@@ -171,7 +171,17 @@ function initModel(model){
   console.log(model);
   paradata = model.model_param
   let param = model.model_view
-  scene = {meshes: {"nxz" : {url: 'archive/models/'+model.model_object.object }}, modelInstances: instanceOpt, trackball: trackBallOpt, space: spaceOpt, config: configOpt}
+  scene = {
+    meshes: {
+      "nxz" : {
+        url: 'archive/models/'+model.model_object.object 
+      }
+    }, 
+    modelInstances: instanceOpt, 
+    trackball: trackBallOpt, 
+    space: spaceOpt, 
+    config: configOpt
+  }
   init3dhop();
   presenter = new Presenter("draw-canvas");
   presenter.setScene(scene);

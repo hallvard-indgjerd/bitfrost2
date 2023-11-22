@@ -75,15 +75,16 @@ class Model extends Conn{
   public function getModels(array $search){
     $filter = [];
     if($search['status'] > 0){
-      array_push($filter, "status = ".$search['status']);
+      array_push($filter, "status_id = ".$search['status']);
     }else {
-      array_push($filter, "status > ".$search['status']);
+      array_push($filter, "status_id > ".$search['status']);
     }
     if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
     if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
+    $sql = "select m.id object, m.model, m.status_id, m.status, m.object file, m.thumbnail, m.author_id, m.author, m.description, m.updated_at from model_query_view m ".$filter." order by m.updated_at desc;";
+    // $sql = "select m.id, m.nxz, m.thumb_256 thumb, u.id author_id, concat (p.first_name, ' ', p.last_name) name, m.description,  meta.updated_at from model m inner join model_metadata meta on meta.model= m.id inner join user u on meta.author = u.id inner join person p on u.person = p.id ".$filter." order by meta.updated_at desc;";
 
-    $sql = "select m.id, m.nxz, m.thumb_256 thumb, u.id author_id, concat (p.first_name, ' ', p.last_name) name, m.description,  meta.updated_at from model m inner join model_metadata meta on meta.model= m.id inner join user u on meta.author = u.id inner join person p on u.person = p.id ".$filter." order by meta.updated_at desc;";
-
+    // return $sql;
     return $this->simple($sql);
   }
 

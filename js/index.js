@@ -59,6 +59,7 @@ function getFilterList(){
 }
 
 function gallery(data, wrapDiv){
+  $("#loadingDiv").remove()
   $(wrapDiv).html('');
   let cardClass = wrapDiv == ".card-wrap" ? 'viewArtifactsBtn' : 'collectedCard';
   data.forEach((item, i) => {

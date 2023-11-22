@@ -17,11 +17,7 @@
         <input type="hidden" name="usr" value="<?php echo $_SESSION['id']; ?>">
         <form name="newArtifactForm" enctype="multipart/form-data" method="post">
           <fieldset>
-            <div class="row mb-3">
-              <div class="col">
-                <h4 class="bg-adc-light txt-adc-dark p-2">Main data</h4>
-              </div>
-            </div>
+            <legend>Main data</legend>
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="name" class="text-danger fw-bold">Name</label>
@@ -86,12 +82,9 @@
                 <div id="matTechArray"></div>
               </div>
             </div>
-
-            <div class="row">
-              <div class="col">
-                <h4 class="bg-adc-light txt-adc-dark p-2">Chronological definition</h4>
-              </div>
-            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Chronological definition</legend>
             <div class="row">
               <div class="col">
                 <legend>Lower bound</legend>
@@ -132,12 +125,9 @@
                 <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="-3000000" max="<?php echo Date('Y'); ?>" required>
               </div>
             </div>
-
-            <div class="row mb-3">
-              <div class="col">
-                <h4 class="bg-adc-light txt-adc-dark p-2">Conservation info</h4>
-              </div>
-            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Conservation info</legend>
             <div class="row mb-3">
               <div class="col-md-3">
                 <label for="storage_place" class="fw-bold text-danger">Storage place</label>
@@ -166,12 +156,9 @@
                 <input data-table="artifact" type="checkbox" data-toggle="toggle" data-onlabel="yes" data-offlabel="no" data-onstyle="success" data-offstyle="secondary" id="is_museum_copy">
               </div>
             </div>
-
-            <div class="row mb-3">
-              <div class="col">
-                <h4 class="bg-adc-light txt-adc-dark p-2">Geographic information</h4>
-              </div>
-            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Geographic information</legend>
             <div class="row mb-3">
               <div class="col">
                 <legend>Find site</legend>
@@ -223,12 +210,9 @@
                 </div>
               </div>
             </div>
-
-            <div class="row mb-3">
-              <div class="col">
-                <h4 class="bg-adc-light txt-adc-dark p-2">Metadata</h4>
-              </div>
-            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Metadata</legend>
             <div class="row mb-3">
               <div class="col-md-4">
                 <label for="author" class="fw-bold text-danger">Author</label>

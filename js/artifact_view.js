@@ -1,3 +1,4 @@
+
 let storagePlaceMarker, findplaceMarker;
 let markerArr = {}
 
@@ -6,7 +7,7 @@ ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 
 $.ajax(ajaxSettings)
 .done(function(data) {
-  // console.log(data.model.model_object);
+  $("#loadingDiv").remove()
   let artifact = data.artifact;
   Object.keys(artifact).forEach(function(key) {
     if(!artifact[key]){artifact[key] = 'not defined'}
@@ -101,6 +102,28 @@ function artifactMap(markerArr){
   let markerGroup = L.featureGroup().addTo(map);
   storagePlaceMarker = L.marker(markerArr['storage'],{icon:storagePlaceIco}).addTo(markerGroup);
   map.fitBounds(markerGroup.getBounds())
+  let myToolbar = L.Control.extend({
+    options: { position: 'topleft'},
+    onAdd: function (map) {
+      let container = L.DomUtil.create('div', 'extentControl leaflet-bar leaflet-control leaflet-touch');
+      let btnHome = $("<a/>",{href:'#', title:'max zoom', id:'maxZoomBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
+      $("<i/>",{class:'mdi mdi-home'}).appendTo(btnHome)
+      let btnFullscreen = $("<a/>",{href:'#', title:'toggle fullscreen mode', id:'toggleFullscreenBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
+      $("<i/>",{class:'mdi mdi-fullscreen'}).appendTo(btnFullscreen)
+      btnHome.on('click', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        map.fitBounds(markerGroup.getBounds());
+      });
+      btnFullscreen.on('click', function(e){
+        e.preventDefault()
+        e.stopPropagation()
+        toggleFullScreen('map')
+      })
+      return container;
+    }
+  })
+  map.addControl(new myToolbar());
 }
 
 function saveModelParam(model, trigger){

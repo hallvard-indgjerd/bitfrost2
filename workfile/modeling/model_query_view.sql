@@ -9,6 +9,7 @@ select
   obj.author author_id,
   concat(person.first_name,' ',person.last_name) author,
   obj.owner owner_id,
+  owner.name owner,
   obj.license license_id,
   license.license,
   license.acronym license_acronym,
@@ -34,5 +35,6 @@ inner join model_param param on param.object=obj.id
 inner join list_item_status status on obj.status = status.id
 inner join user on obj.author = user.id
 inner join person on user.person = person.id
+inner join institution owner on obj.owner = owner.id
 inner join license on obj.license = license.id
 inner join list_model_acquisition method on param.acquisition_method = method.id;
