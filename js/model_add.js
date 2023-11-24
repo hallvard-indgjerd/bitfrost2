@@ -17,7 +17,12 @@ let listLicense = {
   htmlEl: 'license',
   label: 'name'
 }
-listArray.push(listAuthor,listOwner,listLicense)
+let listMethod = {
+  settings: {trigger:listTrigger, list:'list_model_acquisition', orderBy:'value'},
+  htmlEl: 'acquisition_method',
+  label: 'value'
+}
+listArray.push(listAuthor,listOwner,listLicense,listMethod)
 listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
 
 const uploadButton = document.getElementById('preview');
@@ -25,7 +30,7 @@ const nxz = document.getElementById('nxz');
 const endpoint = 'api/modelPreview.php';
 let file;
 
-$("#closeTip").on('click', function(){
+$(".closeTip").on('click', function(){
   $(this).text($(this).text()==='view tip' ? 'hide tip' : 'view tip')
 })
 $("#preview, #progressBar").hide()

@@ -15,11 +15,12 @@
       <div class="container">
         <form name="newModelForm" enctype="multipart/form-data" method="post">
           <input type="hidden" name="usr" value="<?php echo $_SESSION['id']; ?>">
-          <div id="tip" class="alert alert-info">
-            <div class="text-end">
-              <button type="button" id="closeTip" class="btn btn-sm btn-info" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#tipBody" aria-expanded="false" aria-controls="tipBody">hide tip</button>
+          <div id="tip" class="alert alert-light border">
+            <div>
+              <h5 class="fw-bold w-50 d-inline-block">Create a new model</h5>
+              <button type="button" class="closeTip btn btn-sm btn-light float-end" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#tipBody" aria-expanded="false" aria-controls="tipBody">hide tip</button>
             </div>
-            <div id="tipBody" class="collapse show fs-5"><span class="fw-bold">You are about to create a new model.</span><br>A model is understood as a container that can collect multiple three-dimensional objects (for example, the various parts of the same object).<br>At this stage you will create the "container" model to which you can associate one or more digital objects from the model page you just created</div>
+            <div id="tipBody" class="collapse show fs-6 mt-3">A model is understood as a container that can collect multiple three-dimensional objects (for example, the various parts of the same object).<br>At this stage you will create the "container" model to which you can associate one or more digital objects from the model page you just created</div>
           </div>
           <fieldset>
             <legend>Model main data</legend>
@@ -40,6 +41,7 @@
               <div class="col-md-8">
                 <label for="description" class="form-label fw-bold text-danger">Description</label>
                 <textarea class="form-control" name="description" id="description" data-table="model" rows="6" required></textarea>
+                <div class="form-text">Describe the whole model</div>
               </div>
               <div class="col-md-4">
                 <label for="note" class="form-label">Note</label>
@@ -48,8 +50,15 @@
             </div>
           </fieldset>
           <fieldset>
+            <div id="tip2" class="alert alert-light border">
+              <div>
+                <h5 class="fw-bold w-50 d-inline-block">Create a 3d object to associate with model</h5>
+                <button type="button" class="closeTip btn btn-sm btn-light float-end" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#tipBody2" aria-expanded="false" aria-controls="tipBody2">hide tip</button>
+              </div>
+              <div id="tipBody2" class="collapse show fs-6 mt-3">When you create a model you must necessarily add at least 1 3d object, below you will find the form to associate the 3d object with the model. If the model consists of multiple objects, you can add them later</div>
+            </div>
             <legend>Object metadata</legend>
-            <div class="row mb-3">
+            <div class="row">
               <div class="col-md-4">
                 <label for="author" class="fw-bold text-danger">Author</label>
                 <select class="form-select" data-table="model_object" id="author" required></select>
@@ -68,9 +77,15 @@
               </div>
             </div>
             <div class="row mb-3">
+              <div class="col">
+                <div class="form-text text-center">each object that makes up the model may be made by different people and belong to different institutions, and the rights holders may decide to use different licenses</div>
+              </div>
+            </div>
+            <div class="row mb-3">
               <div class="col-md-8">
                 <label for="description" class="form-label fw-bold text-danger">Description</label>
                 <textarea class="form-control" name="description" id="description" data-table="model_object" rows="6" required></textarea>
+                <div class="form-text">Describe the specific object</div>
               </div>
               <div class="col-md-4">
                 <label for="note" class="form-label">Note</label>
@@ -79,24 +94,26 @@
             </div>
           </fieldset>
           <fieldset>
-            <legend>Define paradata</legend>
+            <legend>Object paradata</legend>
             <div class="row mb-3">
               <div class="col-md-4">
-                <label for="software" class="text-danger fw-bold">Software</label>
-                <input class="form-control" type="text" id="software" name="software" required>
+                <label for="acquisition_method" class="text-danger fw-bold">Acquisition method</label>
+                <select class="form-select" name="acquisition_method" id="acquisition_method" data-table="object_param" required>
+                  <option value="">-- select value --</option>
+                </select>
               </div>
               <div class="col-md-4">
-                <label for="acquisition_method">Acquisition method</label>
-                <input class="form-control" type="text" id="acquisition_method" name="acquisition_method">
-              </div>
-              <div class="col-md-4">
-                <label for="measure_unit">Measure unit</label>
-                <select class="form-select" name="measure_unit" id="measure_unit">
+                <label for="measure_unit" class="text-danger fw-bold">Measure unit</label>
+                <select class="form-select" name="measure_unit" id="measure_unit" data-table="object_param" required>
                   <option value="">-- select unit --</option>
                   <option value="mm">millimeters</option>
                   <option value="cm">centimeters</option>
                   <option value="m">meters</option>
                 </select>
+              </div>
+              <div class="col-md-4">
+                <label for="software">Software</label>
+                <input class="form-control" type="text" id="software" name="software" data-table="object_param">
               </div>
             </div>
             <div class="row mb-3">
@@ -124,7 +141,7 @@
           </fieldset>
           <fieldset>
             <legend>Upload model</legend>
-            <div class="row mb-3">
+            <div class="row">
               <div class="col-md-4">
                 <label for="nxz" class="form-label">You can upload only nxz file</label>
                 <div class="input-group">
@@ -135,7 +152,7 @@
             </div>
             <div class="row mb-3">
               <div class="col">
-              <p class="alert alert-info d-inline-block w-auto">to prevent the file from overwriting other files with the same name, the system will assign a unique id as the name of the file</p>
+                <p class="text-danger d-inline-block w-auto">to prevent the file from overwriting other files with the same name, the system will assign a unique id as the name of the file</p>
                 <progress id="progressBar" value="0" max="100" style="width:100%;"></progress>
                 <h3 id="status"></h3>
                 <p id="loaded_n_total"></p>
