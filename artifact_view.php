@@ -229,7 +229,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="accordion-item">
+                <div class="accordion-item model-accordion">
                   <h2 class="accordion-header" id="model-metadata-btn">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#model-metadata" aria-expanded="true" aria-controls="model-metadata">Model metadata</button>
                   </h2>
@@ -245,26 +245,26 @@
                     </div>
                   </div>
                 </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="model-param-btn">
-                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#model-param" aria-expanded="true" aria-controls="model-param">Model parameters</button>
-                    </h2>
-                    <div id="model-param" class="accordion-collapse collapse" aria-labelledby="model-param-btn">
-                      <div class="accordion-body">
-                        <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><span>Acquisition method</span><span id="model-acquisition_method"></span></li>
-                          <li class="list-group-item"><span>Software</span><span id="model-software"></span></li>
-                          <li class="list-group-item"><span>Scans</span><span id="model-scans"></span></li>
-                          <li class="list-group-item"><span>Textures</span><span id="model-textures"></span></li>
-                          <li class="list-group-item"><span>Pictures number</span><span id="model-pictures"></span></li>
-                          <li class="list-group-item"><span>Points</span><span id="model-points"></span></li>
-                          <li class="list-group-item"><span>Polygons</span><span id="model-polygons"></span></li>
-                          <li class="list-group-item"><span>Measure unit</span><span id="model-measure_unit"></span></li>
-                          <li class="list-group-item"><span>Encumbrance</span><span id="model-encumbrance"></span></li>
-                        </ul>
-                      </div>
+                <div class="accordion-item model-accordion">
+                  <h2 class="accordion-header" id="model-param-btn">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#model-param" aria-expanded="true" aria-controls="model-param">Model parameters</button>
+                  </h2>
+                  <div id="model-param" class="accordion-collapse collapse" aria-labelledby="model-param-btn">
+                    <div class="accordion-body">
+                      <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><span>Acquisition method</span><span id="model-acquisition_method"></span></li>
+                        <li class="list-group-item"><span>Software</span><span id="model-software"></span></li>
+                        <li class="list-group-item"><span>Scans</span><span id="model-scans"></span></li>
+                        <li class="list-group-item"><span>Textures</span><span id="model-textures"></span></li>
+                        <li class="list-group-item"><span>Pictures number</span><span id="model-pictures"></span></li>
+                        <li class="list-group-item"><span>Points</span><span id="model-points"></span></li>
+                        <li class="list-group-item"><span>Polygons</span><span id="model-polygons"></span></li>
+                        <li class="list-group-item"><span>Measure unit</span><span id="model-measure_unit"></span></li>
+                        <li class="list-group-item"><span>Encumbrance</span><span id="model-encumbrance"></span></li>
+                      </ul>
                     </div>
                   </div>
+                </div>
               </div>
             </div>
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Geographic information</h2>

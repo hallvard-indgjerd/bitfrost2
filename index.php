@@ -88,11 +88,6 @@
                       <label for="email" class="form-label">Email</label>
                       <input type="email" class="form-control form-control-sm" id="email" required>
                     </div>
-                    <p class="txt-adc-dark m-0">If you prefer, you can create a user account with which you will be able to manage your collections more easily.</p>
-                    <div class="form-check mb-3">
-                      <input class="form-check-input" type="checkbox" value="1" id="createAccount" name="createAccount">
-                      <label class="form-check-label" for="createAccount">Ok, create an account</label>
-                    </div>
                     <p class="txt-adc-dark m-0">Please insert a title and a brief description for the collection</p>
                     <div class="mb-2">
                       <label for="title" class="form-label">title</label>

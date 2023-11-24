@@ -71,6 +71,8 @@ function cutString(string, length) {
   return short;
 }
 
+function el(el){return document.getElementById(el);}
+
 function generateRandomPassword(){
   ajaxSettings.url=API+'user.php';
   ajaxSettings.data = {trigger:'genPwd'};

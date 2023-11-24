@@ -26,7 +26,7 @@ class Artifact extends Conn{
       $this->prepared($sql, $dati['artifact_findplace']);
 
       $this->pdo()->commit();
-      return ["res"=> 1, "id"=>$lastId];
+      return ["res"=> 1, "output"=>'Ok, the artifact has been successfully created.', "id"=>$lastId];
     } catch (\Exception $e) {
       $this->pdo()->rollBack();
       return ["res"=>0, "output"=>$e->getMessage()];
@@ -114,7 +114,7 @@ class Artifact extends Conn{
   }
 
   private function getArtifactFindplace(int $id){
-    $sql = "select nation.name nation, county.name county, city.name city, f.parish, f.toponym, f.lat, f.lon, f.findplace_notes notes from artifact_findplace f inner join city on f.city = city.id inner join county on f.county = county.id inner join nation on county.nation = nation.id where f.artifact = ".$id.";";
+    $sql = "select nation.name nation, county.id county_id, county.name county,city.id city_id, city.name city, f.parish, f.toponym, f.latitude, f.longitude, f.findplace_notes notes from artifact_findplace f inner join county on f.county = county.id inner join nation on county.nation = nation.id left join city on f.city = city.id where f.artifact = ".$id.";";
     return $this->simple($sql)[0];}
 
 }

@@ -1,6 +1,7 @@
 const listTrigger='getSelectOptions';
 const citySuggested = $("#citySuggested");
 const form = $("[name='newArtifactForm']");
+const toastToolBar = $('#toastBtn');
 let dati={}
 let tab=[]
 let field=[]
@@ -147,9 +148,12 @@ $("[name='newArtifact']").on('click', function(el){
         $("#toastDivError .errorOutput").text(data.output);
         $("#toastDivError").removeClass("d-none");
       }else {
+        $(".toastTitle").text(data.output)
+        gotoIndex.appendTo(toastToolBar);
+        gotoDashBoard.appendTo(toastToolBar);
+        gotoNewItem.attr("href","artifact_view.php?item="+data.id).appendTo(toastToolBar);
+        newRecord.appendTo(toastToolBar);
         $("#toastDivSuccess").removeClass("d-none")
-        $("#toastDivSuccess #createNewRecord").attr("href","artifacts_add.php")
-        $("#toastDivSuccess #goToItemPage").attr("href","artifact_view.php?item="+data.id)
       }
       $("#toastDivContent").removeClass('d-none')
     });

@@ -1,121 +1,16 @@
-/* .toggleSwitch {
-  position: relative;
-  width: 150px;
-  user-select: none;
-  -webkit-user-select:none;
-  -moz-user-select:none;
-  -ms-user-select: none;
-}
-
-.toggleSwitch-checkbox {display: none;}
-
-.toggleSwitch-label {
-  display: block;
-  overflow: hidden;
-  cursor: pointer;
-  border: 1px solid #ced4da;
-  border-radius: 5px;
-}
-.mainLabel{font-size: 18px;}
-.lightDir{display: inline; width:75px; margin-right: 1px;}
-
-.toggleSwitch-inner {
-  display: block;
-  width: 200%;
-  margin-left: -100%;
-  -moz-transition: margin 0.3s ease-in 0s;
-  -webkit-transition: margin 0.3s ease-in 0s;
-  -o-transition: margin 0.3s ease-in 0s;
-  transition: margin 0.3s ease-in 0s;
-}
-
-.toggleSwitch-inner:before, .toggleSwitch-inner:after {
-  display: block;
-  float: left;
-  width: 50%;
-  height: 35px;
-  padding: 0;
-  font-size: 12px;
-  line-height: 35px;
-  color: #fff;
-  font-family: Trebuchet, Arial, sans-serif;
-  font-weight: bold;
-  background-color: rgba(77,76,68,1);
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.toggleSwitch-checkbox:checked + .toggleSwitch-label .toggleSwitch-inner {
-  margin-left: 0;
-}
-
-.toggleSwitch-checkbox:checked + .toggleSwitch-label .toggleSwitch-switch {
-  right: 0px;
-}
-
-.toggleSwitch-switch {
-  display: block;
-  width: 18px;
-  margin: 0px;
-  background: #FFFFFF;
-  border: 1px solid #ced4da;
-  border-radius: 5px;
+#wrap3d{position:relative}
+#wrap3d>#alertBg{
   position: absolute;
   top: 0;
-  bottom: 0;
-  right:calc(150px - 18px);
-  -moz-transition: all 0.3s ease-in 0s;
-  -webkit-transition: all 0.3s ease-in 0s;
-  -o-transition: all 0.3s ease-in 0s;
-  transition: all 0.3s ease-in 0s;
-}
-
-.toggleSwitch-inner:before { padding-left: 10px; }
-.toggleSwitch-inner:after {padding-right: 10px;text-align: right;}
-
-#orthoLabel:before{content: "DEFAULT";}
-#orthoLabel:after{content: "ORTHO";}
-#textureLabel:before{content: "PLAIN COLOR";}
-#textureLabel:after{content: "TEXTURE";}
-#solidLabel:before{content: "TRANSPARENT";}
-#solidLabel:after{content: "SOLID";}
-#lightingLabel:before{content: "LIGHTING";}
-#lightingLabel:after{content: "UNSHADED";}
-#specularLabel:before{content: "DIFFUSE";}
-#specularLabel:after{content: "SPECULAR";}
-#xyz_axesLabel:before{content: "HIDE AXES";}
-#xyz_axesLabel:after{content: "SHOW AXES";}
-
-.card-wrap{
-  position:relative;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,.3);
+  z-index: 20;
   display: flex;
-  width:100%;
-  min-height: 80vh;
-  height:auto;
-  justify-content: space-around;
   flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
-}
-.viewArtifactsBtn{width:100% !important;}
-.card-header{
-  width:100%;
-  height: 200px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-} */
-
-@media (min-width: 992px) {
-  /* .viewArtifactsBtn{width:19% !important;} */
-}
-
-/* X-Large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) {
-  /* .viewArtifactsBtn{width:19% !important;} */
-}
-
-/* XX-Large devices (larger desktops, 1400px and up) */
-@media (min-width: 1400px) {
-  /* .viewArtifactsBtn{width:19% !important;} */
 }

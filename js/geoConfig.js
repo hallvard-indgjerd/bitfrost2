@@ -16,6 +16,7 @@ let geoNamesReverse = 'http://api.geonames.org/addressJSON?username=darklab&'
 //json variables to use -> address.street, address.houseNumber
 
 let baseLayers, osm, gStreets, gSat, gTerrain;
+let overlayMaps = {}
 let mapClick = false;
 
 // const mapExt = [[60,5],[70,30]];

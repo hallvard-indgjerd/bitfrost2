@@ -33,7 +33,6 @@ function newPerson(el){
     ajaxSettings.data = dati;
     $.ajax(ajaxSettings)
     .done(function(data) {
-      console.log([dati,data]);
       if (data.res==0) {
         $("#toastDivError .errorOutput").text(data.output);
         $("#toastDivError").removeClass("d-none");

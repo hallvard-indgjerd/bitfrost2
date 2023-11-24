@@ -28,11 +28,11 @@ class Get extends Conn{
         $field = "id, concat(name,' (', iso, ')') name";
       break;
       case 'jsonCity':
-        $field = "st_asgeojson(shape) geometry";
+        $field = "'city' as type, name, st_asgeojson(shape) geometry";
         $list = 'city';
       break;
       case 'jsonCounty':
-        $field = "st_asgeojson(shape) geometry";
+        $field = "'county' as type, name, st_asgeojson(shape) geometry";
         $list = 'county';
       break;
       default: $field = '*'; break;

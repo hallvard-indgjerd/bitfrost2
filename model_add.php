@@ -135,6 +135,7 @@
             </div>
             <div class="row mb-3">
               <div class="col">
+              <p class="alert alert-info d-inline-block w-auto">to prevent the file from overwriting other files with the same name, the system will assign a unique id as the name of the file</p>
                 <progress id="progressBar" value="0" max="100" style="width:100%;"></progress>
                 <h3 id="status"></h3>
                 <p id="loaded_n_total"></p>
@@ -142,7 +143,15 @@
             </div>
             <div class="row mb-3">
               <div class="col">
-                <div id="wrap3d"><?php require('assets/canvas.html'); ?></div>
+                <div id="wrap3d">
+                  <div id="alertBg">
+                    <div class="alert alert-danger text-center">
+                      <h3>Waiting for the model...</h3>
+                      <h6>the model will be displayed after uploading and clicking the "preview" button</h6>
+                    </div>
+                  </div>
+                  <?php require('assets/canvas.html'); ?>
+                </div>
               </div>
             </div>
           </fieldset>

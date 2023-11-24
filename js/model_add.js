@@ -79,8 +79,6 @@ function saveModel(){
   });
 }
 
-function el(el){return document.getElementById(el);}
-
 function uploadFile(){
   file = nxz.files[0];
   formdata.append("nxz", file, uuid+".nxz");
@@ -104,6 +102,7 @@ function completeHandler(event){
   $("#progressBar").hide()
   el("status").innerHTML = event.target.responseText;
   el("progressBar").value = 0;
+  $("#alertBg").remove()
   scene = {
     meshes: {"nxz" : { url: 'archive/models/preview/'+uuid+".nxz" }},
     modelInstances : instanceOpt,
@@ -119,18 +118,6 @@ function completeHandler(event){
   presenter.setClippingPointXYZ(0.5, 0.5, 0.5);
   gStep = 1.0;
   startupGrid('gridBase')
-  // if(!presenter){
-  //   init3dhop();
-  //   setup3dhop(scene);
-  //   updateOrtho();
-  //   updateTexture()
-  //   updateTransparency()
-  // }else {
-  //   presenter.setScene(scene);
-  // }
-  // setupLightController();
-  // updateLightController(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
-  // setTimeout(startupGrid, 200);
 }
 function errorHandler(event){el("status").innerHTML = "Upload Failed";}
 function abortHandler(event){el("status").innerHTML = "Upload Aborted";}
