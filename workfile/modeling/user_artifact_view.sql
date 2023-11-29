@@ -20,7 +20,7 @@ WITH
       count(model.id) tot 
       from user u 
       inner join person p on u.person = p.id
-      left join model_metadata model on model.author = u.id 
+      left join model_object model on model.author = u.id 
       group by u.id, p.first_name, p.last_name
     )
 SELECT artifact.id, artifact.name, artifact.role, artifact.is_active, artifact.tot artifact, model.tot model FROM artifact JOIN model

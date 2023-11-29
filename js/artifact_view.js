@@ -1,4 +1,3 @@
-
 let storagePlaceMarker, findplaceMarker;
 let markerArr={}
 let polyArr={}
@@ -53,9 +52,12 @@ $.ajax(ajaxSettings)
   if(data.model){
     let model = data.model.model_object;
     if((role && role < 5) || (activeUser && model.author_id === activeUser)){
-      $("[name=saveModelParam]").removeClass('invisible').on('click', function(){
-        saveModelParam(model.id, 'updateModelParam')
+      $("[name=saveModelParam]").on('click', function(){
+        let dati = buildModelParamArray(model.id, 'updateModelParam')
+        saveModelParam(dati)
       })
+    }else{
+      $("[name=saveModelParam]").remove()
     }
     if (model.object) {
       initModel(data.model)
@@ -179,39 +181,4 @@ function artifactMap(markerArr, polyArr){
     }
   })
   map.addControl(new myToolbar());
-}
-
-function saveModelParam(model, trigger){
-  let dati = {
-    trigger:trigger,
-    model:model,
-    default_view: 1,
-    viewside: presenter.getTrackballPosition().join(','),
-    grid: $("#gridListValue").find('.active').val(),
-    ortho: $("[name=ortho]").is(':checked') ? 1 : 0,
-    xyz: $("[name=xyzAxes]").is(':checked') ? 1 : 0,
-    lightDir: lightDir.join(','),
-    texture: $("[name=texture]").is(':checked') ? 1 : 0,
-    solid: $("[name=solid]").is(':checked') ? 1 : 0,
-    lighting: $("[name=lighting]").is(':checked') ? 1 : 0,
-    specular: $("[name=specular]").is(':checked') ? 1 : 0,
-  }
-  ajaxSettings.url=API+"model.php";
-  ajaxSettings.data = dati
-  $.ajax(ajaxSettings)
-  .done(function(data){
-    console.log(data);
-    if (data.res==0) {
-      $("#toastDivError .errorOutput").text(data.msg);
-      $("#toastDivError").removeClass("d-none");
-    }else {
-      $(".toastTitle").text(data.msg)
-      closeToast.appendTo("#toastBtn").on('click', function(){
-        $("#toastDivError, #toastDivSuccess, #toastDivContent").addClass("d-none");
-        $("#toastBtn").html('');
-      });
-      $("#toastDivSuccess").removeClass("d-none")
-    }
-    $("#toastDivContent").removeClass('d-none')
-  })
 }

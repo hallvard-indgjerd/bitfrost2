@@ -65,7 +65,7 @@
           <h3>User <span class="badge text-bg-dark float-end"></span></h3>
           <div class="toolbarDiv border-bottom">
             <div>
-              <a href="persons_add.php?user=true" class="btn btn-sm btn-outline-secondary">add institution</a>
+              <a href="persons_add.php?user=true" class="btn btn-sm btn-outline-secondary">add user</a>
             </div>
           </div>
           <div class="list-group list-group-flush listDashBoard">

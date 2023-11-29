@@ -9,10 +9,10 @@ const configOpt = {pickedpointColor: [1.0, 0.0, 1.0], measurementColor: [0.5, 1.
 const sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
 const defaultViewSide = '15,15,0,0,0,2';
 
-let presenter, scene, paradata, gStep;
+let presenter, scene, paradata, gStep, measure_unit;
 let angleStage = 0;
 let anglePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]];
-let lightDir = [0,0];
+let lightDir = [-0.17,-0.17];
 let viewList = {}
 let viewIndex = 0;
 let spotList = {}
@@ -33,12 +33,8 @@ $("#modelToolsH button").on('click', function(){
   actionsToolbar($(this).data('action'))
 })
 
-$("[name=resetViewBtn]").on('click', function(){
-  home()
-  $("[name=viewside]").removeClass('active')
-  $("#dropdownViewList").text('set view')
-})
-$("[name=viewside]").on('click', function(){ 
+$("[name=viewside]").on('click', function(e){ 
+  e.preventDefault()
   let label = $(this).text()
   $(this).addClass('active')
   $("[name=viewside]").not(this).removeClass('active')
@@ -67,7 +63,8 @@ $("[name=specular]").on('click', function(){
   updateSpecular()
 })
 
-$("[name=changeGrid]").on('click', function(){ 
+$("[name=changeGrid]").on('click', function(e){ 
+  e.preventDefault()
   let label = $(this).text()
   let newGrid = $(this).val()
   let currentGrid = $("#gridListValue").find('.active').val();
@@ -83,15 +80,16 @@ $("[name=xyzAxes]").on('click', function(){
 
 $(".measureTool").on('click', function(){
   let func = $(this).prop('id')
-  if(func !== 'section'){
-    disableToolsFunction()
-    if($(this).is(':checked')){ 
-      $(".measureTool").not(this).not("#section").prop('checked', false) 
-    }
+  disableToolsFunction()
+  if($(this).is(':checked')){ 
+    $(".measureTool").not(this)/*.not("#section")*/.prop('checked', false) 
   }
+  // if(func !== 'section'){}
   let act = $(this).is(':checked') ? func+'_on' : func+'_off';
   actionsToolbar(act);
 })
+
+$("#sectionReset").on('click',sectionReset)
 
 $(".togglePlaneIco").on('click', function(){
   let plane = $(this).prop('id').substring(0, 1);
@@ -168,8 +166,8 @@ $("[name=addViewBtn]").on('click',addView)
 /////////////////////////////////////////////////////////////
 
 function initModel(model){
-  console.log(model);
   paradata = model.model_param
+  measure_unit = paradata.measure_unit;
   let param = model.model_view
   scene = {
     meshes: {
@@ -188,8 +186,14 @@ function initModel(model){
   presenter._onEndMeasurement = onEndMeasure;
   presenter._onEndPickingPoint = onEndPick;
   presenter.setClippingPointXYZ(0.5, 0.5, 0.5);
+  //light component
+  setupLightController()
+  resizeLightController()
+  updateLightController(lightDir[0],lightDir[1])
+  // se vuoi disabilitare la visibilità dei piani di sezione
+  // presenter.setClippingRendermode(false, presenter.getClippingRendermode()[1])
   
-  switch (paradata.measure_unit) {
+  switch (measure_unit) {
     case 'mm': gStep = 10.0; break;
     case 'm': gStep = 0.01; break;
     default: gStep = 1.0; break;
@@ -237,20 +241,23 @@ function actionsToolbar(action) {
     case "fullscreen_out": fullscreenSwitch(action); break;
     case "screenshot": presenter.saveScreenshot(); break;
     case "light_on":
-      presenter.enableLightTrackball(true);
-      checkLight(true);
+      // presenter.enableLightTrackball(true);
+      // checkLight(true);
       setInstructions("click the left mouse button and drag the cursor on model to change the light origin")
+      sectionToolInit(false)
       measureSwitch(false);
+      $("#lightCanvas-box").removeClass('invisible')
     break;
     case "light_off":
-      checkLight(false);
+      // checkLight(false);
       clearInstructions();
+      $("#lightCanvas-box").addClass('invisible')
     break;
     case "measure_on":
       presenter.enableMeasurementTool(true);
       measureSwitch(true);
       $("#measure-box-title").text('Measured length')
-      $("#measure-output").text('0.00'+paradata.measure_unit);
+      $("#measure-output").text('0.00'+measure_unit);
 		  setInstructions("pick two points A-B on the object to measure their distance")
     break;
     case "measure_off":
@@ -282,7 +289,6 @@ function actionsToolbar(action) {
     break;
     case "section_on":
       sectionToolInit(true)
-      
     break;
     case "section_off":
       sectionToolInit(false)
@@ -305,6 +311,8 @@ function disableToolsFunction(){
   presenter.enableMeasurementTool(false);
   presenter.enablePickpointMode(false);
   enableAngleMeasurement(false);
+  sectionToolInit(false)
+  $("#lightCanvas-box").addClass('invisible')
 }
 
 function fullscreenSwitch(action) {
@@ -624,11 +632,11 @@ function clearInstructions(){
   $('#panel_instructions').html("").addClass('invisible').fadeOut('fast'); 
 }
 function onEndMeasure(measure) {
-	var clampTo = (paradata.measure_unit == "m")? 3 : 2;
-	$('#measure-output').html(measure.toFixed(clampTo) + paradata.measure_unit); 
+	var clampTo = (measure_unit == "m")? 3 : 2;
+	$('#measure-output').html(measure.toFixed(clampTo) + measure_unit); 
 }
 function onEndPick(point) {
-	var clampTo = (paradata.measure_unit == "m")? 3 : 2;
+	var clampTo = (measure_unit == "m")? 3 : 2;
 	//undo object transform
 	var opoint = [point[0], point[1], point[2], 1.0];	
 	var tpoint = SglMat4.mul4(SglMat4.inverse(presenter._scene.modelInstances["nxz"].transform.matrix), opoint);
@@ -711,9 +719,15 @@ function resetAngle(){
 
 function sectionToolInit(state){
   if(state){
+    measureSwitch(false)
+    clearInstructions()
     $("#sections-box").removeClass('invisible').fadeIn('fast')
     return false;
   }
+  $("#sections-box").addClass('invisible').fadeOut('fast')
+}
+
+function sectionReset(){
   sectionxSwitch(false)
   sectionySwitch(false)
   sectionzSwitch(false)
@@ -721,7 +735,6 @@ function sectionToolInit(state){
   presenter.setClippingY(0);
   presenter.setClippingZ(0);
   togglePlanesEdgesTool()
-  $("#sections-box").addClass('invisible').fadeOut('fast')
   $("#sections-box").find("[type=range").val(0.5)
   $("[name=planeFlipCheckbox]").prop('checked', false)
 }
@@ -818,7 +831,6 @@ function updateView(view){
 		toolState.pickA = presenter._pickedPoint;
 		viewList[view].tools.pickPoint = toolState;
 	}
-  console.log(viewList);
 }
 
 function deleteView(view){
@@ -983,6 +995,79 @@ function displayViewState(){
 	
 	presenter.repaint();
 }
+///////////////////
+// LIGHT CONTROL //
+///////////////////
+function resizeLightController(){
+  var lightControllerCanvas = document.getElementById("lightcontroller");
+  var dim = Math.min(250, Math.min(lightControllerCanvas.parentElement.clientWidth,lightControllerCanvas.parentElement.clientHeight));
+  lightControllerCanvas.width = dim;
+  lightControllerCanvas.height = dim;
+}
+function updateLightController(xx,yy) {
+  var lightControllerCanvas = document.getElementById("lightcontroller");
+  var cwidth = lightControllerCanvas.width;
+  var cheight = lightControllerCanvas.height;
+  var midpoint = [Math.floor(cwidth/2.0),Math.floor(cheight/2.0)];
+  var radius = Math.min(midpoint[0],midpoint[1]);
+
+  var context = lightControllerCanvas.getContext("2d");
+  context.clearRect(0, 0, cwidth, cheight);
+
+  context.beginPath();
+  context.arc(midpoint[0], midpoint[1], radius, 0, 2 * Math.PI, false);
+  var grd=context.createRadialGradient(midpoint[0]+(xx*(radius-3)*2),midpoint[1]+(yy*(radius-3)*2),3,midpoint[0], midpoint[1],radius);
+  grd.addColorStop(0,"rgb(255,255,168)");
+  grd.addColorStop(1,"rgb(0,0,0)");
+  context.fillStyle = grd;
+  context.fill();
+  context.lineWidth = 1;
+  context.strokeStyle = 'black';
+  context.stroke();
+
+  presenter.ui.postDrawEvent();
+}
+
+function clickLightController(event) {
+  var lightControllerCanvas = document.getElementById("lightcontroller");
+  var cwidth = lightControllerCanvas.width;
+  var cheight = lightControllerCanvas.height;
+  var midpoint = [Math.floor(cwidth/2.0),Math.floor(cheight/2.0)];
+  var radius = Math.min(midpoint[0],midpoint[1]);
+
+  var XX = event.offsetX - midpoint[0];
+  var YY = event.offsetY - midpoint[1];
+
+  // check inside circle
+  if((XX*XX + YY*YY) < ((radius)*(radius))) {
+    var lx = (XX / radius)/2.0;
+    var ly = (YY / radius)/2.0;
+
+    lightDir = [lx,ly];
+    
+    presenter.rotateLight(lightDir[0],-lightDir[1]); // inverted y
+    updateLightController(lightDir[0],lightDir[1]);
+
+    (event.touches) ? lightControllerCanvas.addEventListener("touchmove", clickLightController, false) : lightControllerCanvas.addEventListener("mousemove", clickLightController, false);
+  }
+}
+
+function setupLightController() {
+  // touch and click management
+  var canvas = document.getElementById("draw-canvas");
+  var lightControllerCanvas = document.getElementById("lightcontroller");
+  lightControllerCanvas.addEventListener("touchstart", clickLightController, false);
+  lightControllerCanvas.addEventListener("mousedown", clickLightController, false);
+  canvas.addEventListener("mouseup", function () {
+    lightControllerCanvas.removeEventListener("mousemove", clickLightController, false);
+    lightControllerCanvas.removeEventListener("touchmove", clickLightController, false);
+  }, false);
+  document.addEventListener("mouseup", function () {
+    lightControllerCanvas.removeEventListener("mousemove", clickLightController, false);
+    lightControllerCanvas.removeEventListener("touchmove", clickLightController, false);
+  }, false);
+}
+
 
 function getLight(event) {
   let cwidth = canvas.width;
@@ -998,7 +1083,6 @@ function getLight(event) {
     let lx = (XX / radius)/2.0;
     let ly = (YY / radius)/2.0;
     lightDir = [lx,ly];
-    console.log(lightDir);
   }
 }
 function checkLight(state) {
@@ -1009,4 +1093,42 @@ function checkLight(state) {
   }
   canvas.removeEventListener("mouseup", getLight, false);
   canvas.removeEventListener("touchend", getLight, false);
+}
+//////////////////////////////////////////////////////////////
+
+function buildModelParamArray(model, trigger){
+  let dati = {
+    trigger:trigger,
+    model:model,
+    default_view: 1,
+    viewside: presenter.getTrackballPosition().join(','),
+    grid: $("#gridListValue").find('.active').val(),
+    ortho: $("[name=ortho]").is(':checked') ? 1 : 0,
+    xyz: $("[name=xyzAxes]").is(':checked') ? 1 : 0,
+    lightDir: lightDir.join(','),
+    texture: $("[name=texture]").is(':checked') ? 1 : 0,
+    solid: $("[name=solid]").is(':checked') ? 1 : 0,
+    lighting: $("[name=lighting]").is(':checked') ? 1 : 0,
+    specular: $("[name=specular]").is(':checked') ? 1 : 0,
+  }
+  return dati;
+}
+function saveModelParam(dati){
+  ajaxSettings.url=API+"model.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings)
+  .done(function(data){
+    if (data.res==0) {
+      $("#toastDivError .errorOutput").text(data.msg);
+      $("#toastDivError").removeClass("d-none");
+    }else {
+      $(".toastTitle").text(data.msg)
+      closeToast.appendTo("#toastBtn").on('click', function(){
+        $("#toastDivError, #toastDivSuccess, #toastDivContent").addClass("d-none");
+        $("#toastBtn").html('');
+      });
+      $("#toastDivSuccess").removeClass("d-none")
+    }
+    $("#toastDivContent").removeClass('d-none')
+  })
 }

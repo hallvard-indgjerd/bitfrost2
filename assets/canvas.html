@@ -39,6 +39,11 @@
         <span class="mdi mdi-monitor-screenshot"></span>
       </button>
     </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-success" name="saveModelParam" data-bs-toggle="tooltip" title="Save parameters and active tools in the database, they will be used the next time the model is loaded">
+        <span class="mdi mdi-content-save"></span>
+      </button>
+    </div>
   </div>
   <div id="modelToolsV" class="rounded modelTools">
     <div class="accordion accordion-flush" id="accordionTool">
@@ -83,7 +88,7 @@
               <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useLighting" title="lighting or unshaded object">lighting</label>
               <input type="checkbox" class="btn-check" name="specular" id="i_useSpecular" autocomplete="off">
               <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useSpecular" title="light diffuse or specular">diffuse</label>
-              <button type="button" name="saveModelParam" class="toolBtn btn btn-sm btn-success invisible" title="Save parameters in the database, they will be used the next time the model is loaded">update default parameters</button>
+              <!-- <button type="button" name="saveModelParam" class="toolBtn btn btn-sm btn-success invisible" title="Save parameters in the database, they will be used the next time the model is loaded">update default parameters</button> -->
             </div>
           </div>
         </div>
@@ -175,18 +180,27 @@
       </div>
     </div>
     <div class="row invisible" id="planesEdgesDiv">
-      <div class="col-6">
+      <div class="col-4 p-1">
         <div class="form-check form-check-reverse form-control-sm m-0" title="Toggle model section planes view" data-bs-toggle="tooltip">
           <input class="form-check-input" type="checkbox" id="showPlane" checked>
           <label class="form-check-label" for="reverseCheck1">Show planes</label>
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-4 p-1">
         <div class="form-check form-check-reverse form-control-sm m-0" title="Toggle model section edges view" data-bs-toggle="tooltip">
           <input class="form-check-input" type="checkbox" id="showBorder" checked>
           <label class="form-check-label" for="reverseCheck1">Show edges</label>
         </div>
       </div>
+      <div class="col-4">
+        <div class="d-grid gap-2">
+          <button class="btn btn-dark btn-sm" type="button" id="sectionReset"><span class="mdi mdi-reload"></span> reset</button>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div id="lightCanvas-box" class="invisible">
+    <canvas id="lightcontroller" width="150" height="150"></canvas>
   </div>
 </div>

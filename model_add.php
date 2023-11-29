@@ -99,13 +99,13 @@
               <div class="col-md-4">
                 <label for="acquisition_method" class="text-danger fw-bold">Acquisition method</label>
                 <select class="form-select" name="acquisition_method" id="acquisition_method" data-table="object_param" required>
-                  <option value="">-- select value --</option>
+                  <option value="" selected disabled>-- select value --</option>
                 </select>
               </div>
               <div class="col-md-4">
                 <label for="measure_unit" class="text-danger fw-bold">Measure unit</label>
                 <select class="form-select" name="measure_unit" id="measure_unit" data-table="object_param" required>
-                  <option value="">-- select unit --</option>
+                  <option value="" selected disabled>-- select unit --</option>
                   <option value="mm">millimeters</option>
                   <option value="cm">centimeters</option>
                   <option value="m">meters</option>
@@ -145,14 +145,14 @@
               <div class="col-md-4">
                 <label for="nxz" class="form-label">You can upload only nxz file</label>
                 <div class="input-group">
-                  <input class="form-control" type="file" id="nxz" name="nxz">
+                  <input class="form-control" type="file" id="nxz" name="nxz" disabled >
                   <button class="btn btn-secondary" type="button" id="preview"><i class="mdi mdi-monitor-eye"></i>  preview</button>
                 </div>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col">
-                <p class="text-danger d-inline-block w-auto">to prevent the file from overwriting other files with the same name, the system will assign a unique id as the name of the file</p>
+                <p class="text-danger d-inline-block w-auto" id="uploadTip">Before uploading you have to select the "measure unit" from the specifica field in the "Object paradata" section of the form</p>
                 <progress id="progressBar" value="0" max="100" style="width:100%;"></progress>
                 <h3 id="status"></h3>
                 <p id="loaded_n_total"></p>

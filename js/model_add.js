@@ -51,6 +51,15 @@ $("[name=checkNameBtn]").on('click', function(){
   checkName({name:name,element:'artifact'})
 })
 
+$("[name=measure_unit").on('change', function(){
+  if($(this).val()){
+    $("#uploadTip").text('To prevent the file from overwriting other files with the same name, the system will assign a unique id as the name of the file')
+    $("#nxz").prop('disabled', false);
+    measure_unit = $(this).val()
+  }
+  console.log(measure_unit);
+})
+
 $("[name=saveModelParam").remove()
 
 
@@ -123,6 +132,7 @@ function completeHandler(event){
   presenter.setClippingPointXYZ(0.5, 0.5, 0.5);
   gStep = 1.0;
   startupGrid('gridBase')
+  
 }
 function errorHandler(event){el("status").innerHTML = "Upload Failed";}
 function abortHandler(event){el("status").innerHTML = "Upload Aborted";}

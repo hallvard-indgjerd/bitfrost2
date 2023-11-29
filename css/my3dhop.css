@@ -17,13 +17,15 @@
 #viewSpotDiv::-webkit-scrollbar-thumb {background-color: darkgrey;outline: 1px solid slategrey;}
 
 .modelTools{ position:absolute; background-color: rgba(255, 255, 255, 0.9);}
-#modelToolsV{top:10px; right:10px; width:140px; padding:10px;}
+#modelToolsV{top:10px; right:10px; width:150px; padding:10px;}
 #modelToolsH{top:10px; padding:10px; left:50%; width:auto; transform: translateX(-50%);}
 
 #panel_instructions, #measure-box{ position:absolute; background-color: rgba(255, 255, 255, 0.7); bottom:10px; padding:5px 10px; font-size: 12px;}
 #panel_instructions{left: 50%; transform: translateX(-50%); width: 35%;}
 #measure-box{left:10px;}
-#sections-box{position: absolute; bottom: 10px; right: 10px; width: 30%;}
+#sections-box,#lightCanvas-box{position: absolute; bottom: 10px; right: 10px;}
+#sections-box{width: 350px;}
+/* #lightCanvas-box, #lightcontroller{height:250px; width:250px;} */
 
 .view > div, .spot > div{display: inline-block; vertical-align: middle;}
 .view > .viewToolbar, .spot > .spotToolbar{width:35px;}
