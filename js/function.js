@@ -375,6 +375,24 @@ function setMapExtent(group, id){
   })
 }
 
+function showPreview(){
+  const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+  let thumb = el("thumb");
+  let preview = el("thumbPreview");
+  let val = thumb.value
+  $("#thumbNotAllowed").text("").removeClass('alert alert-danger')
+  if(!allowedExtensions.exec(val)){
+    $("#thumbNotAllowed")
+      .text("Sorry but you can upload only image files. You are trying to upload a "+val.split('.').pop()+" file type")
+      .addClass('alert alert-danger')
+    return false;
+  }
+  if(thumb.files.length > 0){
+    let src = URL.createObjectURL(thumb.files[0]);
+    preview.style.backgroundImage = "url("+src+")";
+  }
+}
+
 function toggleFullScreen(id) {
   let element = document.getElementById(id)
   if (!document.fullscreenElement) {

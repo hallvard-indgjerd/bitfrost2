@@ -2076,6 +2076,25 @@ _drawScene : function () {
 			}
 		}
 	}
+	// beppe ////////////////
+	if(this.isCreatingThumb){
+		console.log('fired');
+		this.isCreatingThumb = false;
+		this.ui._canvas.toBlob((blob) => {
+			const newImg = document.createElement("img");
+			const url = URL.createObjectURL(blob);
+			newImg.onload = () => {URL.revokeObjectURL(url);};
+			newImg.src = url;
+			newImg.id = 'newThumb';
+			document.body.appendChild(newImg);
+		},'image/png')
+		// let t = this.ui._canvas.toDataURL('image/png',1).replace("image/png", "image/octet-stream");
+		// let img = new Image();
+		// img.id = 'test'
+		// img.src = t;
+		// document.body.appendChild(img);
+	}
+	/////////////////////////
 },
 
 _drawScenePickingXYZ : function () {
@@ -2607,7 +2626,9 @@ onInitialize : function () {
 	this.installDefaultShaders();
 
 	// screenshot support
-	this.createThumb = false;
+	//beppe ////////////////////
+	this.isCreatingThumb = false;
+	////////////////////////////
 	this.isCapturingScreenshot = false;
 	this.screenshotData = null;
 
@@ -2950,6 +2971,12 @@ repaint : function () {
 
 saveScreenshot : function () {
 	this.isCapturingScreenshot = true;
+	this.repaint();
+},
+
+// beppe
+createThumb : function () {
+	this.isCreatingThumb = true;
 	this.repaint();
 },
 

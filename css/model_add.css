@@ -14,3 +14,21 @@
   align-items: center;
   flex-wrap: wrap;
 }
+
+
+input[type=file] { display:none; }
+
+.inputLabel {
+  display:block;
+  width:200px;
+  line-height:50px;
+  text-align:center;
+  background:#1172c2;
+  color:#fff;
+  font-size:15px;
+  font-family:"Open Sans",sans-serif;
+  text-transform:Uppercase;
+  font-weight:600;
+  border-radius:5px;
+  cursor:pointer;
+}

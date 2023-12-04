@@ -1,4 +1,9 @@
 const uuid = self.crypto.randomUUID();
+// const canvas = document.getElementById('draw-canvas');
+const nxz = document.getElementById('nxz');
+const endpoint = 'api/modelPreview.php';
+const thumbEndpoint = 'api/modelThumbUpload.php';
+let file, thumb;
 var formdata = new FormData();
 const listTrigger='getSelectOptions';
 let listArray = [];
@@ -25,19 +30,13 @@ let listMethod = {
 listArray.push(listAuthor,listOwner,listLicense,listMethod)
 listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
 
-const uploadButton = document.getElementById('preview');
-const nxz = document.getElementById('nxz');
-const endpoint = 'api/modelPreview.php';
-let file;
-
 $(".closeTip").on('click', function(){
   $(this).text($(this).text()==='view tip' ? 'hide tip' : 'view tip')
 })
-$("#preview, #progressBar").hide()
-$("[name=nxz]").on('change', function(){$("#preview").show()});
-$("[name=newArtifact]").on('click', function(el){
-  createFormdata(el,saveModel)
-});
+$("#progressBar,#thumbWrap, #nxzWrap").hide()
+$("[name=nxz]").on('change', uploadFile);
+$("[name=thumb]").on('change', showPreview);
+$("[name=newModel]").on('click', function(el){ save(el); });
 $("[name=checkNameBtn]").on('click', function(){
   let name = $("#name").val()
   if(!name){
@@ -54,23 +53,29 @@ $("[name=checkNameBtn]").on('click', function(){
 $("[name=measure_unit").on('change', function(){
   if($(this).val()){
     $("#uploadTip").text('To prevent the file from overwriting other files with the same name, the system will assign a unique id as the name of the file')
-    $("#nxz").prop('disabled', false);
+    $("#nxzWrap").show();
     measure_unit = $(this).val()
   }
-  console.log(measure_unit);
 })
 
 $("[name=saveModelParam").remove()
 
 
-uploadButton.addEventListener('click', uploadFile);
-
-function createFormdata(el, callback){
-  el.preventDefault();
-  formdata.append('trigger','addModel')
-  const canvas = document.getElementById('draw-canvas');
-  canvas.toBlob(function(blob) { formdata.append('thumb', blob, uuid+'.png'); });
-  callback()
+function save(btn){
+  const form = $("[name=newModelForm]")[0];
+  // if (form.checkValidity()) {
+    btn.preventDefault();
+    formdata.append('trigger','addModel')
+    formdata.append('name',el('name').value)
+    formdata.append('description',el('description').value)
+    formdata.append('note',el('note').value)
+    formdata.append('author',el('author').value)
+    formdata.append('owner',el('owner').value)
+    formdata.append('license',el('license').value)
+    // formdata.append("nxz", nxz.files[0], uuid+".nxz");
+    // formdata.append("thumb", el('thumb').files[0], uuid+".nxz");
+    for (const pair of formdata.entries()) { console.log(`${pair[0]}: ${pair[1]}`); }
+  // }
 }
 
 function saveModel(){
@@ -94,8 +99,14 @@ function saveModel(){
 }
 
 function uploadFile(){
+  let val = nxz.value.split('.').pop()
+  if(val !== 'nxz'){
+    el("status").innerHTML = "Sorry but you can upload only nxz files. You are trying to upload a "+val+" file type";
+    return false;
+  }
+  var nxzUpload = new FormData();
   file = nxz.files[0];
-  formdata.append("nxz", file, uuid+".nxz");
+  nxzUpload.append("nxz", file, uuid+".nxz");
   var ajax = new XMLHttpRequest();
   $("#progressBar").show()
   ajax.upload.addEventListener("progress", progressHandler, false);
@@ -103,7 +114,7 @@ function uploadFile(){
   ajax.addEventListener("error", errorHandler, false);
   ajax.addEventListener("abort", abortHandler, false);
   ajax.open("POST", endpoint);
-  ajax.send(formdata);
+  ajax.send(nxzUpload);
 }
 
 function progressHandler(event){
@@ -117,6 +128,8 @@ function completeHandler(event){
   el("status").innerHTML = event.target.responseText;
   el("progressBar").value = 0;
   $("#alertBg").remove()
+  $("#uploadTip").text("Before saving the model, take a screenshot of canvas and upload it as thumbnail preview for use in the gallery")
+  $("#thumbWrap").show()
   scene = {
     meshes: {"nxz" : { url: 'archive/models/preview/'+uuid+".nxz" }},
     modelInstances : instanceOpt,
@@ -131,8 +144,48 @@ function completeHandler(event){
   presenter._onEndPickingPoint = onEndPick;
   presenter.setClippingPointXYZ(0.5, 0.5, 0.5);
   gStep = 1.0;
+  // startupGrid('gridBase')
   startupGrid('gridBase')
-  
+  //light component
+  setupLightController()
+  resizeLightController()
+  updateLightController(lightDir[0],lightDir[1])  
+  // getThumbnail()
 }
-function errorHandler(event){el("status").innerHTML = "Upload Failed";}
-function abortHandler(event){el("status").innerHTML = "Upload Aborted";}
+function errorHandler(event){
+  el("status").innerHTML = "Upload Failed";
+  console.log(event);
+}
+function abortHandler(event){
+  el("status").innerHTML = "Upload Aborted";
+  console.log(event);
+}
+
+function getThumbnail(){
+  presenter._scene.config.autoSaveScreenshot = false;
+  // actionsToolbar('screenshot');
+  presenter.createThumb()
+  setTimeout(function(){
+    // thumb = presenter.screenshotData;
+    // el('imgFromPresenter').src = thumb;
+    presenter._scene.config.autoSaveScreenshot = true;
+    // callback()
+  },1000)
+}
+
+async function convertThumb(){
+  const res = await fetch(thumb);
+  const blob = await res.blob();
+  const fd = new FormData();
+  fd.append("thumb", blob, uuid+".png");
+  var ajax = new XMLHttpRequest();
+  ajax.addEventListener("load", completeThumb, false);
+  ajax.addEventListener("error", errorHandler, false);
+  ajax.addEventListener("abort", abortHandler, false);
+  ajax.open("POST", thumbEndpoint);
+  ajax.send(fd);
+}
+
+function completeThumb(event){
+  console.log(event.target.responseText);
+}

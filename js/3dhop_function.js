@@ -241,15 +241,12 @@ function actionsToolbar(action) {
     case "fullscreen_out": fullscreenSwitch(action); break;
     case "screenshot": presenter.saveScreenshot(); break;
     case "light_on":
-      // presenter.enableLightTrackball(true);
-      // checkLight(true);
       setInstructions("click the left mouse button and drag the cursor on model to change the light origin")
       sectionToolInit(false)
       measureSwitch(false);
       $("#lightCanvas-box").removeClass('invisible')
     break;
     case "light_off":
-      // checkLight(false);
       clearInstructions();
       $("#lightCanvas-box").addClass('invisible')
     break;
@@ -1066,33 +1063,6 @@ function setupLightController() {
     lightControllerCanvas.removeEventListener("mousemove", clickLightController, false);
     lightControllerCanvas.removeEventListener("touchmove", clickLightController, false);
   }, false);
-}
-
-
-function getLight(event) {
-  let cwidth = canvas.width;
-  let cheight = canvas.height;
-  let midpoint = [Math.floor(cwidth/2.0),Math.floor(cheight/2.0)];
-  let radius = Math.min(midpoint[0],midpoint[1]);
-
-  let XX = event.offsetX - midpoint[0];
-  let YY = event.offsetY - midpoint[1];
-
-  // check inside circle
-  if((XX*XX + YY*YY) < ((radius)*(radius))) {
-    let lx = (XX / radius)/2.0;
-    let ly = (YY / radius)/2.0;
-    lightDir = [lx,ly];
-  }
-}
-function checkLight(state) {
-  if(state){
-    canvas.addEventListener("mouseup", getLight, false);
-    canvas.addEventListener("touchend", getLight, false);
-    return false;
-  }
-  canvas.removeEventListener("mouseup", getLight, false);
-  canvas.removeEventListener("touchend", getLight, false);
 }
 //////////////////////////////////////////////////////////////
 

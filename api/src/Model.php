@@ -7,9 +7,9 @@ class Model extends Conn{
   public function addModel($data, $file){
     try {
       // $this->handleFile($file['nxz'], 'nxz');
-      $this->handleFile($file['thumb'], 'png');
+      // $this->handleFile($file['thumb'], 'png');
       // $this->handleMetadata($data);
-      return $file;
+      return [$data,$file];
     } catch (\Exception $e) {
       return ["res"=>0, "output"=>$e->getMessage()];
     }

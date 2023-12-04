@@ -142,17 +142,16 @@
           <fieldset>
             <legend>Upload model</legend>
             <div class="row">
-              <div class="col-md-4">
-                <label for="nxz" class="form-label">You can upload only nxz file</label>
-                <div class="input-group">
-                  <input class="form-control" type="file" id="nxz" name="nxz" disabled >
-                  <button class="btn btn-secondary" type="button" id="preview"><i class="mdi mdi-monitor-eye"></i>  preview</button>
-                </div>
+              <div class="col" id="nxzWrap">
+                <label for="nxz" class="form-label inputLabel">select .nxz file</label>
+                <input class="form-control" type="file" id="nxz" name="nxz" accept=".nxz,.nxs" required>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col">
-                <p class="text-danger d-inline-block w-auto" id="uploadTip">Before uploading you have to select the "measure unit" from the specifica field in the "Object paradata" section of the form</p>
+                <div class="alert alert-danger" role="alert" id="uploadTip">
+                Before uploading you have to select the "measure unit" from the specifica field in the "Object paradata" section of the form
+                </div>
                 <progress id="progressBar" value="0" max="100" style="width:100%;"></progress>
                 <h3 id="status"></h3>
                 <p id="loaded_n_total"></p>
@@ -164,18 +163,26 @@
                   <div id="alertBg">
                     <div class="alert alert-danger text-center">
                       <h3>Waiting for the model...</h3>
-                      <h6>the model will be displayed after uploading and clicking the "preview" button</h6>
+                      <h6>the model will be displayed after uploading an allowed file</h6>
                     </div>
                   </div>
                   <?php require('assets/canvas.html'); ?>
                 </div>
               </div>
             </div>
+            <div class="row mb-3">
+              <div id="thumbWrap" class="col">
+                <label for="thumb" class="form-label inputLabel">Upload a thumbnail</label>
+                <input class="form-control" type="file" id="thumb" name="thumb" accept="image/jpeg, image/png, image/jpg" required >
+                <div class="col-md-4 my-3 border rounded" id="thumbPreview"></div>
+                <div id="thumbNotAllowed"></div>
+              </div>
+            </div>
           </fieldset>
           <fieldset>
             <div class="row">
               <div class="col">
-                <button type="submit" name="newArtifact" class="btn btn-warning">save item</button>
+                <button type="submit" name="newModel" class="btn btn-warning">save item</button>
               </div>
             </div>
           </fieldset>

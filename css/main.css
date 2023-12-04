@@ -87,6 +87,15 @@ fieldset > legend{
   z-index: 2000;
 }
 
+#thumbPreview{
+  background-color: rgb(248,249,250);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width:200px;
+  height: 200px;
+}
+
 
 /* leaflet hack */
 
