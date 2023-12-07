@@ -83,13 +83,13 @@
             </div>
             <div class="row mb-3">
               <div class="col-md-8">
-                <label for="description" class="form-label fw-bold text-danger">Description</label>
-                <textarea class="form-control" name="description" id="description" data-table="model_object" rows="6" required></textarea>
+                <label for="object_description" class="form-label fw-bold text-danger">Description</label>
+                <textarea class="form-control" name="object_description" id="object_description" data-table="model_object" rows="6" required></textarea>
                 <div class="form-text">Describe the specific object</div>
               </div>
               <div class="col-md-4">
-                <label for="note" class="form-label">Note</label>
-                <textarea class="form-control" name="note" id="note" data-table="model_object" rows="6"></textarea>
+                <label for="object_note" class="form-label">Note</label>
+                <textarea class="form-control" name="object_note" id="object_note" data-table="model_object" rows="6"></textarea>
               </div>
             </div>
           </fieldset>
@@ -117,25 +117,29 @@
               </div>
             </div>
             <div class="row mb-3">
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label for="points">Points</label>
-                <input type="number" class="form-control" min="0" step="1" name="points" id="points" value="">
+                <input type="number" class="form-control" min="0" step="1" name="points" id="points" value="" data-table="object_param">
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label for="polygons">Polygons</label>
-                <input type="number" class="form-control" min="0" step="1" name="polygons" id="polygons" value="">
+                <input type="number" class="form-control" min="0" step="1" name="polygons" id="polygons" value="" data-table="object_param">
               </div>
               <div class="col-md-2">
                 <label for="textures">Textures</label>
-                <input type="number" class="form-control" min="0" step="1" name="textures" id="textures" value="">
+                <input type="number" class="form-control" min="0" step="1" name="textures" id="textures" value="" data-table="object_param">
               </div>
               <div class="col-md-2">
                 <label for="scans">Scans</label>
-                <input type="number" class="form-control" min="0" step="1" name="scans" id="scans" value="">
+                <input type="number" class="form-control" min="0" step="1" name="scans" id="scans" value="" data-table="object_param">
               </div>
               <div class="col-md-2">
                 <label for="pictures">Pictures</label>
-                <input type="number" class="form-control" min="0" step="1" name="pictures" id="pictures" value="">
+                <input type="number" class="form-control" min="0" step="1" name="pictures" id="pictures" value="" data-table="object_param">
+              </div>
+              <div class="col-md-2">
+                <label for="encumbrance" data-bs-toggle="tooltip" title="you can enter a value or let the system calculate it"><span class="mdi mdi-information-outline"></span> Encumbrance</label>
+                <input type="text" class="form-control" name="encumbrance" id="encumbrance" value="" data-table="object_param">
               </div>
             </div>
           </fieldset>

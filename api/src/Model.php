@@ -5,6 +5,7 @@ class Model extends Conn{
   function __construct(){}
 
   public function addModel($data, $file){
+    // exec(""mogrify -thumbnail 250x250^ -gravity center -extent 250x250  ".$thumb.")
     try {
       // $this->handleFile($file['nxz'], 'nxz');
       // $this->handleFile($file['thumb'], 'png');

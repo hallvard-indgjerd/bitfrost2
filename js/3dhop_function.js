@@ -1066,10 +1066,8 @@ function setupLightController() {
 }
 //////////////////////////////////////////////////////////////
 
-function buildModelParamArray(model, trigger){
+function buildModelParamArray(){
   let dati = {
-    trigger:trigger,
-    model:model,
     default_view: 1,
     viewside: presenter.getTrackballPosition().join(','),
     grid: $("#gridListValue").find('.active').val(),
@@ -1101,4 +1099,14 @@ function saveModelParam(dati){
     }
     $("#toastDivContent").removeClass('d-none')
   })
+}
+
+function computeEncumbrance() {
+  computeSceneBB();
+  var encumbrance = [0.0, 0.0, 0.0];
+  encumbrance[0] = Math.trunc(Math.ceil((sceneBB[0]-sceneBB[3])/gStep)+1);
+  encumbrance[1] = Math.trunc(Math.ceil((sceneBB[1]-sceneBB[4])/gStep)+1);
+  encumbrance[2] = Math.trunc(Math.ceil((sceneBB[2]-sceneBB[5])/gStep)+1);
+
+  el('encumbrance').value = encumbrance[0] + " x " + encumbrance[1]  + " x " + encumbrance[2] + " cm";
 }

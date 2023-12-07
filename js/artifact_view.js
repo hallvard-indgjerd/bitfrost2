@@ -53,7 +53,9 @@ $.ajax(ajaxSettings)
     let model = data.model.model_object;
     if((role && role < 5) || (activeUser && model.author_id === activeUser)){
       $("[name=saveModelParam]").on('click', function(){
-        let dati = buildModelParamArray(model.id, 'updateModelParam')
+        let dati = buildModelParamArray()
+        dati.model = model.id
+        dati.trigger = 'updateModelParam'
         saveModelParam(dati)
       })
     }else{

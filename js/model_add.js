@@ -29,7 +29,7 @@ let listMethod = {
 }
 listArray.push(listAuthor,listOwner,listLicense,listMethod)
 listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
-
+$("#wrapViewSpot").remove()
 $(".closeTip").on('click', function(){
   $(this).text($(this).text()==='view tip' ? 'hide tip' : 'view tip')
 })
@@ -63,18 +63,39 @@ $("[name=saveModelParam").remove()
 
 function save(btn){
   const form = $("[name=newModelForm]")[0];
+  let dati = {
+    model:{'trigger':'addModel'},
+    model_object:new FormData(),
+    model_param:{},
+    model_view:{}
+  }
   // if (form.checkValidity()) {
     btn.preventDefault();
-    formdata.append('trigger','addModel')
-    formdata.append('name',el('name').value)
-    formdata.append('description',el('description').value)
-    formdata.append('note',el('note').value)
-    formdata.append('author',el('author').value)
-    formdata.append('owner',el('owner').value)
-    formdata.append('license',el('license').value)
-    // formdata.append("nxz", nxz.files[0], uuid+".nxz");
-    // formdata.append("thumb", el('thumb').files[0], uuid+".nxz");
-    for (const pair of formdata.entries()) { console.log(`${pair[0]}: ${pair[1]}`); }
+    $("[data-table=model]").each(function(){
+      if($(this).val()){
+        dati.model[$(this).attr('id')] = $(this).val()
+      }
+    })
+    $("[data-table=model_object]").each(function(){
+      if($(this).val()){
+        let field = $(this).attr('id').split('_').pop()
+        dati.model_object.append(field,$(this).val())
+      }
+    })
+    dati.model_object.append("nxz", nxz.files[0], uuid+".nxz");
+    dati.model_object.append("thumb", el('thumb').files[0], uuid+".nxz");
+    $("[data-table=object_param]").each(function(){
+      if($(this).val()){
+        dati.model_param[$(this).attr('id')] = $(this).val()
+      }
+    })
+    dati.model_view = buildModelParamArray()
+    
+    console.log(dati);
+    // Object.keys(dati).forEach(function(key){
+    //   console.log(key+ " " + dati[key]);
+    // })
+    // for (const pair of dati.model_object.entries()) { console.log(`${pair[0]}: ${pair[1]}`); }
   // }
 }
 
@@ -149,8 +170,8 @@ function completeHandler(event){
   //light component
   setupLightController()
   resizeLightController()
-  updateLightController(lightDir[0],lightDir[1])  
-  // getThumbnail()
+  updateLightController(lightDir[0],lightDir[1])
+  if(!el('encumbrance').value){setTimeout(computeEncumbrance,200)}
 }
 function errorHandler(event){
   el("status").innerHTML = "Upload Failed";
