@@ -10,6 +10,7 @@ $.ajax(ajaxSettings)
   console.log(data);
   $("#loadingDiv").remove()
   let artifact = data.artifact;
+  $("h2#title").text(artifact.name)
   Object.keys(artifact).forEach(function(key) {
     if(!artifact[key]){artifact[key] = 'not defined'}
     if(key == 'status'){ artifact[key] = 'The item status is: '+artifact[key] }
@@ -23,7 +24,7 @@ $.ajax(ajaxSettings)
 
   let material = data.artifact_material_technique;
   material.forEach((item) => {
-    $("<li/>", {class:'list-group-item ps-0'}).text(item.material +" / "+(item.technique ? item.technique : 'not defined') ).appendTo('#material>ol')
+    $("<li/>", {class:'list-group-item ps-0 pt-0'}).text(item.material +" / "+(item.technique ? item.technique : 'not defined') ).appendTo('#material>ol')
   });
 
   let institution = data.storage_place;
@@ -100,7 +101,6 @@ $.ajax(ajaxSettings)
 });
 
 function artifactMap(markerArr, polyArr){
-  console.log(Object.keys(polyArr).length);
   map = L.map('map',{maxBounds:mapExt})
   map.setMinZoom(4);
   osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);

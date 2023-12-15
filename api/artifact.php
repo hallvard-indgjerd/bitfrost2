@@ -10,6 +10,7 @@ if(isset($funzione) && function_exists($funzione)) {
 }
 
 function addArtifact($obj){ return json_encode($obj->addArtifact($_POST)); }
+function editArtifact($obj){ return json_encode($obj->editArtifact($_POST)); }
 function getArtifact($obj){return json_encode($obj->getArtifact($_POST['id']));}
 function getArtifacts($obj){return json_encode($obj->getArtifacts($_POST['search']));}
 ?>

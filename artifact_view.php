@@ -42,7 +42,7 @@
                   <i class="mdi mdi-pencil"></i> edit
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a href="#" class="dropdown-item">artifact metadata</a></li>
+                    <li><a href="artifact_edit.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">artifact metadata</a></li>
                     <li><a href="#" class="dropdown-item">model metadata</a></li>
                   </ul>
                 </div>
@@ -59,8 +59,12 @@
       </nav>
       <div class="container-fluid" id="wrapData">
         <div class="row">
+          <div class="col">
+            <h2 id="title" class="titleSection text-center txt-adc-dark fw-bold border-bottom"></h2>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-md-4">
-            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Artifact</h2>
             <div class="alert" id="status"></div>
             <div class="divSection artifactCol" id="artifactCol">
               <div class="accordion accordion-flush" id="accordionArtifact">
@@ -88,18 +92,18 @@
                           <span id="type"></span>
                         </li>
                         <li class="list-group-item">
-                          <div>Material / technique</div>
-                          <div id="material">
+                          <span>Material / technique</span>
+                          <span id="material">
                             <ol class="list-group list-group-numbered list-group-flush"></ol>
-                          </div>
+                          </span>
                         </li>
                         <li class="list-group-item">
-                          <div>Description</div>
-                          <div id="description"></div>
+                          <span>Description</span>
+                          <span id="description"></span>
                         </li>
                         <li class="list-group-item">
-                          <div>Notes</div>
-                          <div id="notes"></div>
+                          <span>Notes</span>
+                          <span id="notes"></span>
                         </li>
                       </ul>
                     </div>
@@ -176,8 +180,8 @@
                           <span id="findplace_toponym">Not defined</span>
                         </li>
                         <li class="list-group-item">
-                          <div>Notes</div>
-                          <div id="findplace_notes">Not defined</div>
+                          <span>Notes</span>
+                          <span id="findplace_notes">Not defined</span>
                         </li>
                       </ul>
                     </div>
@@ -275,13 +279,16 @@
             </div>
           </div>
           <div class="col-md-8">
-            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">3d Object</h2>
             <div id="modelWrap"><?php require('assets/canvas.html'); ?></div>            
           </div>
         </div>
         <div class="row">
-          <div class="col">
+          <div class="col-md-6">
             <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Media gallery</h2>
+            <div class="divSection mb-5"></div>
+          </div>
+          <div class="col-md-6">
+            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Documents</h2>
             <div class="divSection mb-5"></div>
           </div>
         </div>

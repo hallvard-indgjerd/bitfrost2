@@ -808,26 +808,30 @@ function updateView(view){
   viewList[view].state['specular'] = $("[name=specular]").is(':checked');
   
 	// measurements
+  /*
+    quando crei una view salvi: posizione, come viene visualizzato l'oggetto e 1 solo tipo di tool di misurazione
+    una possibilità sarebbe quella di salvare più misurazioni, per fare questo quando cambio tool non devo disattivare quello appena utilizzato e nella view non dovrei salvare la posizione.
+    Tra i tool si potrebbe aggiungere il disegno di una specifica area 
+  */
+  var toolState = {}
 	if(angleStage == 3){
-    var toolState = {}
 		toolState.angleA = anglePoints[0];
 		toolState.angleB = anglePoints[1];
 		toolState.angleC = anglePoints[2];
 		viewList[view].tools.angleMeasure = toolState;
 	}	
   else if((presenter._isMeasuringDistance) && (presenter._measurementStage == 3)){
-		var toolState = {};
 		toolState.distanceA = presenter._pointA;
 		toolState.distanceB = presenter._pointB;
 		viewList[view].tools.distanceMeasure = toolState;
 	}
 	else if((presenter._isMeasuringPickpoint)&(presenter._pickValid)&&(presenter._onEndPickingPoint == onEndPick)){ 
     //extra condition: I am really pointpicking, or i am picking for another tool?
-		var toolState = {};
 		toolState.distanceA = presenter._pointA;
 		toolState.pickA = presenter._pickedPoint;
 		viewList[view].tools.pickPoint = toolState;
 	}
+  console.log(viewList);
 }
 
 function deleteView(view){

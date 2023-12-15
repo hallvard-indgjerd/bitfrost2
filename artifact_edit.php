@@ -15,7 +15,12 @@
     <main class="<?php echo $mainClass; ?>">
       <div class="container">
         <input type="hidden" name="usr" value="<?php echo $_SESSION['id']; ?>">
+        <div class="text-center border rounded bg-light mb-3 p-3">
+          <h5 class="text-muted text-center">you are modifying the metadata of the artifact:</h5>
+          <h1 id="pageTitle" class="text-center txt-adc-dark"></h1>
+        </div>
         <form name="newArtifactForm" enctype="multipart/form-data" method="post">
+          <input type="hidden" name="artifact" id="artifact" data-table="artifact" value="<?php echo $_GET['item']; ?>">
           <fieldset>
             <legend>Main data</legend>
             <div class="row mb-3">
@@ -24,11 +29,16 @@
                 <div class="input-group mb-3">
                   <input type="text" class="form-control" placeholder="name" data-table="artifact" id="name" required>
                   <button class="btn btn-warning" type="button" name="checkNameBtn">check name</button>
+                  <span class="input-group-text bg-info" style="cursor:pointer" data-bs-toggle="tooltip" title="Fill in the 'name'field with a value that help you to easily identify the artifact. Remember that you cannot use the same value for different artifacts. To verify if the name already exists, you can insert the value and click the button 'check name', a messagge will appears. If you don't check the value now, the system will do it for you when you save the record'"><i class="mdi mdi-help-circle-outline"></i></span>
                 </div>
                 <div id="checkNameResult"></div>
               </div>
-              <div class="col-md-6">
-                Fill in the "name" field with a value that help you to easily identify the artifact. Remember that you cannot use the same value for different artifacts. To verify if the name already exists, you can insert the value and click the button "check name", a messagge will appears. If you don't check the value now, the system will do it for you when you save the record
+              <div class="col-md-3">
+                <label for="status" class="fw-bold text-danger">Status item</label>
+                <select name="status" id="status" class="form-select" data-table="artifact" required>
+                  <option value="1">under processing</option>
+                  <option value="2">complete data</option>
+                </select>
               </div>
             </div>
             <div class="row mb-3">
@@ -48,12 +58,12 @@
                   <div class="align-top">
                     <label for="category_class" class="fw-bold text-danger">Category class</label>
                     <select class="form-select" id="category_class" data-table="artifact" required>
-                      <option value="" selected disabled>-- select value --</option>
+                      <!-- <option value="" selected disabled>-- select value --</option> -->
                     </select>
                   </div>
                   <div class="align-top">
                     <label for="category_specs">Category specification</label>
-                    <select class="form-select" id="category_specs" data-table="artifact" value="" disabled></select>
+                    <select class="form-select" id="category_specs" data-table="artifact" value=""></select>
                     <div id="catSpecsMsg" class="form-text text-danger">No specifications available</div>
                   </div>
                 </div>
@@ -131,9 +141,7 @@
             <div class="row mb-3">
               <div class="col-md-3">
                 <label for="storage_place" class="fw-bold text-danger">Storage place</label>
-                <select class="form-select" id="storage_place" data-table="artifact" required>
-                  <option value="" selected disabled>-- select a value --</option>
-                </select>
+                <select class="form-select" id="storage_place" data-table="artifact" required></select>
               </div>
               <div class="col-md-3">
                 <label for="inventory">Inventory</label>
@@ -141,9 +149,7 @@
               </div>
               <div class="col-md-2">
                 <label for="conservation_state" class="fw-bold text-danger">Conservation state</label>
-                <select class="form-select" id="conservation_state" data-table="artifact" required>
-                  <option value="" selected disabled>-- select a value --</option>
-                </select>
+                <select class="form-select" id="conservation_state" data-table="artifact" required></select>
               </div>
               <div class="col-md-2">
                 <label for="object_condition">Object condition</label>
@@ -227,7 +233,8 @@
                 </select>
               </div>
             </div>
-            <button type="submit" name="newArtifact" class="btn btn-warning">save item</button>
+            <button type="submit" name="editArtifact" class="btn btn-warning">save item</button>
+            <a href="dashboard.php" class="btn btn-primary">cancel</a>
           </fieldset>
         </form>
       </div>
@@ -242,5 +249,6 @@
     <script src="js/geoConfig.js" charset="utf-8"></script>
     <script src="js/artifact_add.js" charset="utf-8"></script>
     <script src="js/chronologyFunc.js" charset="utf-8"></script>
+    <script src="js/artifact_edit.js" charset="utf-8"></script>
   </body>
 </html>

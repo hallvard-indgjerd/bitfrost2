@@ -102,8 +102,14 @@ $('[name=resetMap]').on('click',function(e){
 });
 $("[name=confirmMaterial]").on('click', handleMaterialTechnique)
 
+$("#is_museum_copy").on('click',function(){
+  let label = $(this).is(':checked') ? 'yes' : 'no';
+  $("label[for='is_museum_copy").text(label)
+});
+
 $("#county").on('change', function(){
   $("[name=city]").val('').attr({"data-cityid":''})
+  $("#longitude, #latitude").val('')
   setMapExtent('jsonCounty',$(this).val())
   $("#resetMapDiv").show();
 })
@@ -130,7 +136,22 @@ $(document).on('click', (event) => {
   }
 })
 
-$("[name='newArtifact']").on('click', function(el){
+$("[name='newArtifact']").on('click', function(el){ newArtifact(el) })
+
+function checkMaterialArray(){
+  const mt = materialTechniqueArray.length
+  const mtEl = document.getElementById('material')
+  if (mt == 0) {
+    alert('You have to add 1 material at least')
+    mtEl.setCustomValidity('You have to add 1 material at least')
+    return false;
+  }else {
+    mtEl.setCustomValidity('')
+    return true;
+  }
+}
+
+function newArtifact(el){
   checkMaterialArray()
   if (form[0].checkValidity()) {
     el.preventDefault()
@@ -157,17 +178,5 @@ $("[name='newArtifact']").on('click', function(el){
       }
       $("#toastDivContent").removeClass('d-none')
     });
-  }
-})
-
-function checkMaterialArray(){
-  const mt = materialTechniqueArray.length
-  const mtEl = document.getElementById('material')
-  if (mt == 0) {
-    mtEl.setCustomValidity('You have to add 1 material at least')
-    return false;
-  }else {
-    mtEl.setCustomValidity('')
-    return true;
   }
 }

@@ -34,10 +34,32 @@ class Artifact extends Conn{
 
   }
 
-  // public function checkName(string $name){
-  //   $sql = "select id from artifact where name = '".$name."';";
-  //   return $this->simple($sql);
-  // }
+  public function editArtifact(array $dati){
+    $filter = $dati['artifact']['artifact'];
+    unset($dati['artifact']['artifact']);
+    try {
+      $this->pdo()->beginTransaction();
+      $artifactUpdateSql = $this->buildUpdate('artifact',['id'=>$filter],$dati['artifact']);
+      $this->prepared($artifactUpdateSql, $dati['artifact']);
+      
+      $findPlaceUpdateSql = $this->buildUpdate('artifact_findplace',['artifact'=>$filter],$dati['artifact_findplace']);
+      $this->prepared($findPlaceUpdateSql, $dati['artifact_findplace']);
+      
+      $deleteMaterialSql = $this->buildDelete('artifact_material_technique',array("artifact"=>$filter));
+      $this->simple($deleteMaterialSql);
+
+      foreach ($dati['artifact_material_technique'] as $value) {
+        $data = array("artifact"=>$filter, "material"=>$value['m'], "technique" =>$value['t']);
+        $sql = $this->buildInsert("artifact_material_technique", $data);
+        $this->prepared($sql, $data);
+      }
+      $this->pdo()->commit();
+      return ["res"=> 1, "output"=>'Ok, the artifact has been successfully updated.'];
+    } catch (\Exception $e) {
+      $this->pdo()->rollBack();
+      return ["res"=>0, "output"=>$e->getMessage()];
+    }
+  }
 
   public function getArtifacts(array $search){
     $filter = [];
@@ -104,7 +126,7 @@ class Artifact extends Conn{
 
   private function getArtifactMetadata(int $id){
     $out = [];
-    $authorSql = "select p.id, p.first_name, p.last_name from person p inner join user_person up on up.person = p.id inner join user u on up.user = u.id inner join artifact a on a.author = u.id where a.id = ".$id.";";
+    $authorSql = "select p.id, p.first_name, p.last_name from person p inner join user u on u.person = p.id inner join artifact a on a.author = u.id where a.id = ".$id.";";
     $ownerSql = "select i.id, i.name from institution i inner join artifact a on a.owner = i.id where a.id = ".$id.";";
     $licenseSql = "select l.id, l.license, l.acronym, l.link from license l inner join artifact a on a.license = l.id where a.id = ".$id.";";
     $out['author'] = $this->simple($authorSql)[0];

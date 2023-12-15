@@ -117,10 +117,9 @@ function getCity(query){
   });
 }
 
-function getCityFromLonLat(ll){
+function getCityFromLonLat(ll, zoom){
   ajaxSettings.url=API+"get.php";
   ajaxSettings.data={trigger: 'getCityFromLonLat', point:ll};
-  let checkCity = $("[name=city]").val();
   $.ajax(ajaxSettings)
   .done(function(data) {
     if(data.length==0){
@@ -326,9 +325,7 @@ function resetMapValue(){
   map.removeLayer(cityGroup);
   countyGroup = L.featureGroup()
   cityGroup = L.featureGroup()
-  map.eachLayer(function (layer) {
-    if (layer instanceof L.Marker) { layer.remove() }
-  });
+  map.eachLayer(function (layer) { if (layer instanceof L.Marker) { layer.remove() } });
   $("#county, #parish, #toponym, #longitude, #latitude, #findplace_notes").val('')
   $("[name=city]").val('').attr({"data-cityid":''})
   $("#resetMapDiv").show();
