@@ -126,7 +126,7 @@ class Artifact extends Conn{
 
   private function getArtifactMetadata(int $id){
     $out = [];
-    $authorSql = "select p.id, p.first_name, p.last_name from person p inner join user u on u.person = p.id inner join artifact a on a.author = u.id where a.id = ".$id.";";
+    $authorSql = "select u.id, p.first_name, p.last_name from person p inner join user u on u.person = p.id inner join artifact a on a.author = u.id where a.id = ".$id.";";
     $ownerSql = "select i.id, i.name from institution i inner join artifact a on a.owner = i.id where a.id = ".$id.";";
     $licenseSql = "select l.id, l.license, l.acronym, l.link from license l inner join artifact a on a.license = l.id where a.id = ".$id.";";
     $out['author'] = $this->simple($authorSql)[0];
