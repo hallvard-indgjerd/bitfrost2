@@ -42,7 +42,7 @@ main{position: relative; width:100%; min-height:calc(100vh - 100px); margin:70px
 
 
 main.full{padding-right:0;}
-main.small, .itemTool.small{padding-right: 300px;}
+main.small, .itemTool.small{padding-right: 250px;}
 main > .itemTool{position:fixed;top:57px;left:0;width:100vw;height:45px; padding:4px 20px; background:#875e29; z-index:1000;}
 
 #backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;background: rgba(0,0,0,.3);z-index:500;}

@@ -76,6 +76,8 @@
                     <label for="material" class="fw-bold text-danger">Material</label>
                     <select class="form-select" id="material">
                       <option value="" selected disabled>-- select value --</option>
+                      <optgroup id="matClass" label="generic value"></optgroup>
+                      <optgroup id="matSpecs" label="specific value"></optgroup>
                     </select>
                   </div>
                   <div class="technique">

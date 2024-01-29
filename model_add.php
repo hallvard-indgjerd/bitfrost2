@@ -193,8 +193,12 @@
         </form>
       </div>
     </main>
-    <?php require("assets/menu.php"); ?>
-    <?php require("assets/js.html"); ?>
+    
+    <?php
+      require("assets/toastDiv.html"); 
+      require("assets/menu.php");
+      require("assets/js.html");
+    ?>
     <script type="text/javascript" src="assets/3dhop/spidergl.js"></script>
     <script type="text/javascript" src="assets/3dhop/presenter.js"></script>
     <script type="text/javascript" src="assets/3dhop/nexus.js"></script>
@@ -205,7 +209,7 @@
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
     <script src="js/3dhop_function.js"></script>
-    <script src="assets/html2canvas.js" charset="utf-8"></script>
+    <!-- <script src="assets/html2canvas.js" charset="utf-8"></script> -->
     <script src="js/model_add.js" charset="utf-8"></script>
   </body>
 </html>

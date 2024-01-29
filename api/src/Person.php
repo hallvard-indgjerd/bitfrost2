@@ -60,7 +60,7 @@ class Person extends Conn{
   public function getUsrObjects(int $usr){
     $out=[];
     $artifactStatSql = "select count(*) tot from artifact inner join user on artifact.author = user.id where artifact.author = ".$usr.";";
-    $modelStatSql = "select count(*) tot from model_metadata inner join user on model_metadata.author = user.id where model_metadata.author = ".$usr.";";
+    $modelStatSql = "select count(*) tot from model_object inner join user on model_object.author = user.id where model_object.author = ".$usr.";";
     $out['artifacts'] = $this->simple($artifactStatSql)[0];
     $out['models'] = $this->simple($modelStatSql)[0];
     return $out;

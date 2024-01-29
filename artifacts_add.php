@@ -66,6 +66,8 @@
                     <label for="material" class="fw-bold text-danger">Material</label>
                     <select class="form-select" id="material">
                       <option value="" selected disabled>-- select value --</option>
+                      <optgroup id="matClass" label="generic value"></optgroup>
+                      <optgroup id="matSpecs" label="specific value"></optgroup>
                     </select>
                   </div>
                   <div class="technique">
@@ -239,7 +241,7 @@
     ?>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/js/bootstrap5-toggle.ecmas.min.js"></script>
-    <script src="js/geoConfig.js" charset="utf-8"></script>
+    <script src="js/maps/geo_config.js" charset="utf-8"></script>
     <script src="js/artifact_add.js" charset="utf-8"></script>
     <script src="js/chronologyFunc.js" charset="utf-8"></script>
   </body>

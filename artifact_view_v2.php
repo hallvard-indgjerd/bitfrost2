@@ -1,12 +1,10 @@
-<?php
-  require 'init.php';
-?>
+<?php require 'init.php'; ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
     <?php require("assets/meta.php"); ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" media="screen"/>
-    <link rel="stylesheet" href="css/artifact_view.css">
+    <link rel="stylesheet" href="css/artifact_view_v2.css">
     <link rel="stylesheet" href="css/my3dhop.css">
   </head>
   <body>
@@ -57,17 +55,15 @@
           </div>
         </div>
       </nav>
-      <div class="container-fluid" id="wrapData">
-        <div class="row">
-          <div class="col">
-            <h2 id="title" class="titleSection text-center txt-adc-dark fw-bold border-bottom"></h2>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">
-            <div class="alert" id="status"></div>
-            <div class="divSection artifactCol" id="artifactCol">
-              <div class="accordion accordion-flush" id="accordionArtifact">
+
+      <div id="title" class="text-center">
+        <h2 class="titleSection txt-adc-dark fw-bold"></h2>
+      </div>
+      <div id="mainFlex" class="mainFlex_small">
+        <div id="viewer" class=" viewer_small"><?php require('assets/canvas.html'); ?></div>
+        <div id="metadata" class=" metadata_small">
+          <div class="alert" id="status"></div>
+          <div class="accordion accordion-flush" id="accordionArtifact">
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="main-section">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mainSection" aria-expanded="false" aria-controls="mainSection">Main data</button>
@@ -251,7 +247,7 @@
                 </div>
                 <div class="accordion-item model-accordion">
                   <h2 class="accordion-header" id="model-param-btn">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#model-param" aria-expanded="true" aria-controls="model-param">Model parameters</button>
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#model-param" aria-expanded="true" aria-controls="model-param">Model objects</button>
                   </h2>
                   <div id="model-param" class="accordion-collapse collapse" aria-labelledby="model-param-btn">
                     <div class="accordion-body">
@@ -270,27 +266,15 @@
                   </div>
                 </div>
               </div>
-            </div>
-            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Geographic information</h2>
-            <div class="divSection mb-5" id="map">
-              <!-- <div id="alertMapWrap">
-                <div class="alert alert-danger">Coordinaes not saved</div>
-              </div> -->
-            </div>
-          </div>
-          <div class="col-md-8">
-            <div id="modelWrap"><?php require('assets/canvas.html'); ?></div>            
-          </div>
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Media gallery</h2>
-            <div class="divSection mb-5"></div>
-          </div>
-          <div class="col-md-6">
-            <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Documents</h2>
-            <div class="divSection mb-5"></div>
-          </div>
+        <div id="map" class=" map_small"></div>
+      </div>
+      <div id="resource">
+        <div id="media">
+          <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Media gallery</h2>
+        </div>
+        <div id="documents">
+          <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Documents</h2>
         </div>
       </div>
     </main>
@@ -309,8 +293,11 @@
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-    <script src="js/3dhop_function.js"></script>
     <script src="js/maps/geo_config.js" charset="utf-8"></script>
-    <script src="js/artifact_view.js" charset="utf-8"></script>
+    <script src="js/maps/geo_function.js" charset="utf-8"></script>
+    <script src="js/viewer/grid.js" charset="utf-8"></script>
+    <script src="js/viewer/viewer_config.js" charset="utf-8"></script>
+    <script src="js/viewer/viewer_function.js" charset="utf-8"></script>
+    <script src="js/artifact_view_v2.js" charset="utf-8"></script>
   </body>
 </html>

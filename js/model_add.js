@@ -1,10 +1,10 @@
 const uuid = self.crypto.randomUUID();
-// const canvas = document.getElementById('draw-canvas');
 const nxz = document.getElementById('nxz');
+const thumb = document.getElementById('thumb');
 const endpoint = 'api/modelPreview.php';
 const thumbEndpoint = 'api/modelThumbUpload.php';
-let file, thumb;
-var formdata = new FormData();
+const toastToolBar = $('#toastBtn');
+
 const listTrigger='getSelectOptions';
 let listArray = [];
 let listAuthor = {
@@ -33,7 +33,7 @@ $("#wrapViewSpot").remove()
 $(".closeTip").on('click', function(){
   $(this).text($(this).text()==='view tip' ? 'hide tip' : 'view tip')
 })
-$("#progressBar,#thumbWrap, #nxzWrap").hide()
+$("#progressBar,#thumbWrap, #nxzWrap, [name=enlargeScreen]").hide()
 $("[name=nxz]").on('change', uploadFile);
 $("[name=thumb]").on('change', showPreview);
 $("[name=newModel]").on('click', function(el){ save(el); });
@@ -62,61 +62,41 @@ $("[name=saveModelParam").remove()
 
 
 function save(btn){
-  const form = $("[name=newModelForm]")[0];
-  let dati = {
-    model:{'trigger':'addModel'},
-    model_object:new FormData(),
-    model_param:{},
-    model_view:{}
-  }
-  // if (form.checkValidity()) {
-    btn.preventDefault();
-    $("[data-table=model]").each(function(){
-      if($(this).val()){
-        dati.model[$(this).attr('id')] = $(this).val()
-      }
-    })
-    $("[data-table=model_object]").each(function(){
-      if($(this).val()){
-        let field = $(this).attr('id').split('_').pop()
-        dati.model_object.append(field,$(this).val())
-      }
-    })
-    dati.model_object.append("nxz", nxz.files[0], uuid+".nxz");
-    dati.model_object.append("thumb", el('thumb').files[0], uuid+".nxz");
-    $("[data-table=object_param]").each(function(){
-      if($(this).val()){
-        dati.model_param[$(this).attr('id')] = $(this).val()
-      }
-    })
-    dati.model_view = buildModelParamArray()
-    
-    console.log(dati);
-    // Object.keys(dati).forEach(function(key){
-    //   console.log(key+ " " + dati[key]);
-    // })
-    // for (const pair of dati.model_object.entries()) { console.log(`${pair[0]}: ${pair[1]}`); }
-  // }
-}
-
-function saveModel(){
-  $.ajax({
-    type: "POST",
-    enctype: 'multipart/form-data',
-    url: "api/model.php",
-    dataType: 'json',
-    data: formdata,
-    processData: false,
-    contentType: false,
-    cache: false,
-    timeout: 800000,
-    success: function (data) {
-      console.log(data);
-    },
-    error: function (e) {
-      console.log(e);
+  btn.preventDefault();
+  let dati = new FormData();
+  dati.append('trigger','saveModel');
+  $("[data-table]").each(function(){
+    if($(this).val()){
+      dati.append($(this).attr('id'),$(this).val())
     }
-  });
+  })
+  $.each(buildModelParamArray(), function(key, value){dati.append(key, value);})
+  dati.append("nxz", nxz.files[0], nxz.files[0].name);
+  dati.append("thumb", thumb.files[0], thumb.files[0].name);
+  
+  ajaxSettings.url=API+'model.php';
+  ajaxSettings.data = dati;
+  ajaxSettings.enctype = 'multipart/form-data';
+  ajaxSettings.processData= false;
+  ajaxSettings.contentType= false;
+  ajaxSettings.cache= false;
+  ajaxSettings.timeout = 800000;
+  $.ajax(ajaxSettings)
+  .done(function(data) {
+    console.log(data);
+    if (data.res==0) {
+      $("#toastDivError .errorOutput").text(data.output);
+      $("#toastDivError").removeClass("d-none");
+    }else {
+      $(".toastTitle").text(data.output)
+      gotoIndex.appendTo(toastToolBar);
+      gotoDashBoard.appendTo(toastToolBar);
+      gotoNewItem.attr("href","model_view.php?item="+data.id).appendTo(toastToolBar);
+      newRecord.appendTo(toastToolBar);
+      $("#toastDivSuccess").removeClass("d-none")
+    }
+    $("#toastDivContent").removeClass('d-none')
+  }).fail((jqXHR, errorMsg) => {console.log(jqXHR.responseText, errorMsg)});
 }
 
 function uploadFile(){
@@ -126,8 +106,7 @@ function uploadFile(){
     return false;
   }
   var nxzUpload = new FormData();
-  file = nxz.files[0];
-  nxzUpload.append("nxz", file, uuid+".nxz");
+  nxzUpload.append("nxz", nxz.files[0], nxz.files[0].name);
   var ajax = new XMLHttpRequest();
   $("#progressBar").show()
   ajax.upload.addEventListener("progress", progressHandler, false);
@@ -152,7 +131,7 @@ function completeHandler(event){
   $("#uploadTip").text("Before saving the model, take a screenshot of canvas and upload it as thumbnail preview for use in the gallery")
   $("#thumbWrap").show()
   scene = {
-    meshes: {"nxz" : { url: 'archive/models/preview/'+uuid+".nxz" }},
+    meshes: {"nxz" : { url: 'archive/models/preview/'+nxz.files[0].name }},
     modelInstances : instanceOpt,
     trackball: trackBallOpt,
     space: spaceOpt,
@@ -165,7 +144,6 @@ function completeHandler(event){
   presenter._onEndPickingPoint = onEndPick;
   presenter.setClippingPointXYZ(0.5, 0.5, 0.5);
   gStep = 1.0;
-  // startupGrid('gridBase')
   startupGrid('gridBase')
   //light component
   setupLightController()
@@ -182,31 +160,27 @@ function abortHandler(event){
   console.log(event);
 }
 
-function getThumbnail(){
-  presenter._scene.config.autoSaveScreenshot = false;
-  // actionsToolbar('screenshot');
-  presenter.createThumb()
-  setTimeout(function(){
-    // thumb = presenter.screenshotData;
-    // el('imgFromPresenter').src = thumb;
-    presenter._scene.config.autoSaveScreenshot = true;
-    // callback()
-  },1000)
-}
+// function getThumbnail(){
+//   presenter._scene.config.autoSaveScreenshot = false;
+//   presenter.saveScreenshot();
+//   var img = document.createElement("img");
+//   document.body.appendChild(img);
+//   img.src = presenter.screenshotData;
+// }
 
-async function convertThumb(){
-  const res = await fetch(thumb);
-  const blob = await res.blob();
-  const fd = new FormData();
-  fd.append("thumb", blob, uuid+".png");
-  var ajax = new XMLHttpRequest();
-  ajax.addEventListener("load", completeThumb, false);
-  ajax.addEventListener("error", errorHandler, false);
-  ajax.addEventListener("abort", abortHandler, false);
-  ajax.open("POST", thumbEndpoint);
-  ajax.send(fd);
-}
+// async function convertThumb(){
+//   const res = await fetch(thumb);
+//   const blob = await res.blob();
+//   const fd = new FormData();
+//   fd.append("thumb", blob, uuid+".png");
+//   var ajax = new XMLHttpRequest();
+//   ajax.addEventListener("load", completeThumb, false);
+//   ajax.addEventListener("error", errorHandler, false);
+//   ajax.addEventListener("abort", abortHandler, false);
+//   ajax.open("POST", thumbEndpoint);
+//   ajax.send(fd);
+// }
 
-function completeThumb(event){
-  console.log(event.target.responseText);
-}
+// function completeThumb(event){
+//   console.log(event.target.responseText);
+// }

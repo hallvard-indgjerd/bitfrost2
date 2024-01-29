@@ -15,7 +15,7 @@ let listCatClass = {
   label: 'value'
 }
 let listMaterial = {
-  settings: {trigger:listTrigger,list:'list_material_class'},
+  settings: {trigger:listTrigger,list:'material'},
   htmlEl: 'material',
   label: 'value'
 }

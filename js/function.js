@@ -164,6 +164,11 @@ function getList(settings,selName,label){
   ajaxSettings.data=settings;
   $.ajax(ajaxSettings)
   .done(function(data) {
+    if(selName=='material'){
+      data.class.forEach((opt) => { $("<option/>").val(opt.id).text(opt[label]).appendTo("#material>#matClass")});
+      data.specs.forEach((opt) => { $("<option/>").val(opt.id).text(opt[label]).appendTo("#material>#matSpecs")});
+      return false;
+    }
     data.forEach((opt, i) => {
       let item = $("<option/>").val(opt.id).text(opt[label]).appendTo("#"+selName)
       if(selName=='startGenericList' || selName=='startSpecificList' || selName=='endGenericList' || selName=='endSpecificList'){

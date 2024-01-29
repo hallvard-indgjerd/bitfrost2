@@ -1,4 +1,3 @@
-const el = $("#usrDiv");
 const sessionActive = $("[name=sessionActive").val();
 
 getPerson($("[name=person").val())
@@ -40,13 +39,14 @@ function getUsrFromPerson(person){
 }
 
 function usrDiv(data){
-  el.html('')
+  const usrDiv = $("#usrDiv");
+  usrDiv.html('')
   let active = data.is_active == 1 ? 'true' : 'false';
   let class_active = data.is_active == 1 ? 'alert-success' : 'alert-danger';
-  let card = $("<div/>", {class:'card'}).appendTo(el);
-  let header = $("<div/>",{class:'card-header'}).html("<h6>User data</h6>").appendTo(card);
+  let card = $("<div/>", {class:'card'}).appendTo(usrDiv);
+  $("<div/>",{class:'card-header'}).html("<h6>User data</h6>").appendTo(card);
   let ul = $("<ul/>", {class:'list-group list-group-flush'}).appendTo(card);
-  let footer = $("<div/>",{class:'card-footer text-end'}).appendTo(card);
+  let footer = $("<div/>",{class:'card-footer'}).appendTo(card);
   $("<li/>",{class:'list-group-item'}).html('<span class="fw-bold">is active: </span><span class="alert '+class_active+' p-2 m-0">'+active+'</span>').appendTo(ul)
   $("<li/>",{class:'list-group-item'}).html('<span class="fw-bold">role: </span><span>'+data.role+'</span>').appendTo(ul)
   $("<li/>",{class:'list-group-item'}).html('<span class="fw-bold">created at: </span><span>'+data.created+'</span>').appendTo(ul)

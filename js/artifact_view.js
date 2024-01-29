@@ -51,7 +51,7 @@ $.ajax(ajaxSettings)
   $("#artifact_license>a").attr("href",metadata.license.link).text(metadata.license.license+" ("+metadata.license.acronym+")")
 
   if(data.model){
-    let model = data.model.model_object;
+    let model = data.model.model_object[0];
     if((role && role < 5) || (activeUser && model.author_id === activeUser)){
       $("[name=saveModelParam]").on('click', function(){
         let dati = buildModelParamArray()
@@ -69,6 +69,8 @@ $.ajax(ajaxSettings)
       $("#model-license").html("<a href='"+model.license_link+"' target='_blank'>"+model.license+" ("+model.license_acronym+")</a>");
       $("#model-create_at").text(model.create_at)
       $("#model-updated_at").text(model.updated_at)
+
+      console.log(paradata);
     
       Object.keys(paradata).forEach(function(key) {
         if(paradata[key]){$("#model-"+key).text(paradata[key])}
@@ -101,6 +103,7 @@ $.ajax(ajaxSettings)
 });
 
 function artifactMap(markerArr, polyArr){
+  console.log('initMap');
   map = L.map('map',{maxBounds:mapExt})
   map.setMinZoom(4);
   osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);

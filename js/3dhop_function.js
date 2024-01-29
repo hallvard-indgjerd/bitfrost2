@@ -1,15 +1,42 @@
 const artifactId = $("[name=artifactId]").val()
 const activeUser = $("[name=activeUsr]").val()
 const role = $("[name=role]").val()
+
+// variabili di configurazione ///
 const canvas = document.getElementById("draw-canvas");
-const instanceOpt = {"nxz":{ mesh:"nxz", tags: ['Group'], color: [0.5, 0.5, 0.5], backfaceColor: [0.5, 0.5, 0.5, 3.0], specularColor: [0.0, 0.0, 0.0, 256.0]}}
-const trackBallOpt = { type: TurntablePanTrackball, trackOptions: {startPhi: 15.0, startTheta: 15.0, startDistance: 2.0, minMaxPhi: [-180, 180], minMaxTheta: [-90.0, 90.0], minMaxDist: [0.1, 3.0] }}
-const spaceOpt = {centerMode: "scene", radiusMode: "scene", cameraNearFar: [0.01, 5.0]}
-const configOpt = {pickedpointColor: [1.0, 0.0, 1.0], measurementColor: [0.5, 1.0, 0.5], showClippingPlanes: true, showClippingBorder: true, clippingBorderSize: 0.5, clippingBorderColor: [0.0, 1.0, 1.0]}
-const sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
 const defaultViewSide = '15,15,0,0,0,2';
 
-let presenter, scene, paradata, gStep, measure_unit;
+let presenter = null;
+let scene, paradata, gStep, measure_unit;
+let meshes = {};
+let instances = {};
+
+const trackBallOpt = { 
+  type: TurntablePanTrackball, 
+  trackOptions: {
+    startPhi: 15.0, 
+    startTheta: 15.0, 
+    startDistance: 2.0, 
+    minMaxPhi: [-180, 180], 
+    minMaxTheta: [-90.0, 90.0], 
+    minMaxDist: [0.1, 3.0] 
+  }
+}
+const spaceOpt = {
+  centerMode: "scene", 
+  radiusMode: "scene", 
+  cameraNearFar: [0.01, 5.0]
+}
+const configOpt = {
+  pickedpointColor: [1.0, 0.0, 1.0], 
+  measurementColor: [0.5, 1.0, 0.5], 
+  showClippingPlanes: true, 
+  showClippingBorder: true, 
+  clippingBorderSize: 0.5, 
+  clippingBorderColor: [0.0, 1.0, 1.0]
+}
+const sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
+
 let angleStage = 0;
 let anglePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]];
 let lightDir = [-0.17,-0.17];
@@ -18,12 +45,25 @@ let viewIndex = 0;
 let spotList = {}
 let spotIndex = 0;
 
+const instanceOpt = {
+  "nxz":{ 
+    mesh:"nxz", 
+    tags: ['Group'], 
+    color: [0.5, 0.5, 0.5], 
+    backfaceColor: [0.5, 0.5, 0.5, 3.0], 
+    specularColor: [0.0, 0.0, 0.0, 256.0]
+  }
+}
+
+var toolBtnList = [].slice.call(document.querySelectorAll('.toolBtn'))
+var tooltipBtnList = toolBtnList.map(function (tooltipBtn) { return new bootstrap.Tooltip(tooltipBtn,{trigger:'hover', html: true, placement:'left' })})
+/////////////////////////////////////////////////////////////////////
+
+
 $("[name=toggleViewSpot]").on('click', function(){
   $(this).find('span').toggleClass('mdi-chevron-down mdi-chevron-up');
 })
 
-var toolBtnList = [].slice.call(document.querySelectorAll('.toolBtn'))
-var tooltipBtnList = toolBtnList.map(function (tooltipBtn) { return new bootstrap.Tooltip(tooltipBtn,{trigger:'hover', html: true, placement:'left' })})
 $("[name=fullscreenToggle]").on('click', function(){
   let act = $(this).data('action') == 'fullscreen_in' ? 'fullscreen_out' : 'fullscreen_in';
   $(this).find('span').toggleClass('mdi-fullscreen mdi-fullscreen-exit')
@@ -166,20 +206,42 @@ $("[name=addViewBtn]").on('click',addView)
 /////////////////////////////////////////////////////////////
 
 function initModel(model){
-  paradata = model.model_param
-  measure_unit = paradata.measure_unit;
-  let param = model.model_view
+  console.log(model);
+  let mainData = model.model;
+  let object = model.model_object;
+  let model_view = model.model_view;
+  paradata = model.model_object[0]
+  measure_unit = object[0].measure_unit;
+  object.forEach((element, index) => {
+    meshes['mesh_'+index] = {'url': 'archive/models/' + element.object }
+    instances['mesh_'+index] = {
+      mesh:'mesh_'+index, 
+      tags: ['Group'], 
+      color: [0.5, 0.5, 0.5], 
+      backfaceColor: [0.5, 0.5, 0.5, 3.0], 
+      specularColor: [0.0, 0.0, 0.0, 256.0]
+    }
+    let thumbPath = 'archive/thumb/'+element.thumbnail;
+    let thumbDiv = $("<div/>",{'class':'thumb'}).appendTo('#object-control');
+    thumbDiv.css("background-image","url("+thumbPath+")");
+    let backdrop = $("<div/>",{'class':'backdrop'}).appendTo(thumbDiv).hide();
+    thumbDiv.on('click', function(){
+      backdrop.toggle()
+      let vis = backdrop.is(':visible') ? false : true;
+      presenter.setInstanceVisibilityByName('mesh_'+index, vis, true)
+    })
+  });
+
+  console.log(object.length);
+
   scene = {
-    meshes: {
-      "nxz" : {
-        url: 'archive/models/'+model.model_object.object 
-      }
-    }, 
-    modelInstances: instanceOpt, 
+    meshes: meshes, 
+    modelInstances: instances, 
     trackball: trackBallOpt, 
     space: spaceOpt, 
     config: configOpt
   }
+
   init3dhop();
   presenter = new Presenter("draw-canvas");
   presenter.setScene(scene);
@@ -199,25 +261,25 @@ function initModel(model){
     default: gStep = 1.0; break;
   }
   
-  startupGrid(param.grid)
-  presenter.animateToTrackballPosition(param.viewside.split(',').map(Number))
+  startupGrid(model_view.grid)
+  presenter.animateToTrackballPosition(model_view.viewside.split(',').map(Number))
   lightDir = model.model_view.lightdir.split(',').map(Number)
   presenter.rotateLight(lightDir[0],-lightDir[1])
-  let viewsideLabel = getViewside(param.viewside)
-  if(param.viewside !== defaultViewSide && viewsideLabel !== ''){
-    $("[name=viewside][value='"+param.viewside+"']").addClass('active')
+  let viewsideLabel = getViewside(model_view.viewside)
+  if(model_view.viewside !== defaultViewSide && viewsideLabel !== ''){
+    $("[name=viewside][value='"+model_view.viewside+"']").addClass('active')
     $("#dropdownViewList").text(viewsideLabel)
   }
   $("[name=changeGrid][value=gridBase").removeClass('active')
-  $("[name=changeGrid][value="+param.grid+"]").addClass('active')
-  let gridLabel = $("[name=changeGrid][value="+param.grid+"]").text()
+  $("[name=changeGrid][value="+model_view.grid+"]").addClass('active')
+  let gridLabel = $("[name=changeGrid][value="+model_view.grid+"]").text()
   $("#dropdownGridList").text(gridLabel)
-  if(param.ortho==1){ $("[name=ortho]").trigger('click') }
-  if(param.xyz==1){ setTimeout(function(){ $("[name=xyzAxes]").trigger('click') },100) }
-  if (param.texture == 1) { $("[name=texture]").trigger('click') }
-  if(param.solid ==1){$("[name=solid]").trigger('click')}
-  if(param.lighting == 1){$("[name=lighting]").trigger('click')}
-  if(param.specular == 1){$("[name=specular]").trigger('click')}
+  if(model_view.ortho==1){ $("[name=ortho]").trigger('click') }
+  if(model_view.xyz==1){ setTimeout(function(){ $("[name=xyzAxes]").trigger('click') },100) }
+  if (model_view.texture == 1) { $("[name=texture]").trigger('click') }
+  if(model_view.solid ==1){$("[name=solid]").trigger('click')}
+  if(model_view.lighting == 1){$("[name=lighting]").trigger('click')}
+  if(model_view.specular == 1){$("[name=specular]").trigger('click')}
 }
 
 function getViewside(viewside){

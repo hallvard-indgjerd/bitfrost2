@@ -8,6 +8,9 @@ class Get extends Conn{
     $where = '';
     $field = '';
     switch ($list) {
+      case 'material':
+        return $this->getMaterial();
+      break;
       case 'institution':
         $field = "id, concat(abbreviation, ' - ',name) as value";
       break;
@@ -41,6 +44,14 @@ class Get extends Conn{
     $sort = $orderBy ? $orderBy : 2;
     $out = "select ".$field." from ".$list." ".$where." order by ".$sort." asc;";
     return $this->simple($out);
+  }
+  public function getMaterial(){
+    $out = [];
+    $sqlClass = "select s.id, s.value from list_material_class c inner join list_material_specs s on s.material_class = c.id where s.value = c.value order by 2 asc;";
+    $sqlSpecs = "select s.id, s.value from list_material_class c inner join list_material_specs s on s.material_class = c.id where s.value != c.value order by 2 asc;";
+    $out['class'] = $this->simple($sqlClass);
+    $out['specs'] = $this->simple($sqlSpecs);
+    return $out;
   }
 
   public function getFilterList(){

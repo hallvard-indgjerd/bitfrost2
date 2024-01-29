@@ -35,8 +35,11 @@
       <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="toggle fullscreen mode" name="fullscreenToggle" data-action="fullscreen_out">
         <span class="mdi mdi-fullscreen"></span>
       </button>
-      <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="download a screenshot of the current view in png format" name="screenshot" data-action="screenshot">
+      <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="enlarge the screen" name="enlargeScreen">
         <span class="mdi mdi-monitor-screenshot"></span>
+      </button>
+      <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="download a screenshot of the current view in png format" name="screenshot" data-action="screenshot">
+        <span class="mdi mdi-camera"></span>
       </button>
     </div>
     <div class="btn-group" role="group">
@@ -115,9 +118,10 @@
     </div>
   </div>
 
-  <div id="panel_instructions" class="rounded invisible"></div>
-
+  <div id="object-control" class="rounded"></div>
+  
   <div id="measure-box" class="rounded invisible text-center">
+    <div id="panel_instructions" class="mb-2 fw-bold"></div>
     <p id="measure-box-title" class="m-0 border-bottom border-secondary"></p>
     <h6 id="measure-output" class="m-0"></h6>
   </div>

@@ -20,8 +20,8 @@
 #modelToolsV{top:10px; right:10px; width:150px; padding:10px;}
 #modelToolsH{top:10px; padding:10px; left:50%; width:auto; transform: translateX(-50%);}
 
-#panel_instructions, #measure-box{ position:absolute; background-color: rgba(255, 255, 255, 0.7); bottom:10px; padding:5px 10px; font-size: 12px;}
-#panel_instructions{left: 50%; transform: translateX(-50%); width: 35%;}
+#measure-box{ position:absolute; background-color: rgba(255, 255, 255, 0.7); bottom:10px; padding:5px 10px; font-size: 12px;}
+/* #panel_instructions{left: 50%; transform: translateX(-50%); width: 35%;} */
 #measure-box{left:10px;}
 #sections-box,#lightCanvas-box{position: absolute; bottom: 10px; right: 10px;}
 #sections-box{width: 350px;}
@@ -31,3 +31,38 @@
 .view > .viewToolbar, .spot > .spotToolbar{width:35px;}
 .view > .viewDescription, .spot > .spotDescription{width: calc(100% - 40px); padding-right:5px;}
 .view textarea, .spot textarea{font-size:12px;}
+
+#object-control{
+  position:absolute;
+  left: 50%; 
+  transform: translateX(-50%); 
+  background-color: rgba(255, 255, 255, 0.7); 
+  bottom:10px; 
+  padding:5px 10px; 
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: flex-start;
+  align-items: center;
+}
+.thumb:nth-child(even){margin: 0 5px;}
+.thumb:first-child,.thumb:last-child{margin:0 !important;}
+.thumb{
+  position: relative;
+  width:70px;
+  height: 70px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  cursor: pointer;
+}
+.backdrop{
+  position:absolute;
+  top:0;
+  left:0;
+  width:70px;
+  height:70px;
+  backdrop-filter: grayscale(1);
+}
