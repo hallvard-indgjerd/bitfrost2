@@ -141,5 +141,5 @@ fieldset > legend{
   body > nav{top:80px; height: calc(100vh - 80px);}
   body > nav > #linkWrap > a:hover{padding-left:35px;}
   main > .itemTool{top:80px;}
-  main{margin:120px auto 50px;}
+  main{margin:130px auto 50px;}
 }

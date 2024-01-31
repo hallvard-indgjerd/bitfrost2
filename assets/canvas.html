@@ -41,6 +41,9 @@
       <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="download a screenshot of the current view in png format" name="screenshot" data-action="screenshot">
         <span class="mdi mdi-camera"></span>
       </button>
+      <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" title="view model and objects metadata" name="view_metadata">
+        <span class="mdi mdi-help"></span>
+      </button>
     </div>
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-success" name="saveModelParam" data-bs-toggle="tooltip" title="Save parameters and active tools in the database, they will be used the next time the model is loaded">
@@ -91,7 +94,6 @@
               <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useLighting" title="lighting or unshaded object">lighting</label>
               <input type="checkbox" class="btn-check" name="specular" id="i_useSpecular" autocomplete="off">
               <label class="toolBtn btn btn-sm btn-outline-dark" for="i_useSpecular" title="light diffuse or specular">diffuse</label>
-              <!-- <button type="button" name="saveModelParam" class="toolBtn btn btn-sm btn-success invisible" title="Save parameters in the database, they will be used the next time the model is loaded">update default parameters</button> -->
             </div>
           </div>
         </div>
@@ -206,5 +208,26 @@
 
   <div id="lightCanvas-box" class="invisible">
     <canvas id="lightcontroller" width="150" height="150"></canvas>
+  </div>
+
+  <div id="paradata-modal">
+    <div class="paradata-header border-bottom text-end">
+      <button type="button" class="btn-close" aria-label="Close" name="dismiss-paradata-modal"></button>
+    </div>
+    <div class="paradata-body">
+      <div id="model-metadata" class="mb-3">
+        <h5>Model metadata</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><span>Name</span><span id="model-name"></span></li>
+          <li class="list-group-item"><span>Description</span><span id="model-description"></span></li>
+          <li class="list-group-item"><span>Note</span><span id="model-note"></span></li>
+          <li class="list-group-item"><span>UUID</span><span id="model-uuid" data-bs-toggle="tooltip" data-bs-title="copy to clipboard"></span></li>
+        </ul>
+      </div>
+      <div id="objects-metadata">
+        <h5>Objects metadata</h5>
+        <div id="listWrap"></div>
+      </div>
+    </div>
   </div>
 </div>

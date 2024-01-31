@@ -1,7 +1,7 @@
 .tdhop{
   position:relative; 
   width:100%;
-  height:calc(100vh - 220px);
+  height:780px;
   background: rgba(222, 226, 230,0.5);
   background: -moz-linear-gradient(180deg, rgba(222, 226, 230,0.5) 0%, #2b3035 100%);
   background: -webkit-linear-gradient(180deg, rgba(222, 226, 230,0.5) 0%, #2b3035 100%);
@@ -65,4 +65,18 @@
   width:70px;
   height:70px;
   backdrop-filter: grayscale(1);
+  background-color: gray;
+  opacity: 0.5;
 }
+
+#paradata-modal{position: absolute; top: 5px; left: 5px; width: 450px; height:auto; max-height: 750px; background-color: #fff; padding: 10px 20px; border-radius: 0.375rem;}
+#paradata-modal #model-uuid{cursor: pointer;}
+#paradata-modal > .paradata-body{font-size: 0.85rem;}
+#paradata-modal > .paradata-body span{display: inline-block; vertical-align: top;}
+#paradata-modal > .paradata-body > #model-metadata span:first-child{width:100px; font-weight: bold;}
+#paradata-modal > .paradata-body > #model-metadata span:last-child{width:275px;}
+#paradata-modal .list-group-item{padding:1px !important}
+
+#paradata-modal > .paradata-body > #objects-metadata span:first-child{width:125px; font-weight: bold;}
+#paradata-modal > .paradata-body > #objects-metadata span:last-child{width:135px;}
+#objects-metadata > #listWrap{height:auto; max-height: 550px; overflow-x: hidden; overflow-y: auto;}

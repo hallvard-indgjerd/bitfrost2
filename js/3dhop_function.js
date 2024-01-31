@@ -59,6 +59,13 @@ var toolBtnList = [].slice.call(document.querySelectorAll('.toolBtn'))
 var tooltipBtnList = toolBtnList.map(function (tooltipBtn) { return new bootstrap.Tooltip(tooltipBtn,{trigger:'hover', html: true, placement:'left' })})
 /////////////////////////////////////////////////////////////////////
 
+$("#paradata-modal").hide()
+$("[name=view_metadata").on('click', function(){ 
+  $("#paradata-modal").fadeIn('fast');
+})
+$("[name=dismiss-paradata-modal]").on('click',function(){
+  $("#paradata-modal").fadeOut('fast');
+})
 
 $("[name=toggleViewSpot]").on('click', function(){
   $(this).find('span').toggleClass('mdi-chevron-down mdi-chevron-up');
@@ -199,6 +206,7 @@ $("#showBorder").on('click', function(){
   presenter.setClippingRendermode(presenter.getClippingRendermode()[0], $(this).is(':checked'));
 })
 $("[name=addViewBtn]").on('click',addView)
+$("#model-uuid").on('click', function(){copy_to_clipboard('model-uuid')})
 
 
 /////////////////////////////////////////////////////////////
@@ -206,12 +214,20 @@ $("[name=addViewBtn]").on('click',addView)
 /////////////////////////////////////////////////////////////
 
 function initModel(model){
-  console.log(model);
   let mainData = model.model;
   let object = model.model_object;
+  console.log(object);
   let model_view = model.model_view;
   paradata = model.model_object[0]
   measure_unit = object[0].measure_unit;
+
+  //fill modal metadata
+  Object.keys(mainData).forEach(function(key) {
+    if(mainData[key]){$("#model-"+key).text(mainData[key])}
+    if(!mainData[key] && !role){$("#model-"+key).parent().remove()}
+  })
+  
+  
   object.forEach((element, index) => {
     meshes['mesh_'+index] = {'url': 'archive/models/' + element.object }
     instances['mesh_'+index] = {
@@ -230,9 +246,25 @@ function initModel(model){
       let vis = backdrop.is(':visible') ? false : true;
       presenter.setInstanceVisibilityByName('mesh_'+index, vis, true)
     })
-  });
 
-  console.log(object.length);
+    let row = $("<div/>",{'class':'row'}).appendTo("#listWrap");
+    let thumb = $("<div/>",{'class':'col-4'}).appendTo(row)
+    $("<img/>",{'class':'img-fluid rounded', 'src':thumbPath}).appendTo(thumb)
+    let metadata = $("<div/>",{'class':'col-8'}).appendTo(row)
+    let ul = $("<ul/>",{'class':'list-group list-group-flush'}).appendTo(metadata)
+
+    let field = ['acquisition_method','status','author','owner','license_acronym','create_at','description','note','software','points','polygons','textures','scans','pictures','encumbrance','measure_unit']
+    Object.keys(element).forEach((key)=>{
+      if (field.includes(key)){
+        if(element[key]){
+          let li = $("<li/>",{'class':'list-group-item'}).appendTo(ul)
+          $("<span/>").text(key).appendTo(li)
+          $("<span/>").text(element[key]).appendTo(li)
+        }
+      }
+      
+    })
+  });
 
   scene = {
     meshes: meshes, 
@@ -1175,4 +1207,14 @@ function computeEncumbrance() {
   encumbrance[2] = Math.trunc(Math.ceil((sceneBB[2]-sceneBB[5])/gStep)+1);
 
   el('encumbrance').value = encumbrance[0] + " x " + encumbrance[1]  + " x " + encumbrance[2] + " cm";
+}
+
+function resizeCanvas(){
+  let w = $('#3dhop').parent().width()
+  let h = $('#3dhop').parent().height();
+  $('#draw-canvas').attr('width', w);
+	$('#draw-canvas').attr('height',h);
+	$('#3dhop').css('width', w);
+	$('#3dhop').css('height', h);
+  if(presenter) presenter.repaint();
 }

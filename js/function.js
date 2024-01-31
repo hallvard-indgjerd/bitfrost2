@@ -419,3 +419,9 @@ $.extend({
     $(form).appendTo('body').submit();
   }
 });
+
+
+function copy_to_clipboard(el) {
+  const text = document.getElementById(el).innerHTML;
+  navigator.clipboard.writeText(text);
+}
