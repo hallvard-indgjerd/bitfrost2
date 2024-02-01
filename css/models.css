@@ -1,0 +1,25 @@
+.card-wrap{
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.modelCardSmall{
+  position:relative;
+  width:14%;
+  margin:2px;
+  height:50%;
+}
+.thumbDiv{
+  display:block;
+  position: relative;
+  width: 100%;
+  height: 100px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}

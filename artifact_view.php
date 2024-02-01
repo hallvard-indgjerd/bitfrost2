@@ -29,7 +29,7 @@
                   <i class="mdi mdi-plus-thick"></i> add
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a href="#" class="dropdown-item">3d model</a></li>
+                    <li><a href="models.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">model</a></li>
                     <li><a href="#" class="dropdown-item">image and photo</a></li>
                     <li><a href="#" class="dropdown-item">document</a></li>
                     <li><a href="#" class="dropdown-item">reference</a></li>
@@ -73,7 +73,7 @@
               <h2 class="accordion-header" id="main-section">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mainSection" aria-expanded="false" aria-controls="mainSection">Main data</button>
               </h2>
-              <div id="mainSection" class="accordion-collapse collapse" aria-labelledby="main-section" data-bs-parent="accordionArtifact">
+              <div id="mainSection" class="accordion-collapse collapse" aria-labelledby="main-section" data-bs-parent="#accordionArtifact">
                 <div class="accordion-body">
                   <ul class="list-group list-group-flush">
                     <li class="list-group-item">
@@ -153,7 +153,7 @@
                 </div>
               </div>
             </div>
-            <div class="accordion-item">
+            <div class="accordion-item" id="findplaceAccordionSection">
               <h2 class="accordion-header" id="findplace-data">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#findplaceSection">Find place</button>
               </h2>
@@ -170,25 +170,25 @@
                     </li>
                     <li class="list-group-item">
                       <span>City</span>
-                      <span id="findplace_city">Not defined</span>
+                      <span id="findplace_city"></span>
                     </li>
                     <li class="list-group-item">
                       <span>Parish</span>
-                      <span id="findplace_parish">Not defined</span>
+                      <span id="findplace_parish"></span>
                     </li>
                     <li class="list-group-item">
                       <span>Toponym</span>
-                      <span id="findplace_toponym">Not defined</span>
+                      <span id="findplace_toponym"></span>
                     </li>
                     <li class="list-group-item">
                       <span>Notes</span>
-                      <span id="findplace_notes">Not defined</span>
+                      <span id="findplace_notes"></span>
                     </li>
                   </ul>
                 </div>
               </div>
             </div>
-            <div class="accordion-item">
+            <div class="accordion-item" id="measureAccordionSection">
               <h2 class="accordion-header" id="measure-data">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#measureSection">Dimensions</button>
               </h2>
@@ -196,11 +196,11 @@
                 <div class="accordion-body">
                   <small class="txt-adc-dark">Linear measures are in cm, weight is in gr.</small>
                   <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><span>Length</span><span id="length">measure not defined</span></li>
-                    <li class="list-group-item"><span>Width</span><span id="width">measure not defined</span></li>
-                    <li class="list-group-item"><span>Depth</span><span id="depth">measure not defined</span></li>
-                    <li class="list-group-item"><span>Diameter</span><span id="diameter">measure not defined</span></li>
-                    <li class="list-group-item"><span>Weight</span><span id="weight">measure not defined</span></li>
+                    <li class="list-group-item"><span>Length</span><span id="length"></span></li>
+                    <li class="list-group-item"><span>Width</span><span id="width"></span></li>
+                    <li class="list-group-item"><span>Depth</span><span id="depth"></span></li>
+                    <li class="list-group-item"><span>Diameter</span><span id="diameter"></span></li>
+                    <li class="list-group-item"><span>Weight</span><span id="weight"></span></li>
                     <li class="list-group-item">
                       <div>Notes</div>
                       <div id="measures_notes"></div>

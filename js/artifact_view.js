@@ -18,19 +18,29 @@ $("[name=enlargeScreen").on('click', function(){
 
 $.ajax(ajaxSettings)
 .done(function(data) {
-  // console.log(data);
+  console.log(data);
   $("#loadingDiv").remove()
   let artifact = data.artifact;
   $("h2#title").text(artifact.name)
   Object.keys(artifact).forEach(function(key) {
-    if(!artifact[key]){artifact[key] = 'not defined'}
-    if(key == 'status'){ artifact[key] = 'The item status is: '+artifact[key] }
-    if(key == 'from'){ $("#start_period").text(artifact['from']['definition'])}
-    if(key == 'to'){ $("#end_period").text(artifact['to']['definition'])}
-    let statusClass = artifact['status_id'] == 1 ? 'alert-danger' : 'alert-success';
-    $("#status").addClass(statusClass).text(artifact.status);
-    artifact['is_museum_copy'] = artifact['is_museum_copy'] == 0 ? false : true;
-    $("#"+key).text(artifact[key])
+    // if(!artifact[key]){artifact[key] = 'not defined'}
+    if(artifact[key]){
+      if(key == 'status'){ artifact[key] = 'The item status is: '+artifact[key] }
+      if(key == 'from'){ $("#start_period").text(artifact.from.definition)}
+      if("to" in artifact){ $("#end_period").text(artifact.to.definition)}else{$("#end_period").parent().remove()}
+      let statusClass = artifact['status_id'] == 1 ? 'alert-danger' : 'alert-success';
+      $("#status").addClass(statusClass).text(artifact.status);
+      artifact['is_museum_copy'] = artifact['is_museum_copy'] == 0 ? false : true;
+      $("#"+key).text(artifact[key])
+    }else{
+      if(!role){$("#"+key).parent('li').remove()}
+      if(artifact.category_class_id == 128){
+        $("#category_class").parent('li').remove()
+        $("#category_specs").parent('li').remove()
+      }
+      if(artifact.conservation_state_id == 11){$("#conservation_state").parent('li').remove()}
+      if(artifact.object_condition_id == 9){$("#object_condition").parent('li').remove()}
+    }
   })
 
   let material = data.artifact_material_technique;
@@ -47,7 +57,21 @@ $.ajax(ajaxSettings)
   $("#storage_link").attr("href",institution.link).text(institution.link)
   markerArr.storage = [parseFloat(institution.lat), parseFloat(institution.lon)]
 
-  if (data.artifact_measure) {
+  if (data.artifact_findplace) {
+    let findplace = data.artifact_findplace;
+    if(findplace.city_id){polyArr.county=findplace.county_id}
+    if(findplace.city_id){polyArr.city = findplace.city_id}
+    if(findplace.latitude){
+      markerArr.findplace = [parseFloat(findplace.latitude), parseFloat(findplace.longitude)]
+    }
+    Object.keys(findplace).forEach(function(key) {
+      if(findplace[key]){$("#findplace_"+key).text(findplace[key])}
+    })
+  }else{
+    if(!role){$("#findplaceAccordionSection").remove()}
+  }
+
+  if (typeof data.artifact_measure != "undefined") {
     let measure = data.artifact_measure;
     measure.forEach((item, i) => {
       Object.keys(item).forEach(function(key) {
@@ -55,6 +79,8 @@ $.ajax(ajaxSettings)
         if(item[key]){$("#"+key).text(item[key])}
       })
     });
+  }else{
+    if(!role){$("#measureAccordionSection").remove()} 
   }
   let metadata = data.artifact_metadata;
   $("#artifact_author>a").attr("href","person_view.php?person="+metadata.author.id).text(metadata.author.last_name+" "+metadata.author.first_name)
@@ -95,19 +121,6 @@ $.ajax(ajaxSettings)
     $("#3dhop > canvas, .modelTools, .model-accordion").remove()
     let noModelDiv = $("<div/>",{id:'alertModel'}).appendTo("#3dhop");
     $("<div/>",{class:'alert alert-info fs-3'}).text('Model not yet available!!').appendTo(noModelDiv);
-  }
-
-  if (data.artifact_findplace) {
-    let findplace = data.artifact_findplace;
-    if(findplace.city_id){polyArr.county=findplace.county_id}
-    if(findplace.city_id){polyArr.city = findplace.city_id}
-    if(findplace.latitude){
-      markerArr.findplace = [parseFloat(findplace.latitude), parseFloat(findplace.longitude)]
-    }
-    Object.keys(findplace).forEach(function(key) {
-      if(findplace[key]){$("#findplace_"+key).text(findplace[key])}
-    })
-    
   }
   artifactMap()  
 });

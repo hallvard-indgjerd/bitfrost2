@@ -19,7 +19,13 @@ class Model extends Conn{
     try {
       $this->pdo()->beginTransaction();
       // prepare & save model data
-      $modelArray = array('name'=>$data['name'],'description'=>$data['description']);
+      $thumbExt = pathinfo($files['thumb']["name"], PATHINFO_EXTENSION);
+      $modelArray = array(
+        'name'=>$data['name'],
+        'description'=>$data['description'], 
+        'thumbnail'=>$this->uuid.".".$thumbExt,
+        'updated_by' => $data['author']
+      );
       if(isset($data['note'])){$modelArray['note']=$data['note'];}
       $sql = $this->buildInsert("model", $modelArray);
       $this->prepared($sql, $modelArray);
@@ -64,11 +70,11 @@ class Model extends Conn{
 
   private function buildObjectData($data, $files){
     $modelExt = pathinfo($files['thumb']["name"], PATHINFO_EXTENSION);
-    $thumbExt = pathinfo($files['thumb']["name"], PATHINFO_EXTENSION);
+    // $thumbExt = pathinfo($files['thumb']["name"], PATHINFO_EXTENSION);
     $objectArray = [
       'model' => $data['model'],
       'object' => $this->uuid.".".$modelExt,
-      'thumbnail' => $this->uuid.".".$thumbExt,
+      // 'thumbnail' => $this->uuid.".".$thumbExt,
       'author' => $data['author'],
       'updated_by' => $data['author'],
       'owner' => $data['owner'],
@@ -170,13 +176,16 @@ class Model extends Conn{
   public function getModels(array $search){
     $filter = [];
     if($search['status'] > 0){
-      array_push($filter, "status_id = ".$search['status']);
+      array_push($filter, "m.status = ".$search['status']);
     }else {
-      array_push($filter, "status_id > ".$search['status']);
+      array_push($filter, "m.status > ".$search['status']);
     }
-    if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
+    // if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
+    // if(isset($search['connected'])){
+    //   array_push($filter,"m.id not in (select model from artifact_model)");
+    // }
     if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
-    $sql = "select m.id object, m.model, m.status_id, m.status, m.object file, m.thumbnail, m.author_id, m.author, m.description, m.updated_at from model_query_view m ".$filter." order by m.updated_at desc;";
+    $sql = "select m.id, m.name, m.create_at, m.description, m.status, m.thumbnail, concat(person.last_name, ' ', person.first_name) author, count(o.id) object from model m inner join model_object o on o.model = m.id inner join user on m.created_by = user.id inner join person on user.person = person.id ".$filter." group by m.id, m.name, m.create_at, m.description, m.status, m.thumbnail order by m.create_at desc;";
     return $this->simple($sql);
   }
 

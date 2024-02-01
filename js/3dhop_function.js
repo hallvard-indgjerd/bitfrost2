@@ -216,7 +216,6 @@ $("#model-uuid").on('click', function(){copy_to_clipboard('model-uuid')})
 function initModel(model){
   let mainData = model.model;
   let object = model.model_object;
-  console.log(object);
   let model_view = model.model_view;
   paradata = model.model_object[0]
   measure_unit = object[0].measure_unit;

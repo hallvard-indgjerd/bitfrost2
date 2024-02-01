@@ -101,7 +101,7 @@ function getModels(){
       }
       $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Last update</span><span>"+item.updated_at+"</span>").appendTo(divDati)
       let alertClass = item.status_id == 0 ? 'alert-success' : 'alert-danger';
-      $("<div/>", {class:'p-1 m-0 alert '+alertClass, role:'alert'}).text(item.status).appendTo(divDati)
+      $("<div/>", {class:'p-1 m-0 alert '+alertClass, role:'alert'}).text(item.status == 1 ? 'under processing' : 'complete').appendTo(divDati)
 
       let footer = $("<div/>",{class:'card-footer bg-white border-0'}).appendTo(card);
       $("<a/>",{class:'btn btn-sm btn-adc-dark d-block', href:'model_view.php?model='+item.id}).text('edit model').appendTo(footer)
