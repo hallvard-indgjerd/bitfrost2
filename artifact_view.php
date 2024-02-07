@@ -29,7 +29,7 @@
                   <i class="mdi mdi-plus-thick"></i> add
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a href="models.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">model</a></li>
+                    <li id="addModelBtn"><a href="models.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">model</a></li>
                     <li><a href="#" class="dropdown-item">image and photo</a></li>
                     <li><a href="#" class="dropdown-item">document</a></li>
                     <li><a href="#" class="dropdown-item">reference</a></li>
@@ -43,7 +43,9 @@
                   </button>
                   <ul class="dropdown-menu">
                     <li><a href="artifact_edit.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">artifact metadata</a></li>
-                    <li><a href="#" class="dropdown-item">model metadata</a></li>
+                    <li id="editModelBtn">
+                      <a href="" class="dropdown-item">model metadata</a>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -131,7 +133,7 @@
               <h2 class="accordion-header" id="conservation-data">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#conservationSection">Conservation info</button>
               </h2>
-              <div id="conservationSection" class="accordion-collapse collapse" aria-labelledby="conservation-data" data-bs-parent="#accordionArtifact">
+              <div id="conservationSection" class="accordion-collapse collapse show" aria-labelledby="conservation-data" data-bs-parent="#accordionArtifact">
                 <div class="accordion-body">
                   <ul class="list-group list-group-flush">
                     <li class="list-group-item">

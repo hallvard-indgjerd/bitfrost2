@@ -41,8 +41,11 @@
         <?php } ?>
       </div>
     </main>
-    <?php require("assets/menu.php"); ?>
-    <?php require("assets/js.html"); ?>
+    <?php
+      require("assets/toastDiv.html");
+      require("assets/menu.php");
+      require("assets/js.html");
+    ?>
     <script src="js/models.js" charset="utf-8"></script>
   </body>
 </html>

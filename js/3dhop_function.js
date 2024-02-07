@@ -208,12 +208,23 @@ $("#showBorder").on('click', function(){
 $("[name=addViewBtn]").on('click',addView)
 $("#model-uuid").on('click', function(){copy_to_clipboard('model-uuid')})
 
+$("[name=enlargeScreen").on('click', function(){
+  let div = ['artifact','geographic','model','media', 'resource']
+  div.forEach((v)=>{$("#"+v).toggleClass(v+'-primary ' + v +'-full')})
+  resizeCanvas()
+  map.remove();
+  setTimeout(function(){
+    artifactMap()
+  },500)
+})
+
 
 /////////////////////////////////////////////////////////////
 //////////////// FUNCTIONS //////////////////////////////////
 /////////////////////////////////////////////////////////////
 
 function initModel(model){
+  console.log(model);
   let mainData = model.model;
   let object = model.model_object;
   let model_view = model.model_view;
@@ -238,7 +249,8 @@ function initModel(model){
     }
     let thumbPath = 'archive/thumb/'+element.thumbnail;
     let thumbDiv = $("<div/>",{'class':'thumb'}).appendTo('#object-control');
-    thumbDiv.css("background-image","url("+thumbPath+")");
+    $("<img/>",{class:'img-fluid', src:thumbPath}).appendTo(thumbDiv)
+    // thumbDiv.css("background-image","url("+thumbPath+")");
     let backdrop = $("<div/>",{'class':'backdrop'}).appendTo(thumbDiv).hide();
     thumbDiv.on('click', function(){
       backdrop.toggle()
@@ -331,7 +343,10 @@ function actionsToolbar(action) {
     case "zoomin": presenter.zoomIn(); break;
     case "zoomout": presenter.zoomOut(); break;
     case "fullscreen_in":
-    case "fullscreen_out": fullscreenSwitch(action); break;
+    case "fullscreen_out": 
+      $("[name=enlargeScreen]").toggle()
+      fullscreenSwitch(action); 
+    break;
     case "screenshot": presenter.saveScreenshot(); break;
     case "light_on":
       setInstructions("click the left mouse button and drag the cursor on model to change the light origin")

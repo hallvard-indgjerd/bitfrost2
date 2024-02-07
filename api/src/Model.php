@@ -24,6 +24,7 @@ class Model extends Conn{
         'name'=>$data['name'],
         'description'=>$data['description'], 
         'thumbnail'=>$this->uuid.".".$thumbExt,
+        'created_by' => $data['author'],
         'updated_by' => $data['author']
       );
       if(isset($data['note'])){$modelArray['note']=$data['note'];}
@@ -70,11 +71,9 @@ class Model extends Conn{
 
   private function buildObjectData($data, $files){
     $modelExt = pathinfo($files['thumb']["name"], PATHINFO_EXTENSION);
-    // $thumbExt = pathinfo($files['thumb']["name"], PATHINFO_EXTENSION);
     $objectArray = [
       'model' => $data['model'],
       'object' => $this->uuid.".".$modelExt,
-      // 'thumbnail' => $this->uuid.".".$thumbExt,
       'author' => $data['author'],
       'updated_by' => $data['author'],
       'owner' => $data['owner'],
@@ -166,9 +165,9 @@ class Model extends Conn{
   }
 
   public function getModel(int $id){
-    $out['model'] = $this->simple("select * from model where id = ".$id.";")[0];
+    $out['model'] = $this->simple("select m.id, m.name, m.note, m.uuid, NULLIF(m.description, 'no description available') description, m.thumbnail, status.id status_id, status.value status, m.create_at, m.updated_at, concat(p.last_name,' ',p.first_name) created_by from model m inner join list_item_status status ON m.status = status.id inner join user on m.created_by = user.id inner join person p on user.person = p.id where m.id =  ".$id.";")[0];
     $out['model_biblio'] = $this->simple("select * from model_biblio where model = ".$id.";");
-    $out['model_object'] = $this->simple("select obj.id, obj.object, obj.thumbnail, status.value status, obj.author author_id, concat(author.first_name,' ',author.last_name) author, obj.owner owner_id, owner.name owner, obj.license license_id, license.license license, license.acronym license_acronym, license.link license_link, obj.create_at, obj.updated_at, obj.updated_by, obj.description, obj.note, obj.uuid, method.value AS acquisition_method, param.software, param.points, param.polygons, param.textures, param.scans, param.pictures, param.encumbrance, param.measure_unit from model_object obj inner join list_item_status status ON obj.status = status.id inner join user on obj.author = user.id inner join person author on user.person = author.id inner join institution owner on obj.owner = owner.id inner join license on obj.license = license.id inner join model_param param on param.object = obj.id inner join list_model_acquisition method on param.acquisition_method = method.id where model =".$id.";");
+    $out['model_object'] = $this->simple("select obj.id, obj.object, obj.thumbnail, status.value status, obj.author author_id, concat(author.first_name,' ',author.last_name) author, obj.owner owner_id, owner.name owner, obj.license license_id, license.license license, license.acronym license_acronym, license.link license_link, obj.create_at, obj.updated_at, nullif(obj.description,'no object description') description, obj.note, obj.uuid, method.value acquisition_method, param.software, param.points, param.polygons, param.textures, param.scans, param.pictures, param.encumbrance, param.measure_unit from model_object obj inner join list_item_status status ON obj.status = status.id inner join user on obj.author = user.id inner join person author on user.person = author.id inner join institution owner on obj.owner = owner.id inner join license on obj.license = license.id inner join model_param param on param.object = obj.id inner join list_model_acquisition method on param.acquisition_method = method.id where model =".$id.";");
     $out['model_view'] = $this->simple("select * from model_view where model = ".$id." and default_view = true;")[0];
     return $out;
   }
@@ -181,9 +180,9 @@ class Model extends Conn{
       array_push($filter, "m.status > ".$search['status']);
     }
     // if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
-    // if(isset($search['connected'])){
-    //   array_push($filter,"m.id not in (select model from artifact_model)");
-    // }
+    if(isset($search['to_connect'])){
+      array_push($filter,"m.id not in (select model from artifact_model)");
+    }
     if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
     $sql = "select m.id, m.name, m.create_at, m.description, m.status, m.thumbnail, concat(person.last_name, ' ', person.first_name) author, count(o.id) object from model m inner join model_object o on o.model = m.id inner join user on m.created_by = user.id inner join person on user.person = person.id ".$filter." group by m.id, m.name, m.create_at, m.description, m.status, m.thumbnail order by m.create_at desc;";
     return $this->simple($sql);
@@ -210,5 +209,17 @@ class Model extends Conn{
       return ["res"=>0, "msg"=>$e->getMessage()];
     }
   }
+
+
+  public function connectModel(array $dati){
+    try {
+      $sql = $this->buildInsert('artifact_model', $dati);
+      $this->prepared($sql, $dati);
+      return ["res"=>1, "msg"=>'ok, model connected'];
+    } catch (\Exception $e) {
+      return ["res"=>0, "msg"=>$e->getMessage()];
+    }
+  }
 }
+
 ?>

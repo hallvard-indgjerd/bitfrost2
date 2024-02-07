@@ -1,5 +1,7 @@
-const item = $("[name=item]").val()
-getArtifactName(item)
+const toastToolBar = $('#toastBtn');
+const artifact = parseInt($("[name=item]").val())
+
+getArtifactName(artifact)
 getModels()
 
 function getArtifactName(item){
@@ -14,7 +16,7 @@ function getArtifactName(item){
 function getModels(){
   let dati={
     trigger:'getModels', 
-    search:{status:0, connected:false}
+    search:{status:0, to_connect:true}
   }
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data = dati
@@ -37,9 +39,31 @@ function getModels(){
       let btnConnect = $("<button/>",{'class':'btn btn-sm btn-adc-dark d-block'}).text('connect model').appendTo(footer)
       btnConnect.on('click', function(){
         if(confirm('You are connecting the selected model to artifact, are you sure?')){
-          console.log(item.id);
+          connectModel([artifact,item.id]);
         }
       })
     });
+  });
+}
+
+function connectModel(items){
+  let dati={
+    trigger:'connectModel', 
+    data:{'artifact':items[0], 'model':items[1]}
+  }
+  ajaxSettings.url=API+"model.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings).done(function(data){
+    if (data.res==0) {
+      $("#toastDivError .errorOutput").text(data.msg);
+      $("#toastDivError").removeClass("d-none");
+    }else {
+      $(".toastTitle").text(data.msg)
+      gotoIndex.appendTo(toastToolBar);
+      gotoDashBoard.appendTo(toastToolBar);
+      gotoNewItem.text('Back to artifact page').attr("href","artifact_view.php?item="+artifact).appendTo(toastToolBar);
+      $("#toastDivSuccess").removeClass("d-none")
+    }
+    $("#toastDivContent").removeClass('d-none')
   });
 }

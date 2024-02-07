@@ -1,0 +1,14 @@
+main{
+  margin:80px auto 0 !important; 
+  min-height:auto !important; 
+  height:calc(100vh - 80px);
+}
+.tdhop{height:calc(100vh - 80px) !important;}
+
+@media (min-width: 992px) {}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {}

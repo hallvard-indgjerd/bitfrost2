@@ -99,12 +99,12 @@ function getModels(){
       if(usrCls < 4){
         $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Author</span><span>"+item.author+"</span>").appendTo(divDati)
       }
-      $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Last update</span><span>"+item.updated_at+"</span>").appendTo(divDati)
+      // $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Created at</span><span>"+item.create_at+"</span>").appendTo(divDati)
       let alertClass = item.status_id == 0 ? 'alert-success' : 'alert-danger';
       $("<div/>", {class:'p-1 m-0 alert '+alertClass, role:'alert'}).text(item.status == 1 ? 'under processing' : 'complete').appendTo(divDati)
 
       let footer = $("<div/>",{class:'card-footer bg-white border-0'}).appendTo(card);
-      $("<a/>",{class:'btn btn-sm btn-adc-dark d-block', href:'model_view.php?model='+item.id}).text('edit model').appendTo(footer)
+      $("<a/>",{class:'btn btn-sm btn-adc-dark d-block', href:'model_view.php?item='+item.id}).text('view model').appendTo(footer)
     });
   });
 }

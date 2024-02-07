@@ -53,10 +53,15 @@
   position: relative;
   width:70px;
   height: 70px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
   cursor: pointer;
+  overflow-y: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
 .backdrop{
   position:absolute;
@@ -64,9 +69,7 @@
   left:0;
   width:70px;
   height:70px;
-  backdrop-filter: grayscale(1);
-  background-color: gray;
-  opacity: 0.5;
+  backdrop-filter: blur(2px);
 }
 
 #paradata-modal{position: absolute; top: 5px; left: 5px; width: 450px; height:auto; max-height: 750px; background-color: #fff; padding: 10px 20px; border-radius: 0.375rem;}

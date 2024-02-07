@@ -319,6 +319,8 @@ function mapInit(){
   map.addControl(new myToolbar());
 }
 
+function nl2br(str){return str.replace(/(?:\r\n|\r|\n)/g, '<br>');}
+
 function resetChronology(){
   $("#start, #end, #startGenericList, #startSpecificList,#endGenericList, #endSpecificList").val('')
   $("#start, #end").attr({"min":-3000000,"max":getDate()['y']});
