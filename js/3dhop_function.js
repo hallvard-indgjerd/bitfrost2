@@ -223,6 +223,26 @@ $("[name=enlargeScreen").on('click', function(){
 //////////////// FUNCTIONS //////////////////////////////////
 /////////////////////////////////////////////////////////////
 
+function changeModelStatus(){
+  let status = $("button[name=modelVisibility").val()
+  let dati = {trigger:'changeModelStatus', dati:{id:model, status:status}}
+  ajaxSettings.data = dati;
+  console.log(ajaxSettings);
+  $.ajax(ajaxSettings)
+    .done(function(data) {
+      console.log(data);
+      if (data.res==1) {
+        $("#toastDivError .errorOutput").text(data.msg);
+        $("#toastDivError").removeClass("d-none");
+      }else {
+        $(".toastTitle").text(data.msg)
+        $("#toastDivSuccess").removeClass("d-none")
+        setTimeout(function(){ location.reload(); }, 3000);
+      }
+      $("#toastDivContent").removeClass('d-none')
+    })
+}
+
 function initModel(model){
   console.log(model);
   let mainData = model.model;
@@ -232,6 +252,22 @@ function initModel(model){
   measure_unit = object[0].measure_unit;
 
   //fill modal metadata
+  let statusAlert, statusTooltip, statusBtnClass, statusBtnValue, statusBtnTooltip;
+  if(mainData.status_id == 1){
+    statusAlert = 'alert-danger';
+    statusTooltip = 'model not visible in the main gallery. Click the "change visibility" button or edit the model to change model visibility'
+    statusBtnClass = 'btn-success'
+    statusBtnValue = 2
+    statusBtnTooltip = 'Mark model as complete. The Model will be visible in the main gallery'
+  }else{
+    statusAlert = 'alert-success';
+    statusTooltip = 'model visible in the main gallery. Click the "change visibility" button or edit the model to change model visibility';
+    statusBtnClass = 'btn-warning'
+    statusBtnValue = 1
+    statusBtnTooltip = 'Mark model as under processing. The Model will not be visible in the main gallery'
+  }
+  $("#model-status").addClass(statusAlert).tooltip({title:statusTooltip, placement:'top', trigger:'hover'}); 
+  $("button[name=modelVisibility").addClass(statusBtnClass).val(statusBtnValue).tooltip({title:statusBtnTooltip, placement:'top', trigger:'hover'}).on('click',changeModelStatus)
   Object.keys(mainData).forEach(function(key) {
     if(mainData[key]){$("#model-"+key).text(mainData[key])}
     if(!mainData[key] && !role){$("#model-"+key).parent().remove()}
@@ -239,6 +275,7 @@ function initModel(model){
   
   
   object.forEach((element, index) => {
+    console.log(element);
     meshes['mesh_'+index] = {'url': 'archive/models/' + element.object }
     instances['mesh_'+index] = {
       mesh:'mesh_'+index, 
@@ -273,8 +310,12 @@ function initModel(model){
           $("<span/>").text(element[key]).appendTo(li)
         }
       }
-      
     })
+    let navBarObj = $("<nav/>",{class:"my-3 pb-2 border-bottom"}).appendTo(metadata);
+    $("<a/>",{href:'object_edit.php?model='+mainData.id+'&item='+element.id, class:'btn btn-sm btn-adc-dark', text:'edit'}).appendTo(navBarObj)
+    if(object.length > 1){
+      $("<button/>",{type:'button', class:'btn btn-sm btn-danger float-end', text:'delete object'}).appendTo(navBarObj)
+    }
   });
 
   scene = {

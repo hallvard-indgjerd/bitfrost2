@@ -92,14 +92,17 @@ function getModels(){
     console.log(data);
     $('#modelList .badge').text(data.length)
     data.forEach((item, i) => {
+      console.log(data[0].description.length);
       let card = $("<div/>",{class:' card modelCardSmall'}).appendTo(cardWrap);
-      $("<div/>", {class:'thumbDiv card-header'}).css("background-image", "url(archive/thumb_512/"+item.thumbnail+")").appendTo(card)
+      $("<div/>", {class:'thumbDiv card-header'}).css("background-image", "url(archive/thumb/"+item.thumbnail+")").appendTo(card)
       let divDati = $("<div/>",{class:'card-body'}).appendTo(card)
-      $("<p/>", {class:'m-0'}).text(item.description).appendTo(divDati)
+      let descript = $("<p/>", {class:'m-0'}).text(cutString(item.description,50)).appendTo(divDati)
+      if(item.description.length > 50){
+        descript.addClass('pointer').attr({"data-bs-toggle":"tooltip", "data-bs-title":item.description}).tooltip()
+      }
       if(usrCls < 4){
         $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Author</span><span>"+item.author+"</span>").appendTo(divDati)
       }
-      // $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Created at</span><span>"+item.create_at+"</span>").appendTo(divDati)
       let alertClass = item.status_id == 0 ? 'alert-success' : 'alert-danger';
       $("<div/>", {class:'p-1 m-0 alert '+alertClass, role:'alert'}).text(item.status == 1 ? 'under processing' : 'complete').appendTo(divDati)
 

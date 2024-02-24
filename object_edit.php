@@ -13,51 +13,13 @@
     <?php require("assets/header.php"); ?>
     <main class="<?php echo $mainClass; ?>">
       <div class="container">
-        <form name="newModelForm" enctype="multipart/form-data" method="post">
-          <input type="hidden" name="usr" value="<?php echo $_SESSION['id']; ?>">
-          <div id="tip" class="alert alert-light border">
-            <div>
-              <h5 class="fw-bold w-50 d-inline-block">Create a new model</h5>
-              <button type="button" class="closeTip btn btn-sm btn-light float-end" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#tipBody" aria-expanded="false" aria-controls="tipBody">hide tip</button>
-            </div>
-            <div id="tipBody" class="collapse show fs-6 mt-3">A model is understood as a container that can collect multiple three-dimensional objects (for example, the various parts of the same object).<br>At this stage you will create the "container" model to which you can associate one or more digital objects from the model page you just created</div>
-          </div>
+        <form name="editObjForm" enctype="multipart/form-data" method="post">
+          <input type="hidden" name="session" value="<?php echo $_SESSION['id']; ?>">
+          <input type="hidden" name="item" value="<?php echo $_GET['item']; ?>">
+          <input type="hidden" name="model" value="<?php echo $_GET['model']; ?>">
+
           <fieldset>
-            <legend>Model main data</legend>
-            <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="name" class="text-danger fw-bold">Name</label>
-                <div class="input-group mb-3">
-                  <input type="text" class="form-control" placeholder="name" data-table="model" id="name" required>
-                  <button class="btn btn-warning" type="button" name="checkNameBtn">check name</button>
-                </div>
-                <div id="checkNameResult"></div>
-              </div>
-              <div class="col-md-6">
-                Fill in the "name" field with a value that help you to easily identify the artifact. Remember that you cannot use the same value for different artifacts. To verify if the name already exists, you can insert the value and click the button "check name", a messagge will appears. If you don't check the value now, the system will do it for you when you save the record
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-8">
-                <label for="description" class="form-label fw-bold text-danger">Description</label>
-                <textarea class="form-control" name="description" id="description" data-table="model" rows="6" required></textarea>
-                <div class="form-text">Describe the whole model</div>
-              </div>
-              <div class="col-md-4">
-                <label for="note" class="form-label">Note</label>
-                <textarea class="form-control" name="note" id="note" data-table="model" rows="6"></textarea>
-              </div>
-            </div>
-          </fieldset>
-          <fieldset>
-            <div id="tip2" class="alert alert-light border">
-              <div>
-                <h5 class="fw-bold w-50 d-inline-block">Create a 3d object to associate with model</h5>
-                <button type="button" class="closeTip btn btn-sm btn-light float-end" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#tipBody2" aria-expanded="false" aria-controls="tipBody2">hide tip</button>
-              </div>
-              <div id="tipBody2" class="collapse show fs-6 mt-3">When you create a model you must necessarily add at least 1 3d object, below you will find the form to associate the 3d object with the model. If the model consists of multiple objects, you can add them later</div>
-            </div>
-            <legend>Object metadata</legend>
+            <legend>Edit Object metadata</legend>
             <div class="row">
               <div class="col-md-4">
                 <label for="author" class="fw-bold text-danger">Author</label>
@@ -98,13 +60,13 @@
             <div class="row mb-3">
               <div class="col-md-4">
                 <label for="acquisition_method" class="text-danger fw-bold">Acquisition method</label>
-                <select class="form-select" name="acquisition_method" id="acquisition_method" data-table="object_param" required>
+                <select class="form-select" name="acquisition_method" id="acquisition_method" data-table="model_param" required>
                   <option value="" selected disabled>-- select value --</option>
                 </select>
               </div>
               <div class="col-md-4">
                 <label for="measure_unit" class="text-danger fw-bold">Measure unit</label>
-                <select class="form-select" name="measure_unit" id="measure_unit" data-table="object_param" required>
+                <select class="form-select" name="measure_unit" id="measure_unit" data-table="model_param" required>
                   <option value="" selected disabled>-- select unit --</option>
                   <option value="mm">millimeters</option>
                   <option value="cm">centimeters</option>
@@ -113,37 +75,45 @@
               </div>
               <div class="col-md-4">
                 <label for="software">Software</label>
-                <input class="form-control" type="text" id="software" name="software" data-table="object_param">
+                <input class="form-control" type="text" id="software" name="software" data-table="model_param">
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-md-2">
                 <label for="points">Points</label>
-                <input type="number" class="form-control" min="0" step="1" name="points" id="points" value="" data-table="object_param">
+                <input type="number" class="form-control" min="0" step="1" name="points" id="points" value="" data-table="model_param">
               </div>
               <div class="col-md-2">
                 <label for="polygons">Polygons</label>
-                <input type="number" class="form-control" min="0" step="1" name="polygons" id="polygons" value="" data-table="object_param">
+                <input type="number" class="form-control" min="0" step="1" name="polygons" id="polygons" value="" data-table="model_param">
               </div>
               <div class="col-md-2">
                 <label for="textures">Textures</label>
-                <input type="number" class="form-control" min="0" step="1" name="textures" id="textures" value="" data-table="object_param">
+                <input type="number" class="form-control" min="0" step="1" name="textures" id="textures" value="" data-table="model_param">
               </div>
               <div class="col-md-2">
                 <label for="scans">Scans</label>
-                <input type="number" class="form-control" min="0" step="1" name="scans" id="scans" value="" data-table="object_param">
+                <input type="number" class="form-control" min="0" step="1" name="scans" id="scans" value="" data-table="model_param">
               </div>
               <div class="col-md-2">
                 <label for="pictures">Pictures</label>
-                <input type="number" class="form-control" min="0" step="1" name="pictures" id="pictures" value="" data-table="object_param">
+                <input type="number" class="form-control" min="0" step="1" name="pictures" id="pictures" value="" data-table="model_param">
               </div>
               <div class="col-md-2">
                 <label for="encumbrance" data-bs-toggle="tooltip" title="you can enter a value or let the system calculate it"><span class="mdi mdi-information-outline"></span> Encumbrance</label>
-                <input type="text" class="form-control" name="encumbrance" id="encumbrance" value="" data-table="object_param">
+                <input type="text" class="form-control" name="encumbrance" id="encumbrance" value="" data-table="model_param">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" value="" id="status" data-table="model_object">
+                  <label class="form-check-label" for="status"></label>
+                </div>
               </div>
             </div>
           </fieldset>
-          <fieldset>
+          <!-- <fieldset>
             <legend>Upload model</legend>
             <div class="row">
               <div class="col" id="nxzWrap">
@@ -182,11 +152,12 @@
                 <div id="thumbNotAllowed"></div>
               </div>
             </div>
-          </fieldset>
+          </fieldset> -->
           <fieldset>
             <div class="row">
               <div class="col">
-                <button type="submit" name="newModel" class="btn btn-warning">save item</button>
+                <button type="submit" name="saveObj" class="btn btn-warning">save item</button>
+                <a href="model_view.php?item=<?php echo $_GET['item']; ?>" class="btn btn-secondary w-auto">back to model</a>
               </div>
             </div>
           </fieldset>
@@ -199,7 +170,7 @@
       require("assets/menu.php");
       require("assets/js.html");
     ?>
-    <script type="text/javascript" src="assets/3dhop/spidergl.js"></script>
+    <!-- <script type="text/javascript" src="assets/3dhop/spidergl.js"></script>
     <script type="text/javascript" src="assets/3dhop/presenter.js"></script>
     <script type="text/javascript" src="assets/3dhop/nexus.js"></script>
     <script type="text/javascript" src="assets/3dhop/ply.js"></script>
@@ -208,8 +179,7 @@
     <script type="text/javascript" src="assets/3dhop/trackball_pantilt.js"></script>
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
-    <script src="js/3dhop_function.js"></script>
-    <!-- <script src="assets/html2canvas.js" charset="utf-8"></script> -->
-    <script src="js/model_add.js" charset="utf-8"></script>
+    <script src="js/3dhop_function.js"></script> -->
+    <script src="js/object_edit.js" charset="utf-8"></script>
   </body>
 </html>

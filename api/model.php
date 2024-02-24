@@ -17,8 +17,10 @@ function getModels($obj){return json_encode($obj->getModels($_POST['search']));}
 function saveModelParam($obj){return json_encode($obj->saveModelParam($_POST));}
 function updateModelParam($obj){return json_encode($obj->updateModelParam($_POST));}
 function connectModel($obj){return json_encode($obj->connectModel($_POST['data']));}
+function updateModelMetadata($obj){return json_encode($obj->updateModelMetadata($_POST));}
+function deleteModel($obj){return json_encode($obj->deleteModel($_POST['id']));}
 
-function test($obj){return json_encode($obj->test($_POST, $_FILES));}
-
-
+function getObject($obj){return json_encode($obj->getObject($_POST['id']));}
+function updateObjectMetadata($obj){return json_encode($obj->updateObjectMetadata($_POST));}
+function changeModelStatus($obj){return json_encode($obj->changeModelStatus($_POST['dati']));}
 ?>

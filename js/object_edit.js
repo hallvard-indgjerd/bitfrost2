@@ -1,4 +1,6 @@
-const form = $("[name=newModelForm]")[0];
+const model =$("[name=model]").val()
+const object =$("[name=item]").val()
+const form = $("[name=editObjForm]")[0];
 const uuid = self.crypto.randomUUID();
 const nxz = document.getElementById('nxz');
 const thumb = document.getElementById('thumb');
@@ -30,36 +32,67 @@ let listMethod = {
 }
 listArray.push(listAuthor,listOwner,listLicense,listMethod)
 listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
-$("#wrapViewSpot").remove()
-$(".closeTip").on('click', function(){
-  $(this).text($(this).text()==='view tip' ? 'hide tip' : 'view tip')
-})
-$("#progressBar,#thumbWrap, #nxzWrap, [name=enlargeScreen],#object-control").hide()
-$("[name=nxz]").on('change', uploadFile);
-$("[name=thumb]").on('change', showPreview);
-$("[name=newModel]").on('click', save);
-$("[name=checkNameBtn]").on('click', function(){
-  let name = $("#name").val()
-  if(!name){
-    alert('The field is empty, enter a value and retry')
-    return false;
-  }
-  if(name.length < 5){
-    alert('The name must be 5 characters at least')
-    return false;
-  }
-  checkName({name:name,element:'model'})
-})
 
-$("[name=measure_unit").on('change', function(){
-  if($(this).val()){
-    $("#uploadTip").text('To prevent the file from overwriting other files with the same name, the system will assign a unique id as the name of the file')
-    $("#nxzWrap").show();
-    measure_unit = $(this).val()
-  }
-})
 
-$("[name=saveModelParam").remove()
+$(document).ready(function () {
+  getObject()
+  $("#wrapViewSpot").remove()
+  $(".closeTip").on('click', function(){
+    $(this).text($(this).text()==='view tip' ? 'hide tip' : 'view tip')
+  })
+  $("#progressBar,#thumbWrap, #nxzWrap, [name=enlargeScreen],#object-control").hide()
+  $("[name=nxz]").on('change', uploadFile);
+  $("[name=thumb]").on('change', showPreview);
+  $("[name=saveObj]").on('click', save);
+  $("[name=checkNameBtn]").on('click', function(){
+    let name = $("#name").val()
+    if(!name){
+      alert('The field is empty, enter a value and retry')
+      return false;
+    }
+    if(name.length < 5){
+      alert('The name must be 5 characters at least')
+      return false;
+    }
+    checkName({name:name,element:'model'})
+  })
+  
+  $("[name=measure_unit").on('change', function(){
+    if($(this).val()){
+      $("#uploadTip").text('To prevent the file from overwriting other files with the same name, the system will assign a unique id as the name of the file')
+      $("#nxzWrap").show();
+      measure_unit = $(this).val()
+    }
+  })
+  
+  $("[name=saveModelParam").remove()
+});
+
+function getObject(){
+  ajaxSettings.url=API+'model.php';
+  ajaxSettings.data={trigger:'getObject', id:object};
+  $.ajax(ajaxSettings)
+  .done(function(data) {
+    console.log(data);
+    let status_label = 'mark object as ';
+    $("#author ").val(data.author)
+    $("#owner").val(data.owner)
+    $("#license").val(data.license)
+    $("#object_description").val(data.description)
+    $("#object_note").val(data.note)
+    $("#acquisition_method").val(data.acquisition_method)
+    $("#measure_unit").val(data.measure_unit)
+    $("#software").val(data.software)
+    $("#points").val(data.points)
+    $("#polygons").val(data.polygons)
+    $("#textures").val(data.textures)
+    $("#scans").val(data.scans)
+    $("#pictures").val(data.pictures)
+    $("#encumbrance").val(data.encumbrance)
+    $("#status").val(data.status == 1 ? 2 :1)
+    $("label[for=status]").text(data.status == 1 ? status_label+'complete' : status_label+'under processing')
+  });
+}
 
 function checkFiles(){
   const nxz = document.getElementById('nxz')
@@ -78,24 +111,28 @@ function checkFiles(){
 function save(btn){
   if (form.checkValidity()) {
     btn.preventDefault();
-    checkFiles()
-    let dati = new FormData();
-    dati.append('trigger','saveModel');
-    $("[data-table]").each(function(){
-      if($(this).is('input[type="number"]') && !$(this).val()){$(this).val(0)}
-      if($(this).val()){dati.append($(this).attr('id'),$(this).val())}
+    let dati = {
+      trigger: 'updateObjectMetadata', 
+      model_object:{id:object},
+      model_param:{object:object}};
+    $("[data-table").each(function(){
+      let table = $(this).data("table");
+      let id=$(this).attr('id');
+      if (!$(this).is(':checkbox')) {
+        if($(this).is('input[type="number"]') && !$(this).val()){$(this).val(0)}
+        if(id == 'object_description'){id='description'}
+        if(id == 'object_note'){id='note'}
+        dati[table][id]=$(this).val()
+      } else {
+        if ($(this).is(':checked')) { 
+          dati[table][id]=$(this).val()
+        }
+      }
     })
-    $.each(buildModelParamArray(), function(key, value){dati.append(key, value);})
-    dati.append("nxz", nxz.files[0], nxz.files[0].name);
-    dati.append("thumb", thumb.files[0], thumb.files[0].name);
     
     ajaxSettings.url=API+'model.php';
     ajaxSettings.data = dati;
-    ajaxSettings.enctype = 'multipart/form-data';
-    ajaxSettings.processData= false;
-    ajaxSettings.contentType= false;
-    ajaxSettings.cache= false;
-    ajaxSettings.timeout = 800000;
+
     $.ajax(ajaxSettings)
     .done(function(data) {
       console.log(data);
@@ -104,14 +141,11 @@ function save(btn){
         $("#toastDivError").removeClass("d-none");
       }else {
         $(".toastTitle").text(data.output)
-        gotoIndex.appendTo(toastToolBar);
-        gotoDashBoard.appendTo(toastToolBar);
-        gotoNewItem.attr("href","model_view.php?item="+data.id).appendTo(toastToolBar);
-        newRecord.appendTo(toastToolBar);
         $("#toastDivSuccess").removeClass("d-none")
+        setTimeout(function(){ window.location.href="model_view.php?item="+model; }, 3000);
       }
       $("#toastDivContent").removeClass('d-none')
-    }).fail((jqXHR, errorMsg) => {console.log(jqXHR.responseText, errorMsg)});
+    });
   }
 }
 
@@ -175,28 +209,3 @@ function abortHandler(event){
   el("status").innerHTML = "Upload Aborted";
   console.log(event);
 }
-
-// function getThumbnail(){
-//   presenter._scene.config.autoSaveScreenshot = false;
-//   presenter.saveScreenshot();
-//   var img = document.createElement("img");
-//   document.body.appendChild(img);
-//   img.src = presenter.screenshotData;
-// }
-
-// async function convertThumb(){
-//   const res = await fetch(thumb);
-//   const blob = await res.blob();
-//   const fd = new FormData();
-//   fd.append("thumb", blob, uuid+".png");
-//   var ajax = new XMLHttpRequest();
-//   ajax.addEventListener("load", completeThumb, false);
-//   ajax.addEventListener("error", errorHandler, false);
-//   ajax.addEventListener("abort", abortHandler, false);
-//   ajax.open("POST", thumbEndpoint);
-//   ajax.send(fd);
-// }
-
-// function completeThumb(event){
-//   console.log(event.target.responseText);
-// }

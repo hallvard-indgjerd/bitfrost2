@@ -424,6 +424,10 @@ $.extend({
 
 
 function copy_to_clipboard(el) {
+  const host = window.location.origin+'/'+window.location.pathname.split('/')[1]
+  const element = el.split('-')[0]
   const text = document.getElementById(el).innerHTML;
-  navigator.clipboard.writeText(text);
+  const link = host+'/'+element+'_view.php?uuid='+text
+  navigator.clipboard.writeText(link);
+  console.log(link);
 }

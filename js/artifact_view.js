@@ -95,6 +95,7 @@ $.ajax(ajaxSettings)
       }
       $("#addModelBtn").remove();
       initModel(data.model)
+      $("#alertArtifactModelConnection").remove()
     }else{
       $("#3dhop > canvas, .modelTools, .model-accordion").remove()
     }

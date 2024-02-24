@@ -65,7 +65,7 @@ function gallery(data, wrapDiv){
   data.forEach((item, i) => {
     let div = $("<div/>",{class:'card m-1 '+cardClass}).data("item",item.id).appendTo(wrapDiv);
     $("<div/>", {class:'card-header'})
-    .css({"background-image":"url('archive/thumb_512/"+item.thumbnail+"')"})
+    .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
     .appendTo(div);
     let body = $("<div/>",{class:'card-body'}).appendTo(div);
     $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);

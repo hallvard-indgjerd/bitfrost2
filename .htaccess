@@ -1,0 +1,12 @@
+# Disable directory browsing 
+Options -Indexes
+
+<Files .htaccess>
+  Order allow,deny
+  Deny from all
+</Files>
+
+<FilesMatch "\.(ini|sql|log|sh)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>

@@ -59,18 +59,10 @@ class Model extends Conn{
       return ["res"=>0, "output"=>$e->getMessage()];
     }
   }
-  public function saveObject($data, $files){
-    try {
-      $objectData = $this->buildObjectData($data, $files);
-      $sqlObject = $this->buildInsert("model_object", $objectData);
-      $this->prepared($sqlObject, $objectData);
-    } catch (\Exception $e) {
-      return ["res"=>0, "output"=>$e->getMessage()];
-    }
-  }
 
   private function buildObjectData($data, $files){
-    $modelExt = pathinfo($files['thumb']["name"], PATHINFO_EXTENSION);
+    $modelExt = pathinfo($files['nxz']["name"], PATHINFO_EXTENSION);
+    $thumbExt = pathinfo($files['thumb']["name"], PATHINFO_EXTENSION);
     $objectArray = [
       'model' => $data['model'],
       'object' => $this->uuid.".".$modelExt,
@@ -79,10 +71,21 @@ class Model extends Conn{
       'owner' => $data['owner'],
       'license' => $data['license'],
       'description' => $data['object_description'],
-      'uuid' => $this->uuid
+      'uuid' => $this->uuid,
+      'thumbnail'=>$this->uuid.".".$thumbExt
     ];
     if(isset($data['object_note'])){$objectArray['note']=$data['object_note'];}
     return $objectArray;
+  }
+
+  public function saveObject($data, $files){
+    try {
+      $objectData = $this->buildObjectData($data, $files);
+      $sqlObject = $this->buildInsert("model_object", $objectData);
+      $this->prepared($sqlObject, $objectData);
+    } catch (\Exception $e) {
+      return ["res"=>0, "output"=>$e->getMessage()];
+    }
   }
 
   private function buildObjectView(array $data){
@@ -166,6 +169,10 @@ class Model extends Conn{
 
   public function getModel(int $id){
     $out['model'] = $this->simple("select m.id, m.name, m.note, m.uuid, NULLIF(m.description, 'no description available') description, m.thumbnail, status.id status_id, status.value status, m.create_at, m.updated_at, concat(p.last_name,' ',p.first_name) created_by from model m inner join list_item_status status ON m.status = status.id inner join user on m.created_by = user.id inner join person p on user.person = p.id where m.id =  ".$id.";")[0];
+    //check if it's connected to an artifact
+    $artifact_model = $this->simple("select artifact from artifact_model where model = ".$id.";");
+    if(count($artifact_model) > 0){$out['artifact'] = $artifact_model[0]['artifact'];}
+    ////////////////////////////////////////
     $out['model_biblio'] = $this->simple("select * from model_biblio where model = ".$id.";");
     $out['model_object'] = $this->simple("select obj.id, obj.object, obj.thumbnail, status.value status, obj.author author_id, concat(author.first_name,' ',author.last_name) author, obj.owner owner_id, owner.name owner, obj.license license_id, license.license license, license.acronym license_acronym, license.link license_link, obj.create_at, obj.updated_at, nullif(obj.description,'no object description') description, obj.note, obj.uuid, method.value acquisition_method, param.software, param.points, param.polygons, param.textures, param.scans, param.pictures, param.encumbrance, param.measure_unit from model_object obj inner join list_item_status status ON obj.status = status.id inner join user on obj.author = user.id inner join person author on user.person = author.id inner join institution owner on obj.owner = owner.id inner join license on obj.license = license.id inner join model_param param on param.object = obj.id inner join list_model_acquisition method on param.acquisition_method = method.id where model =".$id.";");
     $out['model_view'] = $this->simple("select * from model_view where model = ".$id." and default_view = true;")[0];
@@ -198,6 +205,16 @@ class Model extends Conn{
     }
   }
 
+  public function updateModelMetadata(array $dati){
+    try {
+      $sql = $this->buildUpdate('model',['id'=>$dati['id']],$dati);
+      $this->prepared($sql, $dati);
+      return ["res"=> 1, "output"=>'Ok, the model has been successfully updated.'];
+    } catch (\Exception $e) {
+      return ["res"=>0, "output"=>$e->getMessage()];
+    }
+  }
+
   public function updateModelParam(array $dati){
     try {
       $filter = ["model"=>$dati['model']];
@@ -210,6 +227,17 @@ class Model extends Conn{
     }
   }
 
+  public function changeModelStatus(array $dati){
+    try {
+      $filter = ["id"=>$dati['id']];
+      $sql = $this->buildUpdate("model", $filter, $dati);
+      $this->prepared($sql, $dati);
+      return ["res"=>0, "msg"=>'ok, model status has been successfully updated'];
+    } catch (\Exception $e) {
+      return ["res"=>1, "msg"=>$e->getMessage()];
+    }
+  }
+
 
   public function connectModel(array $dati){
     try {
@@ -218,6 +246,36 @@ class Model extends Conn{
       return ["res"=>1, "msg"=>'ok, model connected'];
     } catch (\Exception $e) {
       return ["res"=>0, "msg"=>$e->getMessage()];
+    }
+  }
+
+  public function deleteModel(int $id){
+    try {
+      $sql = $this->buildDelete('model',['id'=>$id]);
+      $this->simple($sql);
+      return ["res"=> 1, "output"=>'Ok, the model has been successfully deleted.'];
+    } catch (\Exception $e) {
+      return ["res"=>0, "output"=>$e->getMessage()];
+    }
+  }
+
+  public function getObject(int $id){
+    $sql = "select * from model_object inner join model_param on model_param.object = model_object.id where model_object.id = ".$id.";";
+    return $this->simple($sql)[0];
+  }
+
+  public function updateObjectMetadata(array $dati){
+    try {
+      $modelObjectSql = $this->buildUpdate('model_object',['id'=>$dati['model_object']['id']],$dati['model_object']);
+      $modelParamSql = $this->buildUpdate('model_param',['object'=>$dati['model_param']['object']],$dati['model_param']);
+      $this->pdo()->beginTransaction();
+      $this->prepared($modelObjectSql, $dati['model_object']);
+      $this->prepared($modelParamSql, $dati['model_param']);
+      $this->pdo()->commit();
+      return ["res"=> 1, "output"=>'Ok, the object has been successfully updated.'];
+    } catch (\Exception $e) {
+      $this->pdo()->rollback();
+      return ["res"=>0, "output"=>$e->getMessage()];
     }
   }
 }
