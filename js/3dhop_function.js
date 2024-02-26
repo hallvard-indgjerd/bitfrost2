@@ -244,7 +244,7 @@ function changeModelStatus(){
 }
 
 function initModel(model){
-  console.log(model);
+  console.log(activeUser?activeUser:'no session');
   let mainData = model.model;
   let object = model.model_object;
   let model_view = model.model_view;
@@ -266,8 +266,13 @@ function initModel(model){
     statusBtnValue = 1
     statusBtnTooltip = 'Mark model as under processing. The Model will not be visible in the main gallery'
   }
-  $("#model-status").addClass(statusAlert).tooltip({title:statusTooltip, placement:'top', trigger:'hover'}); 
-  $("button[name=modelVisibility").addClass(statusBtnClass).val(statusBtnValue).tooltip({title:statusBtnTooltip, placement:'top', trigger:'hover'}).on('click',changeModelStatus)
+  let modelStatus = $("#model-status").addClass(statusAlert)
+  if(activeUser){
+    modelStatus.tooltip({title:statusTooltip, placement:'top', trigger:'hover'});
+    $("button[name=modelVisibility").addClass(statusBtnClass).val(statusBtnValue).tooltip({title:statusBtnTooltip, placement:'top', trigger:'hover'}).on('click',changeModelStatus)
+  }else{
+    $("#toolBarModel").remove()
+  } 
   Object.keys(mainData).forEach(function(key) {
     if(mainData[key]){$("#model-"+key).text(mainData[key])}
     if(!mainData[key] && !role){$("#model-"+key).parent().remove()}
@@ -311,10 +316,12 @@ function initModel(model){
         }
       }
     })
-    let navBarObj = $("<nav/>",{class:"my-3 pb-2 border-bottom"}).appendTo(metadata);
-    $("<a/>",{href:'object_edit.php?model='+mainData.id+'&item='+element.id, class:'btn btn-sm btn-adc-dark', text:'edit'}).appendTo(navBarObj)
-    if(object.length > 1){
-      $("<button/>",{type:'button', class:'btn btn-sm btn-danger float-end', text:'delete object'}).appendTo(navBarObj)
+    if(activeUser){
+      let navBarObj = $("<nav/>",{class:"my-3 pb-2 border-bottom"}).appendTo(metadata);
+      $("<a/>",{href:'object_edit.php?model='+mainData.id+'&item='+element.id, class:'btn btn-sm btn-adc-dark', text:'edit'}).appendTo(navBarObj)
+      if(object.length > 1){
+        $("<button/>",{type:'button', class:'btn btn-sm btn-danger float-end', text:'delete object'}).appendTo(navBarObj)
+      }
     }
   });
 
