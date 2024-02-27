@@ -1,9 +1,11 @@
-DROP TABLE if exists list_file_type ;
-CREATE TABLE list_file_type(
-  `id` SMALLINT NOT NULL AUTO_INCREMENT,
-  `value` VARCHAR(25),
-  PRIMARY KEY(id), 
-  UNIQUE KEY(value)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
-
-INSERT INTO list_file_type(value) values ('image'),('document'),('video'),('audio');
+DROP TABLE if exists files;
+create table files(
+  `id` SMALLINT AUTO_INCREMENT,
+  `artifact` INT NOT NULL,
+  `type` ENUM('image','document','video','audio') NOT NULL,
+  `path` varchar(256),
+  `url` varchar(256),
+  `text` text,
+  PRIMARY KEY(id),
+  CONSTRAINT FOREIGN KEY (`artifact`) REFERENCES `artifact` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

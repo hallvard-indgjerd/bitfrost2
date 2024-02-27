@@ -30,9 +30,9 @@
                   </button>
                   <ul class="dropdown-menu">
                     <li id="addModelBtn"><a href="models.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">model</a></li>
-                    <li><a href="#" class="dropdown-item">image and photo</a></li>
-                    <li><a href="#" class="dropdown-item">document</a></li>
-                    <li><a href="#" class="dropdown-item">reference</a></li>
+                    <li><a href="media_add.php?item=<?php echo $_GET['item']; ?>&t=image" class="dropdown-item">image</a></li>
+                    <li><a href="media_add.php?item=<?php echo $_GET['item']; ?>&t=document" class="dropdown-item">document</a></li>
+                    <li><a href="media_add.php?item=<?php echo $_GET['item']; ?>&t=video" class="dropdown-item">video</a></li>
                   </ul>
                 </div>
               </div>
