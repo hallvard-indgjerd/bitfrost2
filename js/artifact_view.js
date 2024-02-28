@@ -105,5 +105,93 @@ $.ajax(ajaxSettings)
     $("<div/>",{class:'alert alert-info fs-3'}).text('Model not yet available!!').appendTo(noModelDiv);
     $("#editModelBtn").remove();
   }
-  artifactMap()  
+  artifactMap()
+
+  if(data.media){
+    let navTabs = $("<ul/>",{class:'nav nav-tabs', id:'mediaTabs', role:'tablist'}).appendTo("#media")
+    let navPanes =$("<div/>",{class:"tab-content", id:"mediaContent"}).appendTo("#media")
+    const type = groupBy(['type']);
+    let group = type(data.media);
+    Object.entries(group).forEach(function(element,idx) {
+      let active = idx == 0 ? 'active' : '';
+      let show = idx == 0 ? 'show' : '';
+      let elTab = $("<li/>", {class:'nav-item', role:'presentation'}).appendTo(navTabs)
+      $("<button/>",{class:'nav-link '+active, id: element[0]+'Tab', type:'button', role:'tab'}).attr({"data-bs-toggle":'tab', "data-bs-target":'#'+element[0]+'Pane'}).text(element[0]).appendTo(elTab)
+
+      let panes = $("<div/>", {class:'p-4 tab-pane fade '+show+' '+active, id: element[0]+'Pane', role:'tabpanel'}).appendTo(navPanes)
+
+      if(element[0] == 'image'){
+        let imgDiv = $("<div/>",{id:'imgDiv'}).appendTo('#imagePane')
+        element[1].forEach(img => {
+        let imgWrap = $("<div/>",{class:'imgCard mb-3'}).appendTo(imgDiv)
+        let figure = $("<figure/>",{class:'figure rounded border p-2'}).appendTo(imgWrap)
+        $("<img/>",{class:'figure-img img-fluid rounded', src:"./archive/image/"+img.path}).appendTo(figure);
+        $("<figcaption/>",{class:'figure-caption', text:img.text}).appendTo(figure)
+        });
+      }
+
+      if(element[0] == 'document'){
+        let ul = $("<ul/>", {class:"list-group list-group-flush"}).appendTo("#documentPane")
+        element[1].forEach(doc => {
+          let li = $("<li/>",{class:'list-group-item'}).appendTo(ul)
+          if(doc.path && doc.path != ''){
+            let divFile = $("<div/>",{class:'d-block'}).appendTo(li)
+            $("<span/>",{text:'download file: '}).appendTo(divFile)
+            $("<a/>",{href:'./archive/document/'+doc.path, text:doc.path}).appendTo(divFile)
+          }
+          if(doc.url && doc.url != ''){
+            let divUrl = $("<div/>",{class:'d-block'}).appendTo(li)
+            $("<span/>",{text:'external resource: '}).appendTo(divUrl)
+            $("<a/>",{href:doc.url, text:doc.url, target:'_blank'}).appendTo(divUrl)
+          }
+          let divText = $("<div/>",{class:'d-block'}).appendTo(li)
+          $("<small/>",{class:'text-secondary',text:doc.text}).appendTo(divText)
+        })
+      }
+
+      if(element[0] == 'video'){
+        element[1].forEach(video => {
+
+          let divVideo = $("<div/>",{class:'mb-3 embed-responsive embed-responsive-16by9'}).appendTo("#videoPane")
+          $("<iframe/>",{class:'embed-responsive-item', src:video.url.replace('watch?v=','embed/')}).prop('allowfullscreen', true).appendTo(divVideo)
+          $("<small/>",{class:'text-secondary',text:video.text}).appendTo(divVideo)
+        })
+      }
+    })
+    
+  }
+
+  typeChronologicalDistribution(data.artifact.category_class_id)
 });
+
+let statData = [['chronology', 'tot']]
+function typeChronologicalDistribution(type){
+  ajaxSettings.url=API+"stats.php";
+  ajaxSettings.data={trigger:'typeChronologicalDistribution', type:type};
+  $.ajax(ajaxSettings).done(function(data) {
+    console.log(data);
+    data.forEach((v) => { 
+      statData.push([v.crono, v.tot])
+    })
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+  })
+
+}
+
+
+function drawChart() {
+  console.log(statData);
+  var data = google.visualization.arrayToDataTable(statData);
+
+  var options = {
+    title: 'Chronological distribution',
+    curveType: 'function',
+    legend: { position: 'bottom' },
+    pointsVisible: true
+  };
+
+  var chart = new google.visualization.LineChart(document.getElementById('stats'));
+
+  chart.draw(data, options);
+}

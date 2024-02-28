@@ -3,10 +3,14 @@ namespace Adc;
 session_start();
 
 use \Adc\Model;
+use \Adc\File;
+
 class Artifact extends Conn{
   public $model;
+  public $files;
   function __construct(){
     $this->model = new Model();
+    $this->files = new File();
   }
   public function addArtifact(array $dati){
     try {
@@ -99,9 +103,9 @@ class Artifact extends Conn{
     $out['artifact_metadata'] = $this->getArtifactMetadata($id);
     $out['artifact_findplace'] = $this->getArtifactFindplace($id);
     $modelId = $this->getModelId($id);
-    if(count($modelId) > 0){
-      $out['model'] = $this->model->getModel($modelId[0]['model']);
-    }
+    if(count($modelId) > 0){$out['model'] = $this->model->getModel($modelId[0]['model']);}
+    $media = $this->files->getMedia($id);
+    if(count($media)>0){$out['media'] = $media;}
     return $out;
   }
 

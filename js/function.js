@@ -422,6 +422,12 @@ $.extend({
   }
 });
 
+const groupBy = keys => array =>
+  array.reduce((objectsByKeyValue, obj) => {
+    const value = keys.map(key => obj[key]).join('-');
+    objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+    return objectsByKeyValue;
+  }, {});
 
 function copy_to_clipboard(el) {
   const host = window.location.origin+'/'+window.location.pathname.split('/')[1]

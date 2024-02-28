@@ -1,1 +1,8 @@
-select obj.id, obj.object, status.value status, obj.author author_id, concat(author.first_name,' ',author.last_name) author, obj.owner owner_id, owner.name owner, obj.license license_id, license.license license, license.acronym license_acronym, license.link license_link, obj.create_at, obj.updated_at, nullif(obj.description,'no object description') description, obj.note, obj.uuid, method.value acquisition_method, param.software, param.points, param.polygons, param.textures, param.scans, param.pictures, param.encumbrance, param.measure_unit from model_object obj inner join list_item_status status ON obj.status = status.id inner join user on obj.author = user.id inner join person author on user.person = author.id inner join institution owner on obj.owner = owner.id inner join license on obj.license = license.id inner join model_param param on param.object = obj.id inner join list_model_acquisition method on param.acquisition_method = method.id where model = 319 \G
+select c.definition crono, count(*) tot
+from cultural_generic_period c, artifact 
+where 
+  artifact.category_class = 19 
+  and artifact.start between c.start and c.end 
+  and artifact.end between c.start and c.end 
+group by c.definition, artifact.category_class
+order by c.id asc;

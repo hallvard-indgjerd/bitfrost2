@@ -59,14 +59,6 @@
           </div>
         </div>
       </nav>
-      <!-- <div class="container-fluid" id="wrapData">
-        <div class="row">
-          <div class="col">
-            <h2 id="title" class="titleSection text-center txt-adc-dark fw-bold border-bottom p-4"></h2>
-          </div>
-        </div>
-      </div> -->
-
       <div id="mainContent">
         <div class="absoluteCol artifactCol artifact-primary" id="artifact">
           <div class="alert" id="status"></div>
@@ -236,36 +228,16 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="accordion-item model-accordion">
-              <h2 class="accordion-header" id="model-metadata-btn">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#model-metadata" aria-expanded="true" aria-controls="model-metadata">Model metadata</button>
-              </h2>
-              <div id="model-metadata" class="accordion-collapse collapse" aria-labelledby="model-metadata-btn" data-bs-parent="#accordionArtifact">
-                <div class="accordion-body">
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><span>Author</span><span id="model-auth"></span></li>
-                    <li class="list-group-item"><span>Owner</span><span id="model-owner"></span></li>
-                    <li class="list-group-item"><span>license</span><span id="model-license"></span></li>
-                    <li class="list-group-item"><span>Create at</span><span id="model-create_at"></span></li>
-                    <li class="list-group-item"><span>Last update</span><span id="model-updated_at"></span></li>
-                  </ul>
-                </div>
-              </div>
-            </div> -->
           </div>
         </div>
         <div class="absoluteCol geographic-primary" id="geographic">
           <div class="divSection mb-5" id="map"></div>
         </div>
         <div class="absoluteCol model-primary" id="model"><?php require('assets/canvas.html'); ?></div> 
-        <div class="absoluteCol media-primary" id="media">
-          <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Media gallery</h2>
-          <div class="divSection mb-5"></div>
-        </div>
-        <div class="absoluteCol resource-primary" id="resource">
-          <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Documents</h2>
-          <div class="divSection mb-5"></div>
-        </div>           
+        <div class="absoluteCol media-primary border-top p-3" id="media"></div>
+        <div class="absoluteCol resource-primary border-top p-3" id="stats"></div>
+          <!-- <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Stats</h2> -->
+                   
       </div>
 
     </main>
@@ -284,6 +256,7 @@
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="js/3dhop_function.js"></script>
     <script src="js/maps/geo_config.js" charset="utf-8"></script>
     <script src="js/maps/geo_function.js" charset="utf-8"></script>
