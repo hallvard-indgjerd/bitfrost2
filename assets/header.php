@@ -2,8 +2,9 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-11 col-lg-8">
-        <img src="img/ico/headerLogo.png" class="img-fluid d-inline" alt="">
-        <h2 class="m-0 ps-xl-3 d-inline-block align-middle">Archaeological Dynamic Collections</h2>
+        <img src="img/logo/lunds-unversitet.svg" class="d-inline" alt="">
+        <!-- <img src="img/ico/headerLogo.png" class="img-fluid d-inline" alt=""> -->
+        <!-- <h2 class="m-0 ps-xl-3 d-inline-block align-middle">Dynamic Collections</h2> -->
       </div>
       <div class="col-1 col-lg-4">
         <div class="headerLink d-xl-none">
@@ -12,7 +13,7 @@
         <div class="headerLink d-none d-xl-inline-block">
           <a href="index.php" class="animated">home</a>
           <a href="#" class="animated">about</a>
-          <a href="#" class="animated">partners</a>
+          <a href="#" class="animated">credits</a>
           <a href="db_model.php" class="animated">db model</a>
           <?php if (!isset($_SESSION['id'])) {?><a href="login.php" class="animated">login</a><?php } ?>
         </div>

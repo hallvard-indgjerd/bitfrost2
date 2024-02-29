@@ -59,11 +59,40 @@
         <!-- data-bs-toggle="modal" data-bs-target="#saveCollectionModal" -->
       </div>
       <div class="container-fluid mt-5">
-        <div class="row">
+        <div class="row mb-4 bg-light p-4 border rounded" style="position:relative; width:100%;height:440px" >
+          <div class="col-md-3">
+            <div style="display: flex; flex-direction: row; justify-content: start; flex-wrap: wrap; width: 100%; height: 400px;">
+              <div class="border rounded bg-white text-center" id="artifactTot" style="width:48%;margin:2px; height:48%; display:flex; justify-content:center; align-items:center; flex-direction:column">
+                <h6>Artifact</h6>
+                <h2 class="fs-1">450</h2>
+              </div>          
+              <div class="border rounded bg-white text-center" id="modelTot" style="width:48%;margin:2px; height:48%; display:flex; justify-content:center; align-items:center; flex-direction:column">
+                <h6>Model</h6>
+                <h2 class="fs-1">450</h2>
+              </div>          
+              <div class="border rounded bg-white text-center" id="institutionTot" style="width:48%;margin:2px; height:48%; display:flex; justify-content:center; align-items:center; flex-direction:column">
+                <h6>Institution</h6>
+                <h2 class="fs-1">450</h2>
+              </div>          
+              <div class="border rounded bg-white text-center" id="usersTot" style="width:48%;margin:2px; height:48%; display:flex; justify-content:center; align-items:center; flex-direction:column">
+                <h6>Users</h6>
+                <h2 class="fs-1">450</h2>
+              </div>          
+            </div>
+          </div>
+          <div class="col-md-5">
+            <div id="mapStat"></div>
+          </div>
+          <div class="col-md-4">
+            <div id="donutchart" style="width:100%;height:190px; margin-bottom:5px;"></div>
+            <div id="curve_chart" style="width:100%;height:190px;"></div>
+          </div>
+        </div>
+        <!-- <div class="row">
           <div class="col text-center">
             <h1 id="totItems" class="txt-adc-dark fw-bold"></h1>
           </div>
-        </div>
+        </div> -->
         <div class="card-wrap"></div>
       </div>
     </main>
@@ -113,5 +142,6 @@
     <?php require("assets/menu.php"); ?>
     <?php require("assets/js.html"); ?>
   </body>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="js/index.js" charset="utf-8"></script>
 </html>

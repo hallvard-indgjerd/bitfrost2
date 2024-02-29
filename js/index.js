@@ -30,6 +30,69 @@ $("#createFromFiltered").on('click', function(){$(".addItemBtn").trigger('click'
 
 $("[name='viewCollectionBtn']").on('click', collectedGallery)
 
+
+
+google.charts.load('current', { 'packages':['geochart', 'corechart'],});
+google.charts.setOnLoadCallback(drawRegionsMap);
+google.charts.setOnLoadCallback(drawChart);
+google.charts.setOnLoadCallback(drawLineChart);
+
+function drawRegionsMap() {
+  var data = google.visualization.arrayToDataTable([
+    ['Country', 'Popularity'],
+    ['Germany', 200],
+    ['United States', 300],
+    ['Brazil', 400],
+    ['Canada', 500],
+    ['France', 600],
+    ['RU', 700]
+  ]);
+  var options = {};
+  var chart = new google.visualization.GeoChart(document.getElementById('mapStat'));
+  chart.draw(data, options);
+}
+
+function drawChart() {
+  var data = google.visualization.arrayToDataTable([
+    ['Task', 'Hours per Day'],
+    ['Work',     11],
+    ['Eat',      2],
+    ['Commute',  2],
+    ['Watch TV', 2],
+    ['Sleep',    7]
+  ]);
+
+  var options = {
+    title: 'My Daily Activities',
+    pieHole: 0.4,
+  };
+
+  var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+  chart.draw(data, options);
+}
+
+function drawLineChart() {
+  var data = google.visualization.arrayToDataTable([
+    ['Year', 'Sales', 'Expenses'],
+    ['2004',  1000,      400],
+    ['2005',  1170,      460],
+    ['2006',  660,       1120],
+    ['2007',  1030,      540]
+  ]);
+
+  var options = {
+    title: 'Company Performance',
+    curveType: 'function',
+    legend: { position: 'bottom' },
+    pointsVisible: true
+  };
+
+  var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+  chart.draw(data, options);
+}
+
+
 function getFilter(){
   filter = [];
   if(byCategory.val()){filter.push("class.id = "+byCategory.val())}
@@ -73,8 +136,8 @@ function gallery(data, wrapDiv){
     $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
     $("<p/>",{class:'mb-2'}).html(cutString(item.description, 100)).appendTo(body);
     let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
-    let itemUrlBtn = $("<a/>",{class:'btn btn-primary ms-3', href:'artifact_view.php?item='+item.id}).text('view').appendTo(footer);
-    let collectBtn = $("<button/>",{class:'btn btn-primary ms-3 addItemBtn', id: 'addItem'+item.id}).text('collect').appendTo(footer);
+    let itemUrlBtn = $("<a/>",{class:'btn btn-primary ms-3', href:'artifact_view.php?item='+item.id}).text('View').appendTo(footer);
+    let collectBtn = $("<button/>",{class:'btn btn-primary ms-3 addItemBtn', id: 'addItem'+item.id}).text('Collect').appendTo(footer);
     let uncollectBtn = $("<button/>",{class:'btn btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('remove').appendTo(footer);
     wrapDiv == ".card-wrap" ? uncollectBtn.hide() : uncollectBtn.show();
     wrapDiv == ".card-wrap" ? collectBtn.show() : collectBtn.hide();

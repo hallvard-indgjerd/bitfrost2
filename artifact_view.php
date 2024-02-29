@@ -25,7 +25,7 @@
               <?php if (isset($_SESSION['id'])) { ?>
               <div class="btn-group" role="group">
                 <div class="dropdown">
-                  <button class="btn btn-adc-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="mdi mdi-plus-thick"></i> add
                   </button>
                   <ul class="dropdown-menu">
@@ -38,7 +38,7 @@
               </div>
               <div class="btn-group" role="group">
                 <div class="dropdown">
-                  <button class="btn btn-adc-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="mdi mdi-pencil"></i> edit
                   </button>
                   <ul class="dropdown-menu">
@@ -49,7 +49,7 @@
                   </ul>
                 </div>
               </div>
-              <button type="button" name="delete" id="delete" class="btn btn-adc-dark"><i class="mdi mdi-delete-forever"></i> delete</button>
+              <button type="button" name="delete" id="delete" class="btn btn-light"><i class="mdi mdi-delete-forever"></i> delete</button>
               <?php } ?>
             </div>
             <div class="col-6 text-end">
@@ -123,7 +123,7 @@
             </div>
             <div class="accordion-item">
               <h2 class="accordion-header" id="conservation-data">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#conservationSection">Conservation info</button>
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#conservationSection">Conservation info</button>
               </h2>
               <div id="conservationSection" class="accordion-collapse collapse show" aria-labelledby="conservation-data" data-bs-parent="#accordionArtifact">
                 <div class="accordion-body">
@@ -236,6 +236,7 @@
         <div class="absoluteCol model-primary" id="model"><?php require('assets/canvas.html'); ?></div> 
         <div class="absoluteCol media-primary border-top p-3" id="media"></div>
         <div class="absoluteCol resource-primary border-top p-3" id="stats"></div>
+        <div class="absoluteCol resource-primary border-top p-3" id="statsMap" style="top:1070px;"></div>
           <!-- <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Stats</h2> -->
                    
       </div>

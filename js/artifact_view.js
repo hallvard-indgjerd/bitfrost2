@@ -5,6 +5,24 @@ let polyArr={}
 ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 
+google.charts.load('current', { 'packages':['geochart']});
+google.charts.setOnLoadCallback(drawRegionsMap);
+
+function drawRegionsMap() {
+  var data = google.visualization.arrayToDataTable([
+    ['Country', 'Popularity'],
+    ['Germany', 200],
+    ['United States', 300],
+    ['Brazil', 400],
+    ['Canada', 500],
+    ['France', 600],
+    ['RU', 700]
+  ]);
+  var options = {};
+  var chart = new google.visualization.GeoChart(document.getElementById('statsMap'));
+  chart.draw(data, options);
+}
+
 $.ajax(ajaxSettings)
 .done(function(data) {
   console.log(data);
