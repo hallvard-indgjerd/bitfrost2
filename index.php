@@ -5,6 +5,7 @@
 <html lang="en" dir="ltr">
   <head>
     <?php require("assets/meta.php"); ?>
+    <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/artifacts.css">
   </head>
   <body>
@@ -56,10 +57,35 @@
       </nav>
       <div id="viewCollection">
         <button type="button" class="btn btn-adc-dark" name="viewCollectionBtn" data-bs-toggle="modal" data-bs-target="#saveCollectionModal">view your collection</button>
-        <!-- data-bs-toggle="modal" data-bs-target="#saveCollectionModal" -->
+      </div>
+      <div id="statWrap" class="bg-light border">
+        <div class="">
+          <div class="border rounded bg-white text-center" id="artifactTot" >
+            <h6>Artifact</h6>
+            <h2 class="fs-1">450</h2>
+          </div>
+          <div class="border rounded bg-white text-center" id="modelTot" >
+            <h6>Model</h6>
+            <h2 class="fs-1">450</h2>
+          </div>
+          <div class="border rounded bg-white text-center" id="institutionTot" >
+            <h6>Institution</h6>
+            <h2 class="fs-1">450</h2>
+          </div> 
+          <div class="border rounded bg-white text-center" id="userTot" >
+            <h6>User</h6>
+            <h2 class="fs-1">450</h2>
+          </div> 
+        </div>
+        <div class="bg-white border rounded" id="mapStat"></div>
+        <div class="bg-white border rounded" id="chartStat">
+          <div id="donutchart"></div>
+          <div id="curve_chart"></div>
+          </div>
+        </div>
       </div>
       <div class="container-fluid mt-5">
-        <div class="row mb-4 bg-light p-4 border rounded" style="position:relative; width:100%;height:440px" >
+        <!-- <div class="row mb-4 bg-light p-4 border" style="position:relative; width:100%;height:440px" >
           <div class="col-md-3">
             <div style="display: flex; flex-direction: row; justify-content: start; flex-wrap: wrap; width: 100%; height: 400px;">
               <div class="border rounded bg-white text-center" id="artifactTot" style="width:48%;margin:2px; height:48%; display:flex; justify-content:center; align-items:center; flex-direction:column">
@@ -87,7 +113,7 @@
             <div id="donutchart" style="width:100%;height:190px; margin-bottom:5px;"></div>
             <div id="curve_chart" style="width:100%;height:190px;"></div>
           </div>
-        </div>
+        </div> -->
         <!-- <div class="row">
           <div class="col text-center">
             <h1 id="totItems" class="txt-adc-dark fw-bold"></h1>

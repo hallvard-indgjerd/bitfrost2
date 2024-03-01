@@ -101,8 +101,8 @@ fieldset > legend{
   header img{width:60px;}
   header h2{font-size: 2rem;}
   header .headerLink{float: right;}
-  header .headerLink > a{height: 80px; width: 80px; line-height: 80px; text-align: center;color:#875e29; background: none; margin: -10px 0; font-size:1rem;}
-  header .headerLink > a:hover, header .headerLink > a.currentPage{color:#f0eee5; background-color: #875e29;}
+  header .headerLink > a{height: 80px; width: 80px; line-height: 80px; text-align: center;color:#fff; background: none; margin: -10px 0; font-size:1rem;}
+  header .headerLink > a:hover, header .headerLink > a.currentPage{color:#22458a; background-color: #fff;}
   body > nav{top:80px; height: calc(100vh - 80px);}
   main > .itemTool{top:80px;}
 }
@@ -112,8 +112,8 @@ fieldset > legend{
   header img{width:60px;}
   header h2{font-size: 2rem;}
   header .headerLink{float: right;}
-  header .headerLink > a{height: 80px; width: 80px; line-height: 80px; text-align: center;color:#875e29; background: none; margin: -10px 0; font-size:1rem;}
-  header .headerLink > a:hover, header .headerLink > a.currentPage{color:#f0eee5; background-color: #875e29;}
+  header .headerLink > a{height: 80px; width: 80px; line-height: 80px; text-align: center;color:#fff; background: none; margin: -10px 0; font-size:1rem;}
+  header .headerLink > a:hover, header .headerLink > a.currentPage{color:#22458a; background-color: #fff;}
   body > nav{top:80px; height: calc(100vh - 80px);}
   body > nav > #linkWrap > a:hover{padding-left:35px;}
   main > .itemTool{top:80px;}

@@ -2,7 +2,7 @@ let btnHome, btnFullscreen;
 let collected = [];
 let filter = [];
 let sort = "rand()";
-$("#viewCollection, #createFromFiltered").hide();
+$("#viewCollection>button, #createFromFiltered").hide();
 
 function buildData(){
   $("[data-table]").each(function(){
@@ -61,7 +61,7 @@ function checkName(data){
 }
 
 function countItems(){
-  collected.length > 0 ? $("#viewCollection").show() : $("#viewCollection").hide()
+  collected.length > 0 ? $("#viewCollection>button").show() : $("#viewCollection>button").hide()
 }
 
 function cutString(string, length) {

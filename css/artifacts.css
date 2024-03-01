@@ -2,7 +2,6 @@
   position:relative;
   display: flex;
   width:100%;
-  /* min-height: 80vh; */
   height:auto;
   justify-content: flex-start;
   flex-direction: row;
@@ -26,15 +25,6 @@ fieldset > legend{
   height:400px;
 }
 
-#viewCollection{
-  position:fixed;
-  top:122px;
-  left:0;
-  width:100%;
-  padding:10px 30px;
-  background-color: #fff;
-  z-index:499;
-}
 
 .viewArtifactsBtn, .collectedCard{width:100% !important;}
 .card-header{
@@ -51,7 +41,7 @@ fieldset > legend{
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  .viewArtifactsBtn{width:19% !important;}
+  .viewArtifactsBtn{width:16% !important;}
   .collectedCard{width:23% !important;}
 }
 
