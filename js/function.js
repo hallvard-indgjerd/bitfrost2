@@ -47,6 +47,43 @@ function buildGallery(){
   })
 }
 
+function gallery(data, wrapDiv){
+  let cardWidth = document.getElementById("userMenu") ? 'smallCard' : 'largeCard';
+  $("#loadingDiv").remove()
+  $(wrapDiv).html('');
+  let cardClass = wrapDiv == ".card-wrap" ? 'viewArtifactsBtn' : 'collectedCard';
+  data.forEach((item) => {
+    let div = $("<div/>",{class:'card m-1 '+cardClass+' '+cardWidth}).data("item",item.id).appendTo(wrapDiv);
+    $("<div/>", {class:'card-header'})
+    .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
+    .appendTo(div);
+    let body = $("<div/>",{class:'card-body'}).appendTo(div);
+    $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
+    $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+item.material+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html(cutString(item.description, 80)).appendTo(body);
+    let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
+    let itemUrlBtn = $("<a/>",{class:'btn btn-adc-blue ms-3', href:'artifact_view.php?item='+item.id}).text('View').appendTo(footer);
+    let collectBtn = $("<button/>",{class:'btn btn-adc-blue ms-3 addItemBtn', id: 'addItem'+item.id}).text('Collect').appendTo(footer);
+    let uncollectBtn = $("<button/>",{class:'btn btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('remove').appendTo(footer);
+    wrapDiv == ".card-wrap" ? uncollectBtn.hide() : uncollectBtn.show();
+    wrapDiv == ".card-wrap" ? collectBtn.show() : collectBtn.hide();
+    collectBtn.on('click',function(){
+      collected.push(item);
+      $(this).hide();
+      uncollectBtn.show();
+      countItems();
+    })
+    uncollectBtn.on('click',function(){
+      let idx = collected.findIndex(i => i === item.id);
+      collected.splice(idx, 1);
+      $(this).hide();
+      collectBtn.show();
+      countItems();
+    })
+  })
+}
+
 function checkName(data){
   let dati = {}
   dati.trigger='checkName';

@@ -5,6 +5,7 @@
 <html lang="en" dir="ltr">
   <head>
     <?php require("assets/meta.php"); ?>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" media="screen"/>
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/artifacts.css">
   </head>
@@ -13,114 +14,83 @@
       require("assets/header.php"); 
       require("assets/loadingDiv.html"); 
     ?>
-    <main class="<?php echo $mainClass; ?>">
-      <nav class="itemTool <?php echo $itemToolClass; ?>">
-        <div class="container-fluid">
-          <div class="d-inline-block me-1">
-            <button class="btn btn-light btn-sm" type="button" id="resetGallery" data-bs-toggle="tooltip" data-bs-title="reset filters" style="margin-top:-5px"><span class="mdi mdi-reload"></span></button>
-          </div>
-          <div class="d-inline-block me-1">
-            <select class="form-select form-select-sm buildGallery" id="byCategory">
-              <option selected value="" disabled>search by category</option>
-            </select>
-          </div>
-          <div class="d-inline-block me-1">
-            <select class="form-select form-select-sm buildGallery"id="byMaterial">
-              <option selected value="" disabled>search by material</option>
-            </select>
-          </div>
-          <div class="d-inline-block me-1">
-            <select class="form-select form-select-sm buildGallery" id="byChronology">
-              <option selected value="" disabled>search by chronology</option>
-            </select>
-          </div>
-          <div class="d-inline-block me-1">
-            <div class="input-group input-group-sm">
-              <input type="search" class="form-control w-auto" id="byDescription" value="">
-              <button class="btn btn-light byDescription" type="button"><span class="mdi mdi-magnify"></span></button>
-            </div>
-          </div>
-          <div class="d-inline-block me-1">
-            <div class="btn-group">
-              <button class="btn bg-adc-dark btn-sm" type="button" id="createFromFiltered" data-bs-toggle="tooltip" data-bs-title="create a new collection from filtered items" style="margin-top:-5px">create collection</button>
-            </div>
-          </div>
-          <div class="dropdown float-end me-3">
-            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" id="sortByBtn"><span class="mdi mdi-sort-reverse-variant"></span></button>
-            <ul class="dropdown-menu" id="sortBy">
-              <li><a class="dropdown-item sortBy" href="#" data-sort="category">name</a></li>
-              <li><a class="dropdown-item sortBy" href="#" data-sort="material">material</a></li>
-              <li><a class="dropdown-item sortBy" href="#" data-sort="start">chronology</a></li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-      <div id="viewCollection">
+    <div id="itemTool" class="animated mainSection <?php echo $mainClass; ?>">
+      <div id="viewCollection" class="d-inline-block me-1">
         <button type="button" class="btn btn-adc-dark" name="viewCollectionBtn" data-bs-toggle="modal" data-bs-target="#saveCollectionModal">view your collection</button>
       </div>
-      <div id="statWrap" class="bg-light border">
-        <div class="">
-          <div class="border rounded bg-white text-center" id="artifactTot" >
-            <h6>Artifact</h6>
-            <h2 class="fs-1">450</h2>
-          </div>
-          <div class="border rounded bg-white text-center" id="modelTot" >
-            <h6>Model</h6>
-            <h2 class="fs-1">450</h2>
-          </div>
-          <div class="border rounded bg-white text-center" id="institutionTot" >
-            <h6>Institution</h6>
-            <h2 class="fs-1">450</h2>
-          </div> 
-          <div class="border rounded bg-white text-center" id="userTot" >
-            <h6>User</h6>
-            <h2 class="fs-1">450</h2>
-          </div> 
+        <div class="d-inline-block me-1">
+          <button class="btn btn-light btn-sm" type="button" id="resetGallery" data-bs-toggle="tooltip" data-bs-title="reset filters" style="margin-top:-5px"><span class="mdi mdi-reload"></span></button>
         </div>
-        <div class="bg-white border rounded" id="mapStat"></div>
-        <div class="bg-white border rounded" id="chartStat">
-          <div id="donutchart"></div>
-          <div id="curve_chart"></div>
+        <div class="d-inline-block me-1">
+          <select class="form-select form-select-sm buildGallery" id="byCategory">
+            <option selected value="" disabled>search by category</option>
+          </select>
+        </div>
+        <div class="d-inline-block me-1">
+          <select class="form-select form-select-sm buildGallery"id="byMaterial">
+            <option selected value="" disabled>search by material</option>
+          </select>
+        </div>
+        <div class="d-inline-block me-1">
+          <select class="form-select form-select-sm buildGallery" id="byChronology">
+            <option selected value="" disabled>search by chronology</option>
+          </select>
+        </div>
+        <div class="d-inline-block me-1">
+          <div class="input-group input-group-sm">
+            <input type="search" class="form-control w-auto" id="byDescription" value="">
+            <button class="btn btn-light byDescription" type="button"><span class="mdi mdi-magnify"></span></button>
           </div>
         </div>
+        <div class="d-inline-block me-1">
+          <div class="btn-group">
+            <button class="btn bg-adc-dark btn-sm" type="button" id="createFromFiltered" data-bs-toggle="tooltip" data-bs-title="create a new collection from filtered items" style="margin-top:-5px">create collection</button>
+          </div>
+        </div>
+        <div class="dropdown float-end me-3">
+          <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" id="sortByBtn"><span class="mdi mdi-sort-reverse-variant"></span></button>
+          <ul class="dropdown-menu" id="sortBy">
+            <li><a class="dropdown-item sortBy" href="#" data-sort="category">name</a></li>
+            <li><a class="dropdown-item sortBy" href="#" data-sort="material">material</a></li>
+            <li><a class="dropdown-item sortBy" href="#" data-sort="start">chronology</a></li>
+          </ul>
+        </div>
+    </div>
+
+    <div id="statToggle" class="">
+      <button type="button" class="btn btn-lg btn-secondary" name="statToggle">
+        <span class="mdi mdi-chevron-left"></span>
+      </button>
+    </div>
+
+    <div id="statWrap" class="statWrapVisible bg-light border animated mainSection <?php echo $mainClass; ?>">
+      <div class="">
+        <div class="border rounded bg-white text-center" id="artifactTot" >
+          <h6>Artifact</h6>
+          <h2 class="fs-1"></h2>
+        </div>
+        <div class="border rounded bg-white text-center" id="modelTot" >
+          <h6>Model</h6>
+          <h2 class="fs-1"></h2>
+        </div>
+        <div class="border rounded bg-white text-center" id="institutionTot" >
+          <h6>Institution</h6>
+          <h2 class="fs-1"></h2>
+        </div> 
+        <div class="border rounded bg-white text-center" id="filesTot" >
+          <h6>Media</h6>
+          <h2 class="fs-1"></h2>
+        </div> 
       </div>
-      <div class="container-fluid mt-5">
-        <!-- <div class="row mb-4 bg-light p-4 border" style="position:relative; width:100%;height:440px" >
-          <div class="col-md-3">
-            <div style="display: flex; flex-direction: row; justify-content: start; flex-wrap: wrap; width: 100%; height: 400px;">
-              <div class="border rounded bg-white text-center" id="artifactTot" style="width:48%;margin:2px; height:48%; display:flex; justify-content:center; align-items:center; flex-direction:column">
-                <h6>Artifact</h6>
-                <h2 class="fs-1">450</h2>
-              </div>          
-              <div class="border rounded bg-white text-center" id="modelTot" style="width:48%;margin:2px; height:48%; display:flex; justify-content:center; align-items:center; flex-direction:column">
-                <h6>Model</h6>
-                <h2 class="fs-1">450</h2>
-              </div>          
-              <div class="border rounded bg-white text-center" id="institutionTot" style="width:48%;margin:2px; height:48%; display:flex; justify-content:center; align-items:center; flex-direction:column">
-                <h6>Institution</h6>
-                <h2 class="fs-1">450</h2>
-              </div>          
-              <div class="border rounded bg-white text-center" id="usersTot" style="width:48%;margin:2px; height:48%; display:flex; justify-content:center; align-items:center; flex-direction:column">
-                <h6>Users</h6>
-                <h2 class="fs-1">450</h2>
-              </div>          
-            </div>
-          </div>
-          <div class="col-md-5">
-            <div id="mapStat"></div>
-          </div>
-          <div class="col-md-4">
-            <div id="donutchart" style="width:100%;height:190px; margin-bottom:5px;"></div>
-            <div id="curve_chart" style="width:100%;height:190px;"></div>
-          </div>
-        </div> -->
-        <!-- <div class="row">
-          <div class="col text-center">
-            <h1 id="totItems" class="txt-adc-dark fw-bold"></h1>
-          </div>
-        </div> -->
-        <div class="card-wrap"></div>
+      <div class="bg-white border rounded" id="mapStat"></div>
+      <div class="bg-white border rounded" id="chartStat">
+        <div id="institution_chart"></div>
+        <div id="crono_chart"></div>
       </div>
+    </div>
+
+    <main class="animated mainSection <?php echo $mainClass; ?>">
+      <div class="card-wrap" id="wrapCard"></div>
     </main>
 
     <div class="modal fade" id="saveCollectionModal" tabindex="-1" aria-hidden="true">
@@ -168,6 +138,9 @@
     <?php require("assets/menu.php"); ?>
     <?php require("assets/js.html"); ?>
   </body>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="js/maps/geo_config.js" charset="utf-8"></script>
+  <script src="js/maps/geo_function.js" charset="utf-8"></script>
   <script src="js/index.js" charset="utf-8"></script>
 </html>

@@ -4,29 +4,20 @@
   width:100%;
   height:auto;
   justify-content: flex-start;
+  align-items: start;
   flex-direction: row;
   flex-wrap: wrap;
 }
-#wrapCollected{
-  max-height: 75vh;
-  overflow: auto;
-}
-fieldset > legend{
-  color:#875e29;
-  font-weight: bold;
-  font-size:1.7rem;
-}
 
+.viewArtifactsBtn, .collectedCard{height:500px;}
+.largeCard{width:calc((100% / 6) - 0.50rem);}
+.smallCard{width:calc((100% / 5) - 0.50rem);}
+
+#wrapCollected{max-height: 75vh; overflow: auto;}
+fieldset > legend{color:#875e29; font-weight: bold; font-size:1.7rem;}
 .modal-xxl{width:90vw !important; max-width: 90vw !important;}
+#map{position: relative; width:100%; height:400px;}
 
-#map{
-  position: relative;
-  width:100%;
-  height:400px;
-}
-
-
-.viewArtifactsBtn, .collectedCard{width:100% !important;}
 .card-header{
   width:100%;
   height: 200px;
@@ -35,18 +26,12 @@ fieldset > legend{
   background-size: contain;
 }
 @media (min-width: 992px) {
-  .viewArtifactsBtn{width:19% !important;}
-  .collectedCard{width:32% !important;}
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  .viewArtifactsBtn{width:16% !important;}
-  .collectedCard{width:23% !important;}
 }
 
 /* XX-Large devices (larger desktops, 1400px and up) */
 @media (min-width: 1400px) {
-  .viewArtifactsBtn{width:16% !important;}
-  .collectedCard{width:19% !important;}
 }

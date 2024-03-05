@@ -9,6 +9,7 @@ if(isset($funzione) && function_exists($funzione)) {
   echo $trigger;
 }
 
+function statIndex($obj){ return json_encode($obj->statIndex());}
 function typeChronologicalDistribution($obj){ return json_encode($obj->typeChronologicalDistribution($_POST['type'])); }
 
 ?>

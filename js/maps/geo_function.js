@@ -82,3 +82,11 @@ function artifactMap(){
   })
   map.addControl(new myToolbar());
 }
+
+function mapStat(data){
+  map = L.map('mapStat',{maxBounds:mapExt})
+  map.setZoom(9);
+  map.setMinZoom(4);
+  map.fitBounds(mapExt)
+  osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
+}

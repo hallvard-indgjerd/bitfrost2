@@ -1,3 +1,89 @@
+html, body{position:relative; font-family: 'Titillium Web', sans-serif;padding:0; margin:0;}
+
+header{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height:70px;
+  padding:5px 0 5px 10px;
+  color:#fff;
+  background-color: #22458a;
+  z-index:1000;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+header > #headerLogo{
+  width:300px;
+  height:70px;
+  background-image: url("../img/logo/lunds-unversitet.svg");
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+header > #headerLink{text-align: center;}
+header > #headerLink > a{
+  min-width:60px;
+  width:auto;
+  height:70px;
+  padding:0 10px;
+  color:#fff;
+  display: inline-block;
+  text-align: center;
+  font-size:1.3rem;
+  line-height: 3;
+}
+
+body > nav{
+  position:fixed;
+  top:70px;
+  width:250px;
+  height: calc(100vh - 70px);
+  color:#fff;
+  background: rgba(77,76,68,1);
+  z-index:500;
+}
+body > nav > #linkWrap{display: flex; flex-direction: column;margin:0;padding:0;}
+body > nav > #linkWrap > span#user{display: block; padding: 10px 20px; background: #dddddd; color:#464545}
+body > nav > #linkWrap > span.titleSection{display: block; padding: 5px 20px; text-transform: uppercase;background: rgb(58,58,53);}
+body > nav > #linkWrap > a{color:#fff; padding:5px 20px; border-bottom: 1px solid rgba(0,0,0,.3);}
+
+#backdrop{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  background: rgba(0,0,0,.3);
+  z-index:500;
+}
+
+#itemTool{
+  position:fixed;
+  top:70px;
+  left:0;
+  height:45px;
+  padding:5px;
+  background:#dddddd;
+  z-index:500;
+}
+main{position: relative; min-height:calc(100vh - 100px); margin:80px 0; z-index:1}
+
+.animated{transition: all 0.25s linear;}
+.open{right: 0;}
+.close{right: -250px;}
+.large{width:100%;}
+.small{width:calc(100% - 250px);}
+.txt-adc-light{color:#f0eee5;}
+.txt-adc-dark{color:#875e29;}
+.btn-adc-dark{background-color: #875e29; border:1px solid #875e29; color:#f0eee5;}
+.btn-adc-dark:hover, .btn-adc-dark:active, .btn-adc-dark.show{background-color: #755123 !important; border:1px solid #755123 !important; color:#f0eee5 !important;}
+
+.btn-adc-blue{background-color: #22458a; border:1px solid #22458a; color:#f0eee5;}
+.btn-adc-blue:hover, .btn-adc-blue:active, .btn-adc-blue.show{background-color: #18356d !important; border:1px solid #18356d !important; color:#f0eee5 !important;}
+
 .bg-adc-light, .accordion-button.collapsed{background:#dddddd;color: #464545;}
 .bg-adc-dark,.accordion-button:not(.collapsed) {background-color:#666666 !important; color:#fff !important}
 .accordion-button::after{
@@ -6,40 +92,13 @@
 .accordion-button:not(.collapsed)::after{
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23f0eee5'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e")
 }
-.txt-adc-light{color:#f0eee5;}
-.txt-adc-dark{color:#875e29;}
-.btn-adc-dark{background-color: #875e29; border:1px solid #875e29; color:#f0eee5;}
-.btn-adc-dark:hover, .btn-adc-dark:active, .btn-adc-dark.show{background-color: #755123 !important; border:1px solid #755123 !important; color:#f0eee5 !important;}
-html, body{position:relative; font-family: 'Titillium Web', sans-serif;padding:0; margin:0;}
+
 label[for]{cursor: pointer;}
 a{text-decoration:none;transition: all 0.25s linear;}
 textarea {resize: none;}
-.animated{transition: all 0.25s linear;}
-.open{right: 0;}
-.close{right: -250px;}
 .pointer{cursor:pointer;}
 #loadingDiv{position:fixed; top:0; left:0; width:100vw; height:100vh; background-color: rgba(255,255,255,.5); z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center;}
 #loadingDiv > p{font-size: 40px;}
-
-header{position: fixed; top: 0; left: 0; width: 100vw; /*height:80px;*/ padding:10px; color:#fff;background-color: #22458a;
-  ;z-index:1000;}
-header img{width:50px;}
-header h2{font-size: 1rem;}
-header .headerLink{text-align: center;}
-header .headerLink > a{color:#fff; display: inline-block;text-align: center; font-size:1.5rem;}
-main{position: relative; width:100%; min-height:calc(100vh - 100px); margin:70px auto; z-index:1}
-
-
-main.full{padding-right:0;}
-main.small, .itemTool.small{padding-right: 250px;}
-main > .itemTool{position:fixed;top:57px;left:0;width:100vw;height:45px; padding:4px 20px; background:#dddddd; z-index:1000;}
-
-#backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;background: rgba(0,0,0,.3);z-index:500;}
-body > nav{position:fixed; width:250px; color:#fff; background: rgba(77,76,68,1); z-index:500; top:57px; height: calc(100vh - 57px);}
-body > nav > #linkWrap{display: flex; flex-direction: column;margin:0;padding:0;}
-body > nav > #linkWrap > span#user{display: block; padding: 10px 20px; background: #dddddd; color:#464545}
-body > nav > #linkWrap > span.titleSection{display: block; padding: 5px 20px; text-transform: uppercase;background: rgb(58,58,53);}
-body > nav > #linkWrap > a{color:#fff; padding:5px 20px; border-bottom: 1px solid rgba(0,0,0,.3);}
 
 .form-sm{width:360px;}
 .tdhopBg{background-image: linear-gradient(to top, #6a6a6a, #fff);}
@@ -98,37 +157,17 @@ fieldset > legend{
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-  header img{width:60px;}
-  header h2{font-size: 2rem;}
-  header .headerLink{float: right;}
-  header .headerLink > a{height: 80px; width: 80px; line-height: 80px; text-align: center;color:#fff; background: none; margin: -10px 0; font-size:1rem;}
-  header .headerLink > a:hover, header .headerLink > a.currentPage{color:#22458a; background-color: #fff;}
-  body > nav{top:80px; height: calc(100vh - 80px);}
-  main > .itemTool{top:80px;}
+  header #headerLink > a:hover, header #headerLink > a.currentPage{color:#22458a; background-color: #fff;}
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  header img{width:60px;}
-  header h2{font-size: 2rem;}
-  header .headerLink{float: right;}
-  header .headerLink > a{height: 80px; width: 80px; line-height: 80px; text-align: center;color:#fff; background: none; margin: -10px 0; font-size:1rem;}
-  header .headerLink > a:hover, header .headerLink > a.currentPage{color:#22458a; background-color: #fff;}
-  body > nav{top:80px; height: calc(100vh - 80px);}
+  header #headerLink > a:hover, header #headerLink > a.currentPage{color:#22458a; background-color: #fff;}
   body > nav > #linkWrap > a:hover{padding-left:35px;}
-  main > .itemTool{top:80px;}
-  main{margin:120px auto 50px;}
 }
 
 /* XX-Large devices (larger desktops, 1400px and up) */
 @media (min-width: 1400px) {
-  header img{width:280px;}
-  header h2{font-size: 2rem;}
-  header .headerLink{float: right;}
-  header .headerLink > a{height: 80px; width: 80px; line-height: 80px; text-align: center;color:#fff; background: none; margin: -10px 0; font-size:1rem;}
-  header .headerLink > a:hover, header .headerLink > a.currentPage{color:#22458a; background-color: #fff;}
-  body > nav{top:80px; height: calc(100vh - 80px);}
+  header #headerLink > a:hover, header #headerLink > a.currentPage{color:#22458a; background-color: #fff;}
   body > nav > #linkWrap > a:hover{padding-left:35px;}
-  main > .itemTool{top:80px;}
-  main{margin:130px auto 50px;}
 }

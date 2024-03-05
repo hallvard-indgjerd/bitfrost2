@@ -1,24 +1,14 @@
 <header>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-11 col-lg-8">
-        <img src="img/logo/lunds-unversitet.svg" class="d-inline" alt="">
-        <!-- <img src="img/ico/headerLogo.png" class="img-fluid d-inline" alt=""> -->
-        <!-- <h2 class="m-0 ps-xl-3 d-inline-block align-middle">Dynamic Collections</h2> -->
-      </div>
-      <div class="col-1 col-lg-4">
-        <div class="headerLink d-xl-none">
-          <a href="#" id="toggleMenu"><i class="mdi mdi-dots-vertical"></i></a>
-        </div>
-        <div class="headerLink d-none d-xl-inline-block">
-          <a href="index.php" class="animated">home</a>
-          <a href="#" class="animated">about</a>
-          <a href="#" class="animated">credits</a>
-          <a href="db_model.php" class="animated">db model</a>
-          <?php if (!isset($_SESSION['id'])) {?><a href="login.php" class="animated">login</a><?php } ?>
-        </div>
-        </div>
-      </div>
-    </div>
+  <div id="headerLogo"></div>
+  <div id="headerLink">
+    <a href="index.php" class="animated d-none d-xl-inline-block">home</a>
+    <a href="#" class="animated d-none d-xl-inline-block">about</a>
+    <a href="#" class="animated d-none d-xl-inline-block">credits</a>
+    <a href="db_model.php" class="animated d-none d-xl-inline-block">db model</a>
+    <?php if (!isset($_SESSION['id'])) {?>
+      <a href="login.php" class="animated">login</a>
+    <?php }else { ?>
+      <a href="#" id="toggleMenu"><span class="mdi mdi-menu"></span></a>
+    <?php } ?>
   </div>
 </header>

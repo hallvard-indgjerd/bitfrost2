@@ -7,13 +7,15 @@ $(document).ready(function() {
 });
 
 function initNav(){
-  let nav = $("nav");
   let initNav = screen.width >= 992 ? 'open' : 'close';
-  nav.addClass(initNav)
+  $("body > nav").addClass(initNav)
+  if (screen.width >= 992) {$("#backdrop").remove();}
 }
 function toggleNav(){
-  $("#backdrop").fadeToggle('250');
+  if (screen.width <= 992) {$("#backdrop").fadeToggle('250');}
   $("nav").toggleClass('open close');
+  if (screen.width >= 992) {$(".mainSection").toggleClass('large small')}
+  if(document.getElementById("userMenu")){ $(".viewArtifactsBtn").toggleClass('smallCard largeCard')}
 }
 function currentPageActiveLink(url){
   $(".headerLink > a").removeClass('currentPage');

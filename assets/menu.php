@@ -2,7 +2,7 @@
 $isMobile = isMobileCheck();
 if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
 <div id="backdrop"></div>
-<nav class="animated">
+<nav class="animated" id="userMenu">
   <div id="linkWrap">
     <?php if(isset($_SESSION['id'])){ ?>
       <span id="user"><?php echo $_SESSION['email']; ?></span>
