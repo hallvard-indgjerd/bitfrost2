@@ -1,17 +1,43 @@
+//magari non serve!!!
+if (history.scrollRestoration) {
+  history.scrollRestoration = 'manual';
+} else {
+  window.onload = function () { window.scrollTo(0, 0);}
+}
+/////////////
 const byCategory = $("#byCategory");
 const byMaterial = $("#byMaterial");
 const byChronology = $("#byChronology");
 const byDescription = $("#byDescription");
+const byInstitution = $("#byInstitution");
 const sortBy = $("#sortBy");
 let activeFilter = 0;
-let cronoData = [['chronology', 'tot']]
-let institutionData = [['Institution', 'Artifact stored']];
+let cronoData = []
+let institutionData = [];
 google.charts.load('current', { 'packages':['corechart'],});
 
+// collected.length == 0 ? $("#fullCollection").hide() : $("#emptyCollection").hide()
+
+$("#createFromFiltered, #resetCollection").hide()
+
+if($("[name=logged]").val() == 0){
+  $("#itemTool, #statWrap").addClass('large');
+}else{
+  $("#itemTool, #statWrap").addClass(checkDevice()=='pc' ? 'small' :'large');
+}
 currentPageActiveLink('index.php');
 getFilterList();
-buildGallery();
+buildGallery(gallery);
+buildCollection()
 buildStat();
+artifactByCounty()
+
+screen.orientation.addEventListener("change", resizeDOM);
+
+$(".toggleFilter").on('click', function(){
+  $("#filterWrap").toggleClass('d-none d-block')
+  $(".toggleFilter").find('span').toggleClass('mdi-chevron-down mdi-chevron-up')
+})
 
 $("[name=statToggle").on('click', function(){
   $("#statWrap").toggleClass('statWrapVisible statWrapHidden')
@@ -32,19 +58,68 @@ $("#resetGallery").on('click', function(){
   byMaterial.val('');
   byDescription.val('');
   byChronology.val('');
+  byInstitution.val('');
   activeFilter = 0;
-  buildGallery()
+  buildGallery(gallery)
 })
 
-$("#createFromFiltered").on('click', function(){$(".addItemBtn").trigger('click');})
-$("[name='viewCollectionBtn']").on('click', collectedGallery)
+$("#createFromFiltered").on('click', function(){
+  $(".addItemBtn").trigger('click');
+  $(this).hide()
+})
+$("#resetCollection").on('click', function(){
+  collected = [];
+  $(".removeItemBtn").hide()
+  $(".addItemBtn").show()
+  buildCollection()
+  checkActiveFilter()
+})
+$("#viewCollection > span").text('('+collected.length+')')
+
+
+$(window).scroll(function(){
+  let pos = $(this).scrollTop();
+  if(pos > 0){
+    if($("#statWrap").hasClass('statWrapVisible')){
+      $("#statWrap").removeClass('statWrapVisible').addClass('statWrapHidden')
+      $("[name=statToggle").find('span').removeClass('mdi-chevron-left').addClass('mdi-chevron-right')
+    }
+  }
+  if(pos == 0){
+    if($("#statWrap").hasClass('statWrapHidden')){
+      $("#statWrap").removeClass('statWrapHidden').addClass('statWrapVisible')
+      $("[name=statToggle").find('span').removeClass('mdi-chevron-right').addClass('mdi-chevron-left')
+    }
+  }
+});
+
+document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((el)=>{
+  el.addEventListener('show.bs.tab', function (event) {
+    // if(event.target.id == 'viewGallery'){window.scrollTo(0,0)}
+    if(event.target.id == 'viewCollection'){window.scrollTo(0,350)}
+  })
+})
 
 function institutionChart() {
   var data = google.visualization.arrayToDataTable(institutionData);
+  
+  let institutionChartColor = {
+    'Blekinge Museum':'#22458a',
+    'Lund University Historical Museum': '#358a22',
+    'Statens Historiska Museum':'#dea600'
+  }
+  var slices = [];
+  for (var i = 0; i < data.getNumberOfRows(); i++) {
+    slices.push({color: institutionChartColor[data.getValue(i, 0)]});
+  }
   var options = {
     title: 'Total artifacts by institution',
+    chartArea: {width: '100%', height:'300px'},
     pieHole: 0.4,
-  };
+    slices:slices,
+    width: '100%',
+    height:'300px'
+  }
   var chart = new google.visualization.PieChart(document.getElementById('institution_chart'));
   chart.draw(data, options);
 }
@@ -53,9 +128,11 @@ function cronoChart() {
   var data = google.visualization.arrayToDataTable(cronoData);
   var options = {
     title: 'Chronological distribution',
+    chartArea: {width: '100%'},
     curveType: 'function',
-    legend: { position: 'bottom' },
-    pointsVisible: true
+    legend: { position: 'top' },
+    pointsVisible: true,
+    width: '100%'
   };
   var chart = new google.visualization.LineChart(document.getElementById('crono_chart'));
   chart.draw(data, options);
@@ -71,8 +148,10 @@ function getFilter(){
     filter.push("artifact.start >= "+span[0]+" and artifact.start < "+span[1])
   }
   if(byDescription.val()){filter.push("artifact.description like '%"+byDescription.val()+"%'")}
-  buildGallery();
+  if(byInstitution.val()){filter.push("artifact.storage_place = "+byInstitution.val())}
+  buildGallery(gallery);
 }
+
 function getFilterList(){
   ajaxSettings.url=API+"get.php";
   ajaxSettings.data={trigger:'getFilterList'};
@@ -87,12 +166,12 @@ function getFilterList(){
     data.chronology.forEach((item, i) => {
       $("<option/>").text(item.period).val(item.start+"|"+item.end).appendTo(byChronology);
     });
+    data.institution.forEach((item, i) => {
+      $("<option/>").text(item.value).val(item.id).appendTo(byInstitution);
+    });
   })
 }
 
-function collectedGallery(){
-  gallery(collected,"#wrapCollected")
-}
 function checkActiveFilter(){
   filter.length > 0 ? $("#createFromFiltered").show() : $("#createFromFiltered").hide();
 }
@@ -102,6 +181,8 @@ function buildStat(){
   ajaxSettings.data={trigger:'statIndex'};
   $.ajax(ajaxSettings)
   .done(function(data) {
+    cronoData.push(['chronology', 'tot'])
+    institutionData.push(['Institution', 'Artifact stored'])
     data.typeChronologicalDistribution.forEach((v) => {cronoData.push([v.crono, v.tot])})
     data.institutionDistribution.forEach((v) => {institutionData.push([v.name, v.tot])})
     $("#artifactTot > h2").text(data.artifact.tot)
@@ -111,6 +192,28 @@ function buildStat(){
 
     google.charts.setOnLoadCallback(cronoChart);
     google.charts.setOnLoadCallback(institutionChart);
-    mapStat(data)
   })
+}
+
+function artifactByCounty(){
+  ajaxSettings.url=API+"stats.php";
+  ajaxSettings.data={trigger:'artifactByCounty'};
+  $.ajax(ajaxSettings)
+  .done(function(data) { mapStat(data); })
+}
+
+$("#toggleMenu").on('click',resizeDOM);
+
+function resizeDOM(){
+  if(
+    screen.orientation.type.split('-')[0] == 'landscape' &&
+    screen.orientation.angle == 0 || screen.orientation.angle == 180
+  ){
+    map.remove();
+    setTimeout(function() {
+      cronoChart()
+      institutionChart()
+      artifactByCounty()
+      }, 500);
+  }
 }

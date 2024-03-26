@@ -2,7 +2,6 @@ let btnHome, btnFullscreen;
 let collected = [];
 let filter = [];
 let sort = "rand()";
-$("#viewCollection>button, #createFromFiltered").hide();
 
 function buildData(){
   $("[data-table]").each(function(){
@@ -32,28 +31,20 @@ function buildData(){
   $.each(val,function(i,v){ dati[v.tab][v.field]=v.val })
 }
 
-function buildGallery(){
+function buildGallery(callback){
   checkActiveFilter()
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data={trigger:'buildGallery', filter:filter, sort:sort};
-  $.ajax(ajaxSettings)
-  .done(function(data) {
-    gallery(data,".card-wrap");
-    let totItemsTxt;
-    if (data.length == 0) {totItemsTxt = 'No items found';}
-    if (data.length == 1) {totItemsTxt = 'Only 1 item found';}
-    if (data.length > 1) {totItemsTxt = data.length+' items found';}
-    $("#totItems").text(totItemsTxt);
-  })
+  $.ajax(ajaxSettings).done(callback)
 }
 
-function gallery(data, wrapDiv){
-  let cardWidth = document.getElementById("userMenu") ? 'smallCard' : 'largeCard';
+function gallery(data){
+  wrapDiv = "#wrapGallery";
   $("#loadingDiv").remove()
   $(wrapDiv).html('');
-  let cardClass = wrapDiv == ".card-wrap" ? 'viewArtifactsBtn' : 'collectedCard';
+  $("#viewGallery > span").text('('+data.length+')')
   data.forEach((item) => {
-    let div = $("<div/>",{class:'card m-1 '+cardClass+' '+cardWidth}).data("item",item.id).appendTo(wrapDiv);
+    let div = $("<div/>",{class:'card m-1 itemCard'}).attr("data-item",item.id).appendTo(wrapDiv);
     $("<div/>", {class:'card-header'})
     .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
     .appendTo(div);
@@ -63,25 +54,50 @@ function gallery(data, wrapDiv){
     $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
     $("<p/>",{class:'mb-2'}).html(cutString(item.description, 80)).appendTo(body);
     let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
-    let itemUrlBtn = $("<a/>",{class:'btn btn-adc-blue ms-3', href:'artifact_view.php?item='+item.id}).text('View').appendTo(footer);
-    let collectBtn = $("<button/>",{class:'btn btn-adc-blue ms-3 addItemBtn', id: 'addItem'+item.id}).text('Collect').appendTo(footer);
-    let uncollectBtn = $("<button/>",{class:'btn btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('remove').appendTo(footer);
-    wrapDiv == ".card-wrap" ? uncollectBtn.hide() : uncollectBtn.show();
-    wrapDiv == ".card-wrap" ? collectBtn.show() : collectBtn.hide();
+    $("<a/>",{class:'btn btn-sm btn-adc-blue ms-3', href:'artifact_view.php?item='+item.id}).text('View').appendTo(footer);
+    let collectBtn = $("<button/>",{class:'btn btn-sm btn-adc-blue ms-3 addItemBtn', id: 'addItem'+item.id}).text('Collect').appendTo(footer);
+    let uncollectBtn = $("<button/>",{class:'btn btn-sm btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('Remove').appendTo(footer).hide();
+
     collectBtn.on('click',function(){
-      collected.push(item);
-      $(this).hide();
-      uncollectBtn.show();
-      countItems();
+      if(!collected.includes(item)){
+        collected.push(item);
+        $(this).hide();
+        uncollectBtn.show();
+        buildCollection();
+      }
     })
+
     uncollectBtn.on('click',function(){
-      let idx = collected.findIndex(i => i === item.id);
+      let idx = collected.findIndex(i => i.id === item.id);
       collected.splice(idx, 1);
       $(this).hide();
       collectBtn.show();
-      countItems();
+      buildCollection();
     })
   })
+}
+
+function checkDevice(){
+  let device;
+
+  if(
+    screen.width >= 1024 &&
+    screen.orientation.type.split('-')[0] == 'landscape' &&
+    (screen.orientation.angle == 90 || screen.orientation.angle == 270)
+  ){device = 'tablet-landscape'}
+  
+  if(//tablet and hybrid laptop (ex. surface pro), portrait
+    (screen.width >= 768 && screen.width < 1024) &&
+    screen.orientation.type.split('-')[0] == 'portrait' &&
+    (screen.orientation.angle == 0 || screen.orientation.angle == 180)
+  ){device = 'tablet-portrait'}
+
+  if(//laptop and desktop
+    screen.width >= 1024 &&
+    screen.orientation.type.split('-')[0] == 'landscape' &&
+    (screen.orientation.angle == 0 || screen.orientation.angle == 180)
+  ){device='pc'}
+  return device;
 }
 
 function checkName(data){
@@ -97,8 +113,44 @@ function checkName(data){
   });
 }
 
-function countItems(){
-  collected.length > 0 ? $("#viewCollection>button").show() : $("#viewCollection>button").hide()
+function buildCollection(){
+  console.log(collected);
+  let wrap = $("#wrapCollection");
+  $("#viewCollection > span").text('('+collected.length+')')
+  wrap.html('')
+  if (collected.length === 0) {
+    $("#resetCollection").hide()
+    $("#fullCollection").hide()
+    $("#emptyCollection").show()
+    return false;
+  }
+  $("#resetCollection").show()
+  $("#fullCollection").show()
+  $("#emptyCollection").hide()
+  collected.forEach((item)=>{
+    let div = $("<div/>",{class:'card m-1 itemCard'}).attr("data-item",item.id).appendTo(wrap);
+    $("<div/>", {class:'card-header'})
+    .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
+    .appendTo(div);
+    let body = $("<div/>",{class:'card-body'}).appendTo(div);
+    $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
+    $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+item.material+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html(cutString(item.description, 80)).appendTo(body);
+    let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
+    $("<a/>",{class:'btn btn-sm btn-adc-blue ms-3', href:'artifact_view.php?item='+item.id}).text('View').appendTo(footer);
+    let uncollectBtn = $("<button/>",{class:'btn btn-sm btn-danger ms-3'}).text('Remove').appendTo(footer);
+
+    uncollectBtn.on('click',function(){
+        let idx = collected.findIndex(i => i.id === item.id);
+        collected.splice(idx, 1);
+        div.remove()
+        $("#wrapGallery").find('#addItem'+item.id).show()
+        $("#wrapGallery").find('#removeItem'+item.id).hide()
+        buildCollection()
+        console.log(collected);
+    })
+  })
 }
 
 function cutString(string, length) {

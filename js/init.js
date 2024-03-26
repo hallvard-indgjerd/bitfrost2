@@ -4,19 +4,56 @@ $(document).ready(function() {
     e.preventDefault();
     toggleNav();
   })
+  screen.orientation.addEventListener("change", initNav);
 });
 
 function initNav(){
-  let initNav = screen.width >= 992 ? 'open' : 'close';
-  $("body > nav").addClass(initNav)
-  if (screen.width >= 992) {$("#backdrop").remove();}
+  let navClass;
+  //check session status, device width, type and orientation to show or hide toggleMenu button
+  if($("[name=logged]").val() == 0){
+    $("#userMenu").addClass('closed');
+    $("body>main").addClass('large');
+    switch (checkDevice()) {
+      case 'tablet-landscape': $("#toggleMenu").hide(); break;
+      case 'tablet-portrait': $("#toggleMenu").show(); break;
+      case 'pc': 
+        $("#toggleMenu").hide();
+        $("#backdrop, #userMenu").remove() 
+      break;
+      default: $("#toggleMenu").show(); break;
+    }
+  }else{
+    if(checkDevice()=='pc'){
+      $("#userMenu").addClass('open');
+    }else{
+      $("#userMenu").addClass('closed');
+    }
+    $("body>main").addClass(checkDevice()=='pc' ? 'small' :'large');
+    $("#toggleMenu").show()
+  }
 }
 function toggleNav(){
-  if (screen.width <= 992) {$("#backdrop").fadeToggle('250');}
-  $("nav").toggleClass('open close');
-  if (screen.width >= 992) {$(".mainSection").toggleClass('large small')}
-  if(document.getElementById("userMenu")){ $(".viewArtifactsBtn").toggleClass('smallCard largeCard')}
+  $("nav").toggleClass('open closed');
+  if (
+    screen.width < 1368
+    // || (screen.width >= 1368 && (screen.orientation.angle == 90 || screen.orientation.angle == 270))
+  ) {
+    $("#backdrop").fadeToggle('250');
+    ["wheel", "touchmove"].forEach(event => {
+      document.getElementById("backdrop").addEventListener(event,  preventScroll, {passive: false});
+    })
+  }else{
+    $(".mainSection").toggleClass('large small')
+    if(document.getElementById("userMenu")){ $(".viewArtifactsBtn").toggleClass('smallCard')}
+  }
 }
+function preventScroll(e){
+  e.preventDefault();
+  e.stopPropagation();
+  return false;
+}
+
+
 function currentPageActiveLink(url){
   $(".headerLink > a").removeClass('currentPage');
   $(".headerLink > a[href='"+url+"']").addClass('currentPage');

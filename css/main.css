@@ -1,79 +1,41 @@
 html, body{position:relative; font-family: 'Titillium Web', sans-serif;padding:0; margin:0;}
-
-header{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height:70px;
-  padding:5px 0 5px 10px;
-  color:#fff;
-  background-color: #22458a;
-  z-index:1000;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-header > #headerLogo{
-  width:300px;
-  height:70px;
-  background-image: url("../img/logo/lunds-unversitet.svg");
-  background-position: left;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
+header{position: fixed; top: 0; left: 0; width: 100%; height:70px; padding:5px 0 5px 10px; color:#fff; background-color: #22458a; display: flex; flex-direction: row; justify-content: space-between; align-items: center;z-index:1000;}
+header > #headerLogo{width:300px; height:70px; background-image: url("../img/logo/lunds-unversitet.svg"); background-position: left; background-repeat: no-repeat; background-size: contain;}
 header > #headerLink{text-align: center;}
-header > #headerLink > a{
-  min-width:60px;
-  width:auto;
-  height:70px;
-  padding:0 10px;
-  color:#fff;
-  display: inline-block;
-  text-align: center;
-  font-size:1.3rem;
-  line-height: 3;
-}
-
-body > nav{
-  position:fixed;
-  top:70px;
-  width:250px;
-  height: calc(100vh - 70px);
-  color:#fff;
-  background: rgba(77,76,68,1);
-  z-index:500;
-}
+header > #headerLink > a{min-width:60px; width:auto; height:70px; padding:0 10px; color:#fff; display: inline-block; text-align: center; font-size:1.3rem; line-height: 3;}
+body > nav{position:fixed; top:70px; width:250px; height: calc(100vh - 70px); color:#fff; background: rgba(77,76,68,1); overflow-y: auto; z-index:900;}
 body > nav > #linkWrap{display: flex; flex-direction: column;margin:0;padding:0;}
 body > nav > #linkWrap > span#user{display: block; padding: 10px 20px; background: #dddddd; color:#464545}
 body > nav > #linkWrap > span.titleSection{display: block; padding: 5px 20px; text-transform: uppercase;background: rgb(58,58,53);}
 body > nav > #linkWrap > a{color:#fff; padding:5px 20px; border-bottom: 1px solid rgba(0,0,0,.3);}
-
-#backdrop{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  background: rgba(0,0,0,.3);
-  z-index:500;
-}
+#backdrop{position:fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,.3); z-index:800;}
 
 #itemTool{
-  position:fixed;
-  top:70px;
-  left:0;
-  height:45px;
-  padding:5px;
-  background:#dddddd;
-  z-index:500;
+  position:fixed; 
+  top:70px; 
+  left:0; 
+  height:45px; 
+  padding:5px; 
+  background:#dddddd; 
+  z-index:700;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
 }
+#itemTool > .itemToolBlock{
+  display: inline-block;
+  margin:0;
+  width:calc(100% / 3);
+}
+
 main{position: relative; min-height:calc(100vh - 100px); margin:80px 0; z-index:1}
 
 .animated{transition: all 0.25s linear;}
 .open{right: 0;}
-.close{right: -250px;}
+.closed{right: -250px;}
 .large{width:100%;}
 .small{width:calc(100% - 250px);}
 .txt-adc-light{color:#f0eee5;}
@@ -155,9 +117,15 @@ fieldset > legend{
 @media (min-width: 768px) {
 }
 
+/* Large tablets in landscape mode */
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+  header #headerLink > a.currentPage{color:#22458a; background-color: #fff;}
+}
+
+
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-  header #headerLink > a:hover, header #headerLink > a.currentPage{color:#22458a; background-color: #fff;}
+  header #headerLink > a.currentPage{color:#22458a; background-color: #fff;}
 }
 
 /* X-Large devices (large desktops, 1200px and up) */

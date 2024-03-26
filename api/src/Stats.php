@@ -1,9 +1,12 @@
 <?php
 namespace Adc;
+use Adc\Get;
 
 class Stats extends Conn{
-
-  public function __construct() { }
+  public $get;
+  public function __construct() {
+    $this->get = new Get();
+  }
 
   public function statIndex(){
     return [
@@ -33,10 +36,15 @@ class Stats extends Conn{
     order by c.id asc;";
     return $this->simple($sql);
   }
-
   public function institutionDistribution(int $i = null){
     $filter = $i != null ? 'where i.id = '.$i : '';
     $sql = "select i.name, count(*) tot from institution i inner join artifact a on a.storage_place = i.id ".$filter." group by i.id;";
+    return $this->simple($sql);
+  }
+
+  public function artifactByCounty(int $id = null){
+    $filter = $id != null ? 'where id = '.$id : '';
+    $sql = "with props AS (select county, count(*) tot from artifact_findplace group by county), geom as (select id, name, st_asgeojson(shape) geometry from county) select geom.id, geom.name, geom.geometry, props.tot from props inner join geom on props.county = geom.id;";
     return $this->simple($sql);
   }
 

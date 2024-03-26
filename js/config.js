@@ -11,7 +11,6 @@ const gotoNewItem = $("<a/>",{href:'', class:'btn btn-secondary btn-sm mx-1'}).t
 const backToItem = $("<a/>",{href:'', class:'btn btn-secondary btn-sm mx-1'}).text('Back to item')
 const closeToast = $("<button/>",{type:'button', name:'closeToastBtn', class:'btn btn-secondary btn-sm mx-1'}).text('close');
 
-
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl,{trigger:'hover', html: true })})
 

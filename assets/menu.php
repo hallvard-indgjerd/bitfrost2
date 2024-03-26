@@ -1,6 +1,3 @@
-<?php
-$isMobile = isMobileCheck();
-if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
 <div id="backdrop"></div>
 <nav class="animated" id="userMenu">
   <div id="linkWrap">
@@ -75,4 +72,3 @@ if (($isMobile == 0 && isset($_SESSION['id'])) || $isMobile == 1) {?>
     <?php } ?>
   </div>
 </nav>
-<?php } ?>
