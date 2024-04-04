@@ -1,33 +1,20 @@
-let storagePlaceMarker, findplaceMarker;
+google.charts.load('current', {'packages':['corechart']});
+let classid, classtype, storagePlaceMarker, findplaceMarker;
 let markerArr={}
 let polyArr={}
-
+if($("[name=logged]").val() == 0){
+  $("#itemTool, #statWrap").addClass('large');
+}else{
+  $("#itemTool").addClass(checkDevice()=='pc' ? 'small' :'large');
+}
 ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 
-google.charts.load('current', { 'packages':['geochart']});
-google.charts.setOnLoadCallback(drawRegionsMap);
-
-function drawRegionsMap() {
-  var data = google.visualization.arrayToDataTable([
-    ['Country', 'Popularity'],
-    ['Germany', 200],
-    ['United States', 300],
-    ['Brazil', 400],
-    ['Canada', 500],
-    ['France', 600],
-    ['RU', 700]
-  ]);
-  var options = {};
-  var chart = new google.visualization.GeoChart(document.getElementById('statsMap'));
-  chart.draw(data, options);
-}
-
-$.ajax(ajaxSettings)
-.done(function(data) {
-  console.log(data);
+$.ajax(ajaxSettings).done(function(data) {
   $("#loadingDiv").remove()
   let artifact = data.artifact;
+  classid = artifact.category_class_id;
+  classtype = data.artifact.category_class;
   $("h2#title").text(artifact.name)
   Object.keys(artifact).forEach(function(key) {
     if(artifact[key]){
@@ -66,7 +53,7 @@ $.ajax(ajaxSettings)
 
   if (data.artifact_findplace) {
     let findplace = data.artifact_findplace;
-    if(findplace.city_id){polyArr.county=findplace.county_id}
+    if(findplace.county_id){polyArr.county=findplace.county_id}
     if(findplace.city_id){polyArr.city = findplace.city_id}
     if(findplace.latitude){
     markerArr.findplace = [parseFloat(findplace.latitude), parseFloat(findplace.longitude)]
@@ -113,6 +100,7 @@ $.ajax(ajaxSettings)
       }
       $("#addModelBtn").remove();
       initModel(data.model)
+      $("#toggleMenu").on('click', resizeDOM)
       $("#alertArtifactModelConnection").remove()
     }else{
       $("#3dhop > canvas, .modelTools, .model-accordion").remove()
@@ -123,7 +111,7 @@ $.ajax(ajaxSettings)
     $("<div/>",{class:'alert alert-info fs-3'}).text('Model not yet available!!').appendTo(noModelDiv);
     $("#editModelBtn").remove();
   }
-  artifactMap()
+  
 
   if(data.media){
     let navTabs = $("<ul/>",{class:'nav nav-tabs', id:'mediaTabs', role:'tablist'}).appendTo("#media")
@@ -136,7 +124,7 @@ $.ajax(ajaxSettings)
       let elTab = $("<li/>", {class:'nav-item', role:'presentation'}).appendTo(navTabs)
       $("<button/>",{class:'nav-link '+active, id: element[0]+'Tab', type:'button', role:'tab'}).attr({"data-bs-toggle":'tab', "data-bs-target":'#'+element[0]+'Pane'}).text(element[0]).appendTo(elTab)
 
-      let panes = $("<div/>", {class:'p-4 tab-pane fade '+show+' '+active, id: element[0]+'Pane', role:'tabpanel'}).appendTo(navPanes)
+      let panes = $("<div/>", {class:'pt-2 tab-pane fade '+show+' '+active, id: element[0]+'Pane', role:'tabpanel'}).appendTo(navPanes)
 
       if(element[0] == 'image'){
         let imgDiv = $("<div/>",{id:'imgDiv'}).appendTo('#imagePane')
@@ -179,37 +167,69 @@ $.ajax(ajaxSettings)
     
   }
 
-  typeChronologicalDistribution(data.artifact.category_class_id)
+  artifactMap()
+  lineChart(classid,classtype)
+  columnChart(classid,classtype)
+  mapChart(classid,classtype)
 });
 
-let statData = [['chronology', 'tot']]
-function typeChronologicalDistribution(type){
+function mapChart(id,type){
+  $("#mapChartTitle").text(type)
   ajaxSettings.url=API+"stats.php";
-  ajaxSettings.data={trigger:'typeChronologicalDistribution', type:type};
-  $.ajax(ajaxSettings).done(function(data) {
-    console.log(data);
-    data.forEach((v) => { 
-      statData.push([v.crono, v.tot])
-    })
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-  })
-
+  ajaxSettings.data={
+    trigger:'artifactByCounty',
+    filter:["artifact.category_class = "+id]
+  };
+  $.ajax(ajaxSettings)
+  .done(function(data) { mapStat(data); })
 }
 
+function lineChart(id,type){
+  let statData = [['chronology', 'tot']]
+  ajaxSettings.url=API+"stats.php";
+  ajaxSettings.data={trigger:'typeChronologicalDistribution', type:id};
+  $.ajax(ajaxSettings).done(function(data) {
+    data.forEach((v) => { statData.push([v.crono, v.tot]) })
+    google.charts.setOnLoadCallback(function(){
+      var data = google.visualization.arrayToDataTable(statData);
+      var options = {
+        title: type + ' Chronological distribution',
+        curveType: 'function',
+        legend: { position: 'bottom' },
+        pointsVisible: true
+      };
+      var chart = new google.visualization.LineChart(document.getElementById('lineChart'));
+      chart.draw(data, options);
+    });
+  })
+}
 
-function drawChart() {
-  console.log(statData);
-  var data = google.visualization.arrayToDataTable(statData);
-
-  var options = {
-    title: 'Chronological distribution',
-    curveType: 'function',
-    legend: { position: 'bottom' },
-    pointsVisible: true
+function columnChart(id, type){
+  let statData = [['chronology', 'tot', { role: 'style' }]]
+  ajaxSettings.url=API+"stats.php";
+  ajaxSettings.data={
+    trigger:'typeInstitutionDistribution',
+    filter:["a.category_class = "+id]
   };
+  $.ajax(ajaxSettings).done(function(data) {
+    data.forEach((v) => { statData.push([v.name, v.tot, 'color: '+v.color]) })
+    google.charts.setOnLoadCallback(function(){
+      var data = google.visualization.arrayToDataTable(statData);
+      var options = {
+        title: 'Number of '+type + ' by Institution',
+        legend: { position: 'none' },
+        // bar:{groupWidth:"95%" }
+      };
+      var chart = new google.visualization.ColumnChart(document.getElementById('columnChart'));
+      chart.draw(data, options);
+    });
+  })
+}
 
-  var chart = new google.visualization.LineChart(document.getElementById('stats'));
-
-  chart.draw(data, options);
+function resizeDOM(){
+  setTimeout(function() {
+    lineChart(classid,classtype)
+    columnChart(classid,classtype)
+    resizeCanvas()
+    }, 500);
 }

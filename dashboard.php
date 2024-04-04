@@ -11,7 +11,7 @@
   </head>
   <body>
     <?php require("assets/header.php"); ?>
-    <main class="<?php echo $mainClass; ?>">
+    <main class="animated mainSection">
       <input type="hidden" name="usrId" value="<?php echo $_SESSION['id']; ?>">
       <input type="hidden" name="usrCls" value="<?php echo $_SESSION['role']; ?>">
       <div id="dashboardWrap" class="dashboardFlex">
@@ -57,7 +57,7 @@
           </div>
           <div class="dashboardFlex" id="modelDashboardGallery"></div>
         </div>
-        <div id="mapWrap" class="border rounded shadow p-3 mb-5 w-100">
+        <div id="mapWrap" class="border rounded shadow p-3 mb-5">
           <h3>Collection Map</h3>
           <div id="map"></div>
         </div>

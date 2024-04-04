@@ -11,9 +11,10 @@ function artifactMap(){
     "Google Satellite": gSat,
     "Google Street": gStreets
   };
+
+  var layerControl = L.control.layers(baseLayers, overlayMaps).addTo(map);
   
   let markerGroup = L.featureGroup().addTo(map);
-  let polyStyle;
 
   storagePlaceMarker = L.marker(markerArr['storage'],{icon:storagePlaceIco}).addTo(markerGroup);
   if(markerArr['findplace']){
@@ -22,15 +23,6 @@ function artifactMap(){
 
   if(Object.keys(polyArr).length>0){
     ajaxSettings.url=API+"get.php";
-    if(polyArr.city){
-      ajaxSettings.data = {
-        trigger:'getSelectOptions', 
-        list:'jsonCity', 
-        orderBy:'1', 
-        filter:'id = '+polyArr.city
-      }
-      polyStyle=cityStyle;
-    }
     if(polyArr.county){
       ajaxSettings.data = {
         trigger:'getSelectOptions', 
@@ -38,27 +30,42 @@ function artifactMap(){
         orderBy:'1', 
         filter:'id = '+polyArr.county
       }
-      polyStyle=countyStyle;
+      $.ajax(ajaxSettings)
+      .done(function(data){
+        let geojsonFeature = {
+          "type": "Feature",
+          "properties": {type:data[0].type, name:data[0].name},
+          "geometry": JSON.parse(data[0].geometry)
+        };
+        let county = L.geoJson(geojsonFeature, {style:countyStyle}).addTo(markerGroup);
+        county.bindPopup(data[0].type+': '+data[0].name)
+        layerControl.addOverlay(county, "County");
+        map.fitBounds(markerGroup.getBounds())
+      })
     }
-    $.ajax(ajaxSettings)
-    .done(function(data){
-      let geojsonFeature = {
-        "type": "Feature",
-        "properties": {type:data[0].type, name:data[0].name},
-        "geometry": JSON.parse(data[0].geometry)
-      };
-      let poly = L.geoJson(geojsonFeature, {style:polyStyle}).addTo(markerGroup);
-      poly.bindPopup(data[0].type+': '+data[0].name)
-      data[0].type == 'city' ? overlayMaps.city = poly : overlayMaps.county = poly
-      map.fitBounds(markerGroup.getBounds())
-      L.control.layers(baseLayers, overlayMaps).addTo(map);
-    })
-  }else{
-    map.fitBounds(markerGroup.getBounds())
-    L.control.layers(baseLayers, overlayMaps).addTo(map);
+    
+    if(polyArr.city){
+      ajaxSettings.data = {
+        trigger:'getSelectOptions', 
+        list:'jsonCity', 
+        orderBy:'1', 
+        filter:'id = '+polyArr.city
+      }
+      $.ajax(ajaxSettings)
+      .done(function(data){
+        let geojsonFeature = {
+          "type": "Feature",
+          "properties": {type:data[0].type, name:data[0].name},
+          "geometry": JSON.parse(data[0].geometry)
+        };
+        let city = L.geoJson(geojsonFeature, {style:cityStyle}).addTo(markerGroup);
+        city.bindPopup(data[0].type+': '+data[0].name)
+        layerControl.addOverlay(city, "City");
+        map.fitBounds(markerGroup.getBounds())
+      })
+    }
   }
-
-  map.setZoom(9);
+  map.fitBounds(markerGroup.getBounds());
   let myToolbar = L.Control.extend({
     options: { position: 'topleft'},
     onAdd: function (map) {
@@ -86,10 +93,10 @@ function artifactMap(){
 
 let county;
 function mapStat(countyData){
-  map = L.map('mapStat',{maxBounds:mapExt}).fitBounds(mapExt)
-  map.setMinZoom(3);
-  L.maptilerLayer({apiKey: mapTilerKey, style: "dataviz-light"}).addTo(map)
-  let countyGroup = L.featureGroup().addTo(map);
+  map2 = L.map('mapChart',{maxBounds:mapExt}).fitBounds(mapExt)
+  map2.setMinZoom(3);
+  L.maptilerLayer({apiKey: mapTilerKey, style: "dataviz-light"}).addTo(map2)
+  let countyGroup = L.featureGroup().addTo(map2);
   let countyJson = {"type":"FeatureCollection", "features": []}
   countyData.forEach(el => {
     countyJson.features.push({
@@ -104,8 +111,7 @@ function mapStat(countyData){
     onEachFeature: onEachFeature
   }).addTo(countyGroup);
   
-  map.fitBounds(countyGroup.getBounds())
-
+  
   let myToolbar = L.Control.extend({
     options: { position: 'topleft'},
     onAdd: function (map) {
@@ -121,10 +127,10 @@ function mapStat(countyData){
       return container;
     }
   })
-  map.addControl(new myToolbar());
-
+  map2.addControl(new myToolbar());
+  
   let legend = L.control({position: 'bottomright'});
-  legend.onAdd = function (map) {
+  legend.onAdd = function (map2) {
     let div = L.DomUtil.create('div', 'info legend border rounded')
     let grades = [0, 10, 20, 50, 100, 200, 500, 1000]
     let labels = [];
@@ -137,8 +143,9 @@ function mapStat(countyData){
     }
     return div;
   };
-  legend.addTo(map);
+  legend.addTo(map2);
   $(".arrowGroup").css('visibility','hidden')
+  map2.fitBounds(countyGroup.getBounds())
 }
 
 function getGroup(d) {
@@ -153,14 +160,14 @@ function getGroup(d) {
 }
 
 function getColorByGroup(d) {
-  return d > 1000 ? '#800026' :
-  d > 500  ? '#BD0026' :
-  d > 200  ? '#E31A1C' :
-  d > 100  ? '#FC4E2A' :
-  d > 50   ? '#FD8D3C' :
-  d > 20   ? '#FEB24C' :
-  d > 10   ? '#FED976' :
-  '#FFEDA0';
+  return d > 1000 ? '#188977' :
+  d > 500  ? '#1D9A6C' :
+  d > 200  ? '#39A96B' :
+  d > 100  ? '#56B870' :
+  d > 50   ? '#74C67A' :
+  d > 20   ? '#99D492' :
+  d > 10   ? '#BFE1B0' :
+  '#DEEDCF';
 }
 function styleByGroup(feature) {
   let color = getColorByGroup(feature.properties.tot)

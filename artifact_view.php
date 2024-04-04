@@ -6,62 +6,59 @@
   <head>
     <?php require("assets/meta.php"); ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" media="screen"/>
+    <link href="https://cdn.maptiler.com/maptiler-sdk-js/v1.2.0/maptiler-sdk.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/artifact_view.css">
     <link rel="stylesheet" href="css/my3dhop.css">
+    <link rel="stylesheet" href="css/map.css">
   </head>
   <body>
     <?php 
       require("assets/header.php"); 
       require("assets/loadingDiv.html"); 
     ?>
-    <main class="<?php echo $mainClass; ?>">
-      <input type="hidden" name="artifactId" value="<?php echo $_GET['item']; ?>">
-      <input type="hidden" name="activeUsr" value="<?php echo $_SESSION['id']; ?>">
-      <input type="hidden" name="role" value="<?php echo $_SESSION['role']; ?>">
-      <nav class="itemTool">
-        <div class="container-fluid">
-          <div class="row">
-            <div class="col-6">
-              <?php if (isset($_SESSION['id'])) { ?>
-              <div class="btn-group" role="group">
-                <div class="dropdown">
-                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="mdi mdi-plus-thick"></i> add
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li id="addModelBtn"><a href="models.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">model</a></li>
-                    <li><a href="media_add.php?item=<?php echo $_GET['item']; ?>&t=image" class="dropdown-item">image</a></li>
-                    <li><a href="media_add.php?item=<?php echo $_GET['item']; ?>&t=document" class="dropdown-item">document</a></li>
-                    <li><a href="media_add.php?item=<?php echo $_GET['item']; ?>&t=video" class="dropdown-item">video</a></li>
-                  </ul>
-                </div>
-              </div>
-              <div class="btn-group" role="group">
-                <div class="dropdown">
-                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="mdi mdi-pencil"></i> edit
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a href="artifact_edit.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">artifact metadata</a></li>
-                    <li id="editModelBtn">
-                      <a href="" class="dropdown-item">model metadata</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <button type="button" name="delete" id="delete" class="btn btn-light"><i class="mdi mdi-delete-forever"></i> delete</button>
-              <?php } ?>
+      <nav id="itemTool">
+        <div class="itemToolBlock">
+        <?php if (isset($_SESSION['id'])) { ?>
+          <div class="btn-group btn-group-sm" role="group">
+            <div class="btn-group btn-group-sm" role="group">
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-plus-thick"></i> add</button>
+              <ul class="dropdown-menu">
+                <li id="addModelBtn"><a href="models.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">model</a></li>
+                <li><a href="media_add.php?item=<?php echo $_GET['item']; ?>&t=image" class="dropdown-item">image</a></li>
+                <li><a href="media_add.php?item=<?php echo $_GET['item']; ?>&t=document" class="dropdown-item">document</a></li>
+                <li><a href="media_add.php?item=<?php echo $_GET['item']; ?>&t=video" class="dropdown-item">video</a></li>
+              </ul>
             </div>
-            <div class="col-6 text-end">
-              <button type="button" name="download" id="download" class="btn btn-adc-dark"><i class="mdi mdi-tray-arrow-down"></i> download</button>
-              <button type="button" name="print" id="print" class="btn btn-adc-dark"><i class="mdi mdi-printer"></i> print</button>
+            <div class="btn-group btn-group-sm" role="group">
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-pencil"></i> edit</button>
+              <ul class="dropdown-menu">
+                <li><a href="artifact_edit.php?item=<?php echo $_GET['item']; ?>" class="dropdown-item">artifact metadata</a></li>
+                <li id="editModelBtn"><a href="" class="dropdown-item">model metadata</a></li>
+              </ul>
             </div>
+            <button type="button" name="delete" id="delete" class="btn btn-light"><i class="mdi mdi-delete-forever"></i> delete</button>
+          </div>  
+          <?php } ?>
+        </div>
+        <div class="itemToolBack"></div>
+        <div class="itemToolBack">
+          <div class="btn-group btn-group-sm">
+            <button type="button" name="download" id="download" class="btn btn-light"><i class="mdi mdi-tray-arrow-down"></i> download</button>
+            <button type="button" name="print" id="print" class="btn btn-light"><i class="mdi mdi-printer"></i> print</button>
           </div>
         </div>
       </nav>
+
+    <main class="animated mainSection">
+      <input type="hidden" name="artifactId" value="<?php echo $_GET['item']; ?>">
+      <input type="hidden" name="activeUsr" value="<?php echo $_SESSION['id']; ?>">
+      <input type="hidden" name="role" value="<?php echo $_SESSION['role']; ?>">
+
+
+
       <div id="mainContent">
         <div class="absoluteCol artifactCol artifact-primary" id="artifact">
-          <div class="alert" id="status"></div>
+          <div class="alert text-center" id="status"></div>
           <div class="accordion accordion-flush accordionArtifact" id="accordionArtifact">
             <div class="accordion-item">
               <h2 class="accordion-header" id="main-section">
@@ -231,14 +228,26 @@
           </div>
         </div>
         <div class="absoluteCol geographic-primary" id="geographic">
-          <div class="divSection mb-5" id="map"></div>
+          <div class="divSection" id="map"></div>
         </div>
-        <div class="absoluteCol model-primary" id="model"><?php require('assets/canvas.html'); ?></div> 
-        <div class="absoluteCol media-primary border-top p-3" id="media"></div>
-        <div class="absoluteCol resource-primary border-top p-3" id="stats"></div>
-        <div class="absoluteCol resource-primary border-top p-3" id="statsMap" style="top:1070px;"></div>
-          <!-- <h2 class="titleSection d-block txt-adc-dark fw-bold border-bottom">Stats</h2> -->
-                   
+        <div class="absoluteCol model-primary" id="model">
+          <?php require('assets/canvas.html'); ?>
+        </div> 
+        <div class="absoluteCol media-primary" id="media"></div>
+        <div class="absoluteCol stats-primary p-3" id="stats">
+          <div id="lineChart" class="border rounded"></div>
+          <div id="columnChart" class="border rounded"></div>
+          <small>Where the <span id="mapChartTitle"></span> were found</small>
+          <div id="mapChart">
+            <div id="mapInfo" class="border rounded shadow">
+              <h6 id="mapInfoTitle" class="m-0 text-secondary">Map info</h6>
+              <div id="geomProp" class="text-center">
+                <p class="mb-1 fw-bold" id="nameProp"></p>
+                <p class="m-0" id="totProp"></p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
     </main>
@@ -257,6 +266,8 @@
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="https://cdn.maptiler.com/maptiler-sdk-js/v1.2.0/maptiler-sdk.umd.js"></script>
+    <script src="https://cdn.maptiler.com/leaflet-maptilersdk/v2.0.0/leaflet-maptilersdk.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="js/3dhop_function.js"></script>
     <script src="js/maps/geo_config.js" charset="utf-8"></script>

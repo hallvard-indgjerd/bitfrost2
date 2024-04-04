@@ -41,7 +41,7 @@ const SGL_TRACKBALL_SCALE     = 4;
 
 Presenter = function (canvas) {
 	this._supportsWebGL = sglHandleCanvas(canvas, this, { stencil: true });
-	console.log("3DHOP version: " + this.version);
+	// console.log("3DHOP version: " + this.version);
 };
 
 Presenter.prototype = {

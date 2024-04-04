@@ -16,8 +16,6 @@ let cronoData = []
 let institutionData = [];
 google.charts.load('current', { 'packages':['corechart'],});
 
-// collected.length == 0 ? $("#fullCollection").hide() : $("#emptyCollection").hide()
-
 $("#createFromFiltered, #resetCollection").hide()
 
 if($("[name=logged]").val() == 0){
@@ -102,16 +100,8 @@ document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((el)=>{
 
 function institutionChart() {
   var data = google.visualization.arrayToDataTable(institutionData);
-  
-  let institutionChartColor = {
-    'Blekinge Museum':'#22458a',
-    'Lund University Historical Museum': '#358a22',
-    'Statens Historiska Museum':'#dea600'
-  }
   var slices = [];
-  for (var i = 0; i < data.getNumberOfRows(); i++) {
-    slices.push({color: institutionChartColor[data.getValue(i, 0)]});
-  }
+  for (var i = 0; i < data.getNumberOfRows(); i++) {slices.push({color: data.getValue(i, 2)});}
   var options = {
     title: 'Total artifacts by institution',
     chartArea: {width: '100%', height:'300px'},
@@ -182,9 +172,9 @@ function buildStat(){
   $.ajax(ajaxSettings)
   .done(function(data) {
     cronoData.push(['chronology', 'tot'])
-    institutionData.push(['Institution', 'Artifact stored'])
+    institutionData.push(['Institution', 'Artifact stored', 'color'])
     data.typeChronologicalDistribution.forEach((v) => {cronoData.push([v.crono, v.tot])})
-    data.institutionDistribution.forEach((v) => {institutionData.push([v.name, v.tot])})
+    data.institutionDistribution.forEach((v) => {institutionData.push([v.name, v.tot, v.color])})
     $("#artifactTot > h2").text(data.artifact.tot)
     $("#modelTot > h2").text(data.model.tot)
     $("#institutionTot > h2").text(data.institution.tot)
@@ -197,9 +187,11 @@ function buildStat(){
 
 function artifactByCounty(){
   ajaxSettings.url=API+"stats.php";
-  ajaxSettings.data={trigger:'artifactByCounty'};
-  $.ajax(ajaxSettings)
-  .done(function(data) { mapStat(data); })
+  ajaxSettings.data={
+    trigger:'artifactByCounty',
+    filter:["artifact.category_class > 0"]
+  };
+  $.ajax(ajaxSettings).done(function(data) { mapStat(data); })
 }
 
 $("#toggleMenu").on('click',resizeDOM);

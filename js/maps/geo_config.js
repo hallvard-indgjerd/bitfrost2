@@ -22,7 +22,7 @@ let mapClick = false;
 
 // const mapExt = [[60,5],[70,30]];
 const mapExt = [[72,63],[51,-11]];
-let map,marker, countyGroup, cityGroup;
+let map, map2, marker, countyGroup, cityGroup;
 let countyStyle = {
   weight: 2,
   color: 'rgb(51,136,255)',

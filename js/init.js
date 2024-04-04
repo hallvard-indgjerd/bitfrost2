@@ -8,8 +8,6 @@ $(document).ready(function() {
 });
 
 function initNav(){
-  let navClass;
-  //check session status, device width, type and orientation to show or hide toggleMenu button
   if($("[name=logged]").val() == 0){
     $("#userMenu").addClass('closed');
     $("body>main").addClass('large');
@@ -36,7 +34,6 @@ function toggleNav(){
   $("nav").toggleClass('open closed');
   if (
     screen.width < 1368
-    // || (screen.width >= 1368 && (screen.orientation.angle == 90 || screen.orientation.angle == 270))
   ) {
     $("#backdrop").fadeToggle('250');
     ["wheel", "touchmove"].forEach(event => {
@@ -44,7 +41,7 @@ function toggleNav(){
     })
   }else{
     $(".mainSection").toggleClass('large small')
-    if(document.getElementById("userMenu")){ $(".viewArtifactsBtn").toggleClass('smallCard')}
+    // if(document.getElementById("userMenu")){ $(".viewArtifactsBtn").toggleClass('smallCard')}
   }
 }
 function preventScroll(e){

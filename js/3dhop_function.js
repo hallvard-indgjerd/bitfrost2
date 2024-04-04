@@ -209,7 +209,7 @@ $("[name=addViewBtn]").on('click',addView)
 $("#model-uuid").on('click', function(){copy_to_clipboard('model-uuid')})
 
 $("[name=enlargeScreen").on('click', function(){
-  let div = ['artifact','geographic','model','media', 'resource']
+  let div = ['artifact','geographic','model','media', 'stats']
   div.forEach((v)=>{$("#"+v).toggleClass(v+'-primary ' + v +'-full')})
   resizeCanvas()
   map.remove();
@@ -244,7 +244,6 @@ function changeModelStatus(){
 }
 
 function initModel(model){
-  console.log(activeUser?activeUser:'no session');
   let mainData = model.model;
   let object = model.model_object;
   let model_view = model.model_view;
@@ -280,7 +279,6 @@ function initModel(model){
   
   
   object.forEach((element, index) => {
-    console.log(element);
     meshes['mesh_'+index] = {'url': 'archive/models/' + element.object }
     instances['mesh_'+index] = {
       mesh:'mesh_'+index, 

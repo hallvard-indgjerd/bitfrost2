@@ -1,19 +1,6 @@
 #statToggle{position:fixed; top:265px; left:-17px; z-index:501;}
 #statToggle > button{padding-right:2px}
-
-#statWrap{
-  position:fixed; 
-  height:350px; 
-  top:115px; 
-  padding:10px; 
-  z-index:500; 
-
-  /* display:flex; 
-  flex-direction: row; 
-  flex-wrap: wrap;
-  justify-content: start; 
-  align-items: start; */
-}
+#statWrap{position:fixed; height:350px; top:115px; padding:10px; z-index:500;}
 .statWrapVisible{left:0;}
 .statWrapHidden{left:-100vw;}
 
@@ -33,53 +20,6 @@
   border-bottom-left-radius: var(--bs-border-radius) !important;
   border-bottom-right-radius: var(--bs-border-radius) !important;
   border-top: 1px solid #cacaca;
-}
-
-#mapInfo{
-  position:absolute;
-  top:5px;
-  right:10px;
-  width:auto;
-  max-width: 200px;
-  padding:10px;
-  background-color: rgba(255,255,255,.8);
-  z-index:1000;
-}
-
-.legend {
-  background-color: rgba(255,255,255,.8);
-  padding:10px;
-  color: #555;
-  z-index:1000;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  justify-content: start;
-}
-.legend > div{
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-content: center;
-  justify-content: flex-start;
-  align-items: center;
-}
-.legend i {
-  position:relative;
-  display:inline-block;
-  margin-right:5px;
-  width: 18px;
-  height: 18px;
-  opacity: 0.7;
-}
-img.arrowGroup{
-  display: inline-block;
-  position:relative;
-  visibility: hidden;
-  width:16px;
-  height:16px;
 }
 
 #itemsCount{position:relative; width:100%; margin:0 !important; padding:0 !important; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;}

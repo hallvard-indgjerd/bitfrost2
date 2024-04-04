@@ -9,6 +9,7 @@
     <link href="https://cdn.maptiler.com/maptiler-sdk-js/v1.2.0/maptiler-sdk.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/artifacts.css">
+    <link rel="stylesheet" href="css/map.css">
   </head>
   <body>
     <?php 
@@ -26,7 +27,7 @@
 
     <div id="statWrap" class="statWrapVisible bg-light border animated mainSection">
       <div id="institution_chart" class="bg-white border rounded"></div>
-      <div id="mapStat" class="bg-white border rounded">
+      <div id="mapChart" class="bg-white border rounded">
         <div id="mapInfo" class="border rounded shadow">
           <h6 id="mapInfoTitle" class="m-0 text-secondary">Map info</h6>
           <div id="geomProp" class="text-center">
