@@ -1,3 +1,98 @@
+function osmSearch(city){
+  let api = nominatim+city
+  $.getJSON( api, function( data ) {
+    console.log(data);
+    // let addr = data.address.road;
+    // if(data.address.house_number && data.address.house_number !== 'undefined'){
+    //   addr = addr+" "+data.address.house_number;
+    // }
+    // $("#address").val(addr)
+  });
+}
+function osmReverseSearch(ll){
+  let api = nominatimReverse+'lat='+ll.lat+'&lon='+ll.lng;
+  $.getJSON( api, function( data ) {
+    console.log(data);
+    // let addr = data.address.road;
+    // if(data.address.house_number && data.address.house_number !== 'undefined'){
+    //   addr = addr+" "+data.address.house_number;
+    // }
+    // $("#address").val(addr)
+  });
+}
+
+function mapInit(){
+  // map = L.map('map',{maxBounds:mapExt}).fitBounds(mapExt)
+  map = L.map('map').fitWorld().setZoom(2)
+  // map.setMinZoom(2);
+  osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
+  gStreets = L.tileLayer(gStreetTile,{maxZoom: 18, subdomains:gSubDomains });
+  gSat = L.tileLayer(gSatTile,{maxZoom: 18, subdomains:gSubDomains});
+  gTerrain = L.tileLayer(gTerrainTile,{maxZoom: 18, subdomains:gSubDomains});
+  baseLayers = {
+    "OpenStreetMap": osm,
+    "Google Terrain":gTerrain,
+    "Google Satellite": gSat,
+    "Google Street": gStreets
+  };
+  L.control.layers(baseLayers, null).addTo(map);
+  countyGroup = L.featureGroup().addTo(map);
+  cityGroup = L.featureGroup().addTo(map);
+  map.on({
+    zoomend: handleAlert,
+    click:function(e){
+      mapClick = true;
+      let zoom = map.getZoom()
+      if (zoom<14) { return false;}
+      let ll = map.mouseEventToLatLng(e.originalEvent);
+      // getCityFromLonLat([parseFloat(ll.lng),parseFloat(ll.lat)], zoom)
+      osmReverseSearch(ll)
+    }
+  })
+  function handleAlert(){
+    let alertClass, alertText;
+    let zoom = map.getZoom();
+    if (zoom>=14) {
+      alertClass = 'alert alert-success';
+      alertText = 'Ok, you can click on map to create a marker';
+      map.removeLayer(countyGroup);
+      map.removeLayer(cityGroup);
+    }else {
+      alertClass = 'alert alert-warning'
+      alertText = 'To put a marker on map you have to zoom in';
+      map.addLayer(countyGroup);
+      map.addLayer(cityGroup);
+    }
+    $("#mapAlert").removeClass().addClass(alertClass).text(alertText)
+  }
+
+  let myToolbar = L.Control.extend({
+    options: { position: 'topleft'},
+    onAdd: function (map) {
+      let container = L.DomUtil.create('div', 'extentControl leaflet-bar leaflet-control leaflet-touch');
+      btnHome = $("<a/>",{href:'#', title:'max zoom', id:'maxZoomBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
+      $("<i/>",{class:'mdi mdi-home'}).appendTo(btnHome)
+      btnFullscreen = $("<a/>",{href:'#', title:'toggle fullscreen mode', id:'toggleFullscreenBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
+      $("<i/>",{class:'mdi mdi-fullscreen'}).appendTo(btnFullscreen)
+
+      btnHome.on('click', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        map.fitWorld().setZoom(2);
+      });
+
+      btnFullscreen.on('click', function(e){
+        e.preventDefault()
+        e.stopPropagation()
+        toggleFullScreen('map')
+      })
+      
+      return container;
+    }
+  })
+  map.addControl(new myToolbar());
+}
+
 function artifactMap(){
   map = L.map('map',{maxBounds:mapExt})
   map.setMinZoom(4);

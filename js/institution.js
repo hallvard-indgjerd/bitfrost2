@@ -30,9 +30,10 @@ mapInit()
 
 $("[name=city]").on({
   keyup: function(){
-    let v = $(this).val()
-    if(v.length >= 2){
-      getCity(v)
+    let city = $(this).val()
+    if(city.length >= 2){
+      osmSearch(city)
+      // getCity(city)
     }else{
       citySuggested.html('').fadeOut('fast')
     }

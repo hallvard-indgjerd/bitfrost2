@@ -11,7 +11,7 @@
   </head>
   <body>
     <?php require("assets/header.php"); ?>
-    <main class="<?php echo $mainClass; ?>">
+    <main class="animated mainSection">
       <div class="container">
         
         <form name="newInstitutionForm" enctype="multipart/form-data">
@@ -41,7 +41,6 @@
             <div class="col-md-3 mb-3">
               <label for="city">* City</label>
               <input id="city" type="text" name="city" class="form-control" value="" placeholder="digit city name" data-cityid='' required>
-              <!-- <div id="cityMsg" class="form-text text-danger">No city selected</div> -->
               <div class="list-group" id="citySuggested"></div>
             </div>
             <div class="col-md-5 mb-3">
@@ -92,7 +91,8 @@
       require("assets/js.html"); 
     ?>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
-    <script src="js/geoConfig.js" charset="utf-8"></script>
+    <script src="js/maps/geo_config.js" charset="utf-8"></script>
+    <script src="js/maps/geo_function.js" charset="utf-8"></script>
     <script src="js/institution.js" charset="utf-8"></script>
   </body>
 </html>

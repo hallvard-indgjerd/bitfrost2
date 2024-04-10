@@ -6,7 +6,8 @@ const gSatTile = 'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}';
 const gHybridTile = 'http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}';
 const gTerrainTile = 'http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
 const gSubDomains = ['mt0','mt1','mt2','mt3'];
-let osmReverse = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&'
+let nominatim = 'https://nominatim.openstreetmap.org/search?&format=geocodejson&addressdetails=1&featureType=city&city='
+let nominatimReverse = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&'
 //osm reverse param
 //append to api -> lat=x.xx&lon=x.xx
 //json variables to use -> address.road, address.house_number
