@@ -7,6 +7,8 @@
   <head>
     <?php require("assets/meta.php"); ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
     <link rel="stylesheet" href="css/institution.css">
   </head>
   <body>
@@ -20,6 +22,14 @@
           <div class="row mb-3">
             <h3 class="border-bottom txt-adc-dark fw-bold">New Institution</h3>
             <div class="form-text">* mandatory field</div>
+          </div>
+          <div class="row mb-3">
+            <div class="col">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="is_storage_place">
+                <label class="form-check-label" for="is_storage_place">Is it an artifact storage place?</label>
+              </div>
+            </div>
           </div>
           <div class="row">
             <div class="col-md-3 mb-3">
@@ -40,7 +50,8 @@
           <div class="row">
             <div class="col-md-3 mb-3">
               <label for="city">* City</label>
-              <input id="city" type="text" name="city" class="form-control" value="" placeholder="digit city name" data-cityid='' required>
+              <input id="city" type="search" name="city" class="form-control" value="" placeholder="digit city name" data-cityid='' required>
+              <div id="osmAttribution" class="form-text"><a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap, ODbL 1.0</a></div>
               <div class="list-group" id="citySuggested"></div>
             </div>
             <div class="col-md-5 mb-3">
@@ -91,6 +102,7 @@
       require("assets/js.html"); 
     ?>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js" charset="utf-8"></script>
     <script src="js/maps/geo_config.js" charset="utf-8"></script>
     <script src="js/maps/geo_function.js" charset="utf-8"></script>
     <script src="js/institution.js" charset="utf-8"></script>

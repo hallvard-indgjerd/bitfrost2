@@ -10,7 +10,7 @@ class Institution extends Conn{
 
   public function getInstitutions(){
     $sql = "with 
-    a as (select i.id, i.name, i.abbreviation, cat.value category, city.name city, i.address, i.lat, i.lon, i.url, i.logo from institution i inner join list_institution_category cat on i.category = cat.id inner join city on i.city = city.id),
+    a as (select i.id, i.name, i.abbreviation, cat.value category, i.city, i.address, i.lat, i.lon, i.url, i.logo from institution i inner join list_institution_category cat on i.category = cat.id),
     b as (select owner, count(*) tot from artifact group by owner)
     select a.*, ifnull(b.tot,0) artifact
     from a
@@ -20,7 +20,7 @@ class Institution extends Conn{
   }
 
   public function getInstitution(int $id){
-    $sql="select i.category catid, cat.value category, i.name, i.abbreviation, i.city cityid, city.name city, i.address, i.lat, i.lon, i.url, i.logo, i.uuid FROM institution i INNER JOIN list_institution_category cat ON i.category = cat.id  inner join city on i.city = city.id where i.id = ".$id.";";
+    $sql="select i.category catid, cat.value category, i.name, i.abbreviation, i.city, i.address, i.lat, i.lon, i.url, i.logo, i.uuid FROM institution i INNER JOIN list_institution_category cat ON i.category = cat.id where i.id = ".$id.";";
     return $this->simple($sql)[0];
   }
 
@@ -31,7 +31,7 @@ class Institution extends Conn{
         $ext = array_pop($ext);
         $ext = mb_strtolower(strval($ext));
         $dati['logo'] = $dati['abbreviation']."_logo.".$ext;
-        $this->fileCls->upload($file['logo'],'/img/logo/',$dati['logo']);
+        $this->fileCls->upload($file['logo'],'/img/logo/',$dati['logo'], 'image');
       }
       $sql = $this->buildInsert('institution', $dati);
       $this->prepared($sql, $dati);
@@ -53,7 +53,7 @@ class Institution extends Conn{
         $ext = array_pop($ext);
         $ext = mb_strtolower(strval($ext));
         $dati['logo'] = $dati['abbreviation']."_logo.".$ext;
-        $this->fileCls->upload($file['logo'],'/img/logo/',$dati['logo']);
+        $this->fileCls->upload($file['logo'],'/img/logo/',$dati['logo'], 'image');
       }
       $sql = $this->buildupdate('institution',array("id"=>$dati['id']), $dati );
       $this->prepared($sql, $dati);

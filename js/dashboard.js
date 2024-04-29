@@ -89,10 +89,10 @@ function getModels(){
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data = dati
   $.ajax(ajaxSettings).done(function(data){
-    console.log(data);
+    // console.log(data);
     $('#modelList .badge').text(data.length)
     data.forEach((item, i) => {
-      console.log(data[0].description.length);
+      // console.log(data[0].description.length);
       let card = $("<div/>",{class:' card modelCardSmall'}).appendTo(cardWrap);
       $("<div/>", {class:'thumbDiv card-header'}).css("background-image", "url(archive/thumb/"+item.thumbnail+")").appendTo(card)
       let divDati = $("<div/>",{class:'card-body'}).appendTo(card)
@@ -123,6 +123,7 @@ function getInstitutions(){
   $.ajax(ajaxSettings).done(function(data){
     $('#institutionList .badge').text(data.length)
     data.forEach((item, i) => {
+      console.log(item);
       let logo = item.logo ? item.logo : 'default.jpg';
       let card = $("<div/>",{class:"card mb-3"}).appendTo(cardWrap)  
       let row = $("<div/>", {class:'row g-0'}).appendTo(card)

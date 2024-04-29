@@ -4,13 +4,16 @@ session_start();
 
 use \Adc\Model;
 use \Adc\File;
+use \Adc\Institution;
 
 class Artifact extends Conn{
   public $model;
   public $files;
+  public $institution;
   function __construct(){
     $this->model = new Model();
     $this->files = new File();
+    $this->institution = new Institution();
   }
   public function addArtifact(array $dati){
     try {
@@ -98,7 +101,7 @@ class Artifact extends Conn{
     $out['artifact_material_technique'] = $this->getArtifactMaterial($id);
     if (!empty($out['artifact']['start'])) { $out['artifact']['from'] = $this->getChronology($out['artifact']['start'])[0]; }
     if (!empty($out['artifact']['end'])) { $out['artifact']['to'] = $this->getChronology($out['artifact']['end'])[0]; }
-    $out['storage_place'] = $this->getInstitution($out['artifact']['storage_place'])[0];
+    $out['storage_place'] = $this->institution->getInstitution($out['artifact']['storage_place']);
     if(count($this->getArtifactMeasure($id))>0){$out['artifact_measure'] = $this->getArtifactMeasure($id);}
     $out['artifact_metadata'] = $this->getArtifactMetadata($id);
     $out['artifact_findplace'] = $this->getArtifactFindplace($id);
@@ -121,11 +124,6 @@ class Artifact extends Conn{
     return $this->simple($sql);
   }
 
-
-  private function getInstitution(int $id){
-    $sql = "select i.name, i.abbreviation, cat.value category, city.name city, i.address, i.lat, i.lon, i.url link, i.logo from institution i inner join list_institution_category cat on i.category = cat.id inner join city on i.city = city.id where i.id = ".$id.";";
-    return $this->simple($sql);
-  }
   private function getArtifactMeasure(int $id){ return $this->simple("select * from artifact_measure where artifact = ".$id.";"); }
 
   private function getArtifactMetadata(int $id){

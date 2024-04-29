@@ -27,6 +27,7 @@ let jsonCity = {
 listArray.push(listCategory)
 listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
 mapInit()
+getInstitutions()
 
 $("[name=city]").on({
   keyup: function(){
@@ -111,6 +112,8 @@ function addInstitution(el){
     el.preventDefault();
     fd.append('trigger', trigger)
     if($("[name=institution]").length > 0){fd.append('id', $("[name=institution]").val()) }
+    let is_storage_place = $("#is_storage_place").is(":checked") ? 1 : 0;
+    fd.append('is_storage_place', is_storage_place)
     fd.append('category', $("#category").val())
     fd.append('name', $("#name").val())
     fd.append('abbreviation', $("#abbreviation").val())
@@ -174,4 +177,21 @@ function getInstitution(id){
 
     }
   })
+}
+
+function getInstitutions(){
+  let institutionGroup = L.markerClusterGroup().addTo(map);
+  layerControl.addOverlay(institutionGroup, "Existing Institution");
+  let dati={}
+  dati.trigger='getInstitutions';
+  ajaxSettings.url=API+"institution.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings).done(function(data){
+    data.forEach((item, i) => {
+      L.marker([parseFloat(item.lat), parseFloat(item.lon)],{icon:storagePlaceIco})
+      .bindPopup("<div class='text-center'><h6 class='p-0 m-0'>"+item.name+"</h6><p class='p-0 m-0'>Artifacts stored: <strong>"+item.artifact+"</strong></p></div>")
+      .addTo(institutionGroup);
+    });
+    map.fitBounds(institutionGroup.getBounds())
+  });
 }

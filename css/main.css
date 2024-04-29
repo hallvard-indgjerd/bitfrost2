@@ -18,6 +18,7 @@ body > nav > #linkWrap > a{color:#fff; padding:5px 20px; border-bottom: 1px soli
   padding:5px; 
   background:#dddddd; 
   z-index:700;
+  overflow: visible;
 
   display: flex;
   flex-direction: row;

@@ -11,6 +11,7 @@ ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 
 $.ajax(ajaxSettings).done(function(data) {
+  console.log(data);
   $("#loadingDiv").remove()
   let artifact = data.artifact;
   classid = artifact.category_class_id;
@@ -47,7 +48,7 @@ $.ajax(ajaxSettings).done(function(data) {
   $("#institutionLogo>img").attr("src", "img/logo/"+institution.logo)
   $("#storage_name").text(institution.name)
   $("#gMapLink").attr("href",gMapLink)
-  $("#storage_address").text(institution.address)
+  $("#storage_address").text(institution.city+", "+institution.address)
   $("#storage_link").attr("href",institution.link).text(institution.link)
   markerArr.storage = [parseFloat(institution.lat), parseFloat(institution.lon)]
 

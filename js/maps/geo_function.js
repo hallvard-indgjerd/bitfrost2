@@ -1,30 +1,59 @@
 function osmSearch(city){
   let api = nominatim+city
   $.getJSON( api, function( data ) {
-    console.log(data);
-    // let addr = data.address.road;
-    // if(data.address.house_number && data.address.house_number !== 'undefined'){
-    //   addr = addr+" "+data.address.house_number;
-    // }
-    // $("#address").val(addr)
+    console.log(data.features);
+    citySuggested.html('')
+    if (data.features.length > 0) {
+      data.features.forEach((item,i) => {
+        let geom = item.geometry.coordinates;
+        let prop = item.properties.geocoding;
+        $("<button/>", {class:'list-group-item list-group-item-action', type:'button'})
+          .text(prop.country+", "+prop.name)
+          .appendTo(citySuggested)
+          .on('click', function(){
+            $("[name=city]").val(prop.name)
+            map.setView([geom[1],geom[0]],13)
+            citySuggested.fadeOut('fast').html('');
+            autocompleted = true;
+          })
+      })
+    }else{
+      $("<button/>", {class:'list-group-item list-group-item-action', type:'button'})
+        .text('No cities found')
+        .appendTo(citySuggested)
+        .on('click', function(){ citySuggested.fadeOut('fast').html(''); })
+    }
+    citySuggested.fadeIn('fast')
   });
 }
 function osmReverseSearch(ll){
   let api = nominatimReverse+'lat='+ll.lat+'&lon='+ll.lng;
   $.getJSON( api, function( data ) {
     console.log(data);
-    // let addr = data.address.road;
-    // if(data.address.house_number && data.address.house_number !== 'undefined'){
-    //   addr = addr+" "+data.address.house_number;
-    // }
-    // $("#address").val(addr)
+    if (marker != undefined) { map.removeLayer(marker)};
+    marker = L.marker(ll).addTo(map);
+    let city; 
+    if(data.address.city && data.address.city !== 'undefined'){
+      city = data.address.city;
+    }
+    else if(data.address.town && data.address.town !== 'undefined'){
+      city = data.address.town;
+    }else{
+      city = data.address.village;
+    }
+    $("[name=city]").val(city)
+
+    let addr = data.address.road;
+    if(data.address.house_number && data.address.house_number !== 'undefined'){addr = addr+" "+data.address.house_number;}
+    $("#address").val(addr)
+
+    $("#latitude").val(ll.lat.toFixed(6))
+    $("#longitude").val(ll.lng.toFixed(6))
   });
 }
 
 function mapInit(){
-  // map = L.map('map',{maxBounds:mapExt}).fitBounds(mapExt)
   map = L.map('map').fitWorld().setZoom(2)
-  // map.setMinZoom(2);
   osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
   gStreets = L.tileLayer(gStreetTile,{maxZoom: 18, subdomains:gSubDomains });
   gSat = L.tileLayer(gSatTile,{maxZoom: 18, subdomains:gSubDomains});
@@ -35,9 +64,10 @@ function mapInit(){
     "Google Satellite": gSat,
     "Google Street": gStreets
   };
-  L.control.layers(baseLayers, null).addTo(map);
+  layerControl = L.control.layers(baseLayers, null).addTo(map);
   countyGroup = L.featureGroup().addTo(map);
   cityGroup = L.featureGroup().addTo(map);
+    
   map.on({
     zoomend: handleAlert,
     click:function(e){
@@ -107,7 +137,7 @@ function artifactMap(){
     "Google Street": gStreets
   };
 
-  var layerControl = L.control.layers(baseLayers, overlayMaps).addTo(map);
+  layerControl = L.control.layers(baseLayers, overlayMaps).addTo(map);
   
   let markerGroup = L.featureGroup().addTo(map);
 

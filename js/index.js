@@ -201,7 +201,7 @@ function resizeDOM(){
     screen.orientation.type.split('-')[0] == 'landscape' &&
     screen.orientation.angle == 0 || screen.orientation.angle == 180
   ){
-    map.remove();
+    map2.remove();
     setTimeout(function() {
       cronoChart()
       institutionChart()

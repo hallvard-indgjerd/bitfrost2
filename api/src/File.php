@@ -34,14 +34,12 @@ class File extends Conn{
 
   public function addMedia($data, $file=null){
     try {
-      // if(count($file)>0){
       if($file && $file !== null){
-        $fileAllowed = $data['type'] == 'image' ? $this->imageAllowed : $this->documentAllowed;
         $folder = $data['type'] == 'image' ? $this->imageDir : $this->documentDir;
         $ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
         $name = $this->uuid.".".$ext;
         $data['path'] = $name;
-        $this->upload($file, $folder, $name, $fileAllowed);
+        $this->upload($file, $folder, $name, $data['type']);
       }
       $sql = $this->buildInsert("files", $data);
       $this->prepared($sql, $data);
@@ -56,17 +54,13 @@ class File extends Conn{
     return $this->simple("select * from files where artifact = ".$id.";");
   }
 
-  public function upload($file, $folder, $name, $fileAllowed){
-    // return [$file['name'], $folder, $name, $fileAllowed];
-    // try {
-      $this->checkError($file['error']);
-      $this->checkType($file['name'], $file['type'],$fileAllowed);
-      $this->checkSize($file['error']);
-      $this->moveFile($file, $folder, $name);
-      return true;
-    // } catch (\Exception $e) {
-    //   return ["res"=>0, "output"=>$e->getMessage()];
-    // }
+  public function upload($file, $folder, $name, $type){
+    $fileAllowed = $type == 'image' ? $this->imageAllowed : $this->documentAllowed;
+    $this->checkError($file['error']);
+    $this->checkType($file['name'], $file['type'],$fileAllowed);
+    $this->checkSize($file['error']);
+    $this->moveFile($file, $folder, $name);
+    return true;
   }
 
   protected function checkError($error){
