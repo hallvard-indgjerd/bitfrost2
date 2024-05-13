@@ -4,89 +4,64 @@ const role = $("[name=role]").val()
 
 // variabili di configurazione ///
 const canvas = document.getElementById("draw-canvas");
+const defaultViewSide = '15,15,0,0,0,2';
 
-// presenter object
-var presenter = null;
+let presenter = null;
+let scene, paradata, gStep, measure_unit;
+let meshes = {};
+let instances = {};
 
-// scene data
-var sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
-var gStep, measure_unit;
+const trackBallOpt = { 
+  type: TurntablePanTrackball, 
+  trackOptions: {
+    startPhi: 15.0, 
+    startTheta: 15.0, 
+    startDistance: 2.0, 
+    minMaxPhi: [-180, 180], 
+    minMaxTheta: [-90.0, 90.0], 
+    minMaxDist: [0.1, 3.0] 
+  }
+}
+const spaceOpt = {
+  centerMode: "scene", 
+  radiusMode: "scene", 
+  cameraNearFar: [0.01, 5.0]
+}
+const configOpt = {
+  pickedpointColor: [1.0, 0.0, 1.0], 
+  measurementColor: [0.5, 1.0, 0.5], 
+  showClippingPlanes: true, 
+  showClippingBorder: true, 
+  clippingBorderSize: 0.5, 
+  clippingBorderColor: [0.0, 1.0, 1.0]
+}
+const sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
 
-// VIEWER STATE
-var DEFAULT_VIEWER_STATE = {
-  grid : 'gridBase', //'none' 'gridBase' 'gridBox' 'gridBB'
-  axes : false,
-  //view
-  trackState : [15,15,0,0,0,2],
-  ortho : false,
-  //shading
-  texture : true,
-  transparent : false,
-  specular : false,
-  //lighting
-  lighting : true,
-  lightDir : [-0.17, 0.17], //top-left lighting
-};
-var VIEWER_STATE = {};
-var VIEWER_ANNOTATIONS = {
-  //todo
-};
-
+let angleStage = 0;
+let anglePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]];
+let lightDir = [-0.17,-0.17];
 let viewList = {}
 let viewIndex = 0;
 let spotList = {}
 let spotIndex = 0;
 
-// MEASUREMENT STATE
-let angleStage = 0;
-let anglePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]];
+const instanceOpt = {
+  "nxz":{ 
+    mesh:"nxz", 
+    tags: ['Group'], 
+    color: [0.5, 0.5, 0.5], 
+    backfaceColor: [0.5, 0.5, 0.5, 3.0], 
+    specularColor: [0.0, 0.0, 0.0, 256.0]
+  }
+}
 
-
-let paradata;
-
-// interface: tooltips 
 var toolBtnList = [].slice.call(document.querySelectorAll('.toolBtn'))
 var tooltipBtnList = toolBtnList.map(function (tooltipBtn) { return new bootstrap.Tooltip(tooltipBtn,{trigger:'hover', html: true, placement:'left' })})
 /////////////////////////////////////////////////////////////////////
-////// handlers /////////////////////////////////////////////////////
-
-$("#btHome").on('click', function(){
-  resetViewer();
-});
-
-$("#btTexture").on('click', function(){
-  setTexture();
-});
-$("#btTransparency").on('click', function(){
-  setTransparency();
-});
-$("#btSpecular").on('click', function(){
-  setSpecular();
-});
-
-$("#btGrid").on('click', function(){
-  setGrid();
-});
-$("#btAxes").on('click', function(){
-  setAxes();
-});
-
-$(".btView").on('click', function(){
-  viewFrom($(this).data('direction'))
-})
-
-$("#btOrtho").on('click', function(){
-  setOrtho();
-});
 
 $("#paradata-modal").hide()
-$("[name=view_metadata").on('click', function(){
-  if($("#paradata-modal").is(':hidden')){
-    $("#paradata-modal").fadeIn('fast');
-  }
-  else{
-    $("#paradata-modal").fadeOut('fast');   
-  }
+$("[name=view_metadata").on('click', function(){ 
+  $("#paradata-modal").fadeIn('fast');
 })
 $("[name=dismiss-paradata-modal]").on('click',function(){
   $("#paradata-modal").fadeOut('fast');
@@ -101,7 +76,6 @@ $("[name=fullscreenToggle]").on('click', function(){
   $(this).find('span').toggleClass('mdi-fullscreen mdi-fullscreen-exit')
   $(this).data('action', act);
 })
-
 $("#modelToolsH button").on('click', function(){
   actionsToolbar($(this).data('action'))
 })
@@ -114,11 +88,26 @@ $("[name=viewside]").on('click', function(e){
   viewFrom($(this).val()) 
   $("#dropdownViewList").text(label)
 })
-
+$("[name=ortho]").on('click', function(){updateOrtho()})
+$("[name=texture]").on('click', function(){
+  let label = $(this).is(':checked') ? 'plain color' : 'texture';
+  $(this).next('label').text(label);
+  updateTexture()
+})
+$("[name=solid]").on('click', function(){
+  let label = $(this).is(':checked') ? 'transparent' : 'solid';
+  $(this).next('label').text(label);
+  updateTransparency()
+})
 $("[name=lighting]").on('click', function(){
   let label = $(this).is(':checked') ? 'unshaded' : 'lighting';
   $(this).next('label').text(label);
   updateLighting()
+})
+$("[name=specular]").on('click', function(){
+  let label = $(this).is(':checked') ? 'specular' : 'diffuse';
+  $(this).next('label').text(label);
+  updateSpecular()
 })
 
 $("[name=changeGrid]").on('click', function(e){ 
@@ -221,9 +210,8 @@ $("#model-uuid").on('click', function(){copy_to_clipboard('model-uuid')})
 
 $("[name=enlargeScreen").on('click', function(){
   let div = ['artifact','geographic','model','media', 'stats']
-  div.forEach((v)=>{$("#"+v).toggleClass(v+'-primary ' + v +'-full')});
-  resizeCanvas();
-  $("#wrapViewSpot").toggleClass('invisible');  
+  div.forEach((v)=>{$("#"+v).toggleClass(v+'-primary ' + v +'-full')})
+  resizeCanvas()
   map.remove();
   setTimeout(function(){
     artifactMap()
@@ -289,7 +277,16 @@ function initModel(model){
     if(!mainData[key] && !role){$("#model-"+key).parent().remove()}
   })
   
+  
   object.forEach((element, index) => {
+    meshes['mesh_'+index] = {'url': 'archive/models/' + element.object }
+    instances['mesh_'+index] = {
+      mesh:'mesh_'+index, 
+      tags: ['Group'], 
+      color: [0.5, 0.5, 0.5], 
+      backfaceColor: [0.5, 0.5, 0.5, 3.0], 
+      specularColor: [0.0, 0.0, 0.0, 256.0]
+    }
     let thumbPath = 'archive/thumb/'+element.thumbnail;
     let thumbDiv = $("<div/>",{'class':'thumb'}).appendTo('#object-control');
     $("<img/>",{class:'img-fluid', src:thumbPath}).appendTo(thumbDiv)
@@ -326,241 +323,87 @@ function initModel(model){
     }
   });
 
-  startupViewer(object);
+  scene = {
+    meshes: meshes, 
+    modelInstances: instances, 
+    trackball: trackBallOpt, 
+    space: spaceOpt, 
+    config: configOpt
+  }
 
-}
-
-function defaultViewerState(){
-  // copy default state to viewer state
-  VIEWER_STATE = JSON.parse(JSON.stringify(DEFAULT_VIEWER_STATE));
-  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
-}
-
-function startupViewer(object){
-
-  // init 3dhop environment
   init3dhop();
-  // create viewer in canvas
   presenter = new Presenter("draw-canvas");
-
-  // set viewer state to default values
-  defaultViewerState();
-
-  // initial scene setup
-	var myScene = {
-		meshes: {
-			"sphere" : { url: "archive/models/sphere.ply" },
-			"cube"   : { url: "archive/models/cube.ply" },
-		},
-		modelInstances: {
-		},
-		spots: {
-		},
-		trackball: { 
-			type: TurntablePanTrackball,
-			trackOptions: {
-				startPhi: 15.0,
-				startTheta: 15.0,
-				startDistance: 2.0,
-				minMaxPhi: [-180, 180],
-				minMaxTheta: [-90.0, 90.0],
-				minMaxDist: [0.1, 3.0]
-			}
-		},
-		space: {
-			centerMode: "scene",
-			radiusMode: "scene",
-			cameraNearFar: [0.01, 5.0],
-		},
-		config: {
-			pickedpointColor    : [1.0, 0.0, 1.0],
-			measurementColor    : [0.5, 1.0, 0.5],
-			showClippingPlanes  : true,
-			showClippingBorder  : true,
-			clippingBorderSize  : 0.1,
-			clippingBorderColor : [0.0, 1.0, 1.0]
-		}
-	};
-
-  // populate meshes and instances
-  object.forEach((element, index) => {
-    myScene.meshes['mesh_'+index] = {
-      'url': 'archive/models/' + element.object 
-    };
-    myScene.modelInstances['mesh_'+index] = {
-      mesh:'mesh_'+index, 
-      tags: ['Group'], 
-      color: [0.5, 0.5, 0.5], 
-      backfaceColor: [0.5, 0.5, 0.5, 3.0], 
-      specularColor: [0.0, 0.0, 0.0, 256.0]
-    };
-  });
-
-  // update clipping border according to measure unit
-	if(measure_unit === "mm")
-		myScene.config.clippingBorderSize = 0.5;
-	if(measure_unit === "m")
-		myScene.config.clippingBorderSize = 0.0005;
-
-  presenter.setScene(myScene);
-
-  // handlers
+  presenter.setScene(scene);
   presenter._onEndMeasurement = onEndMeasure;
   presenter._onEndPickingPoint = onEndPick;
-
-  // reset sections
   presenter.setClippingPointXYZ(0.5, 0.5, 0.5);
-
-  //light controller
-  initLightController(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
-
+  //light component
+  setupLightController()
+  resizeLightController()
+  updateLightController(lightDir[0],lightDir[1])
+  // se vuoi disabilitare la visibilità dei piani di sezione
+  // presenter.setClippingRendermode(false, presenter.getClippingRendermode()[1])
+  
   switch (measure_unit) {
     case 'mm': gStep = 10.0; break;
     case 'm': gStep = 0.01; break;
     default: gStep = 1.0; break;
   }
   
-  startupGrid(VIEWER_STATE.grid);
-}
-
-// reset viewer
-function  resetViewer(){
-  defaultViewerState();
-
-  viewFrom('default');
-  setOrtho(VIEWER_STATE.ortho);
-
-  setTexture(VIEWER_STATE.texture);
-  setTransparency(VIEWER_STATE.transparent);
-  setSpecular(VIEWER_STATE.specular);
-
-  presenter.enableSceneLighting(VIEWER_STATE.lighting);
-  updateLightController(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
-  presenter.rotateLight(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
-
-  setGrid(VIEWER_STATE.grid);
-  setAxes(VIEWER_STATE.axes);
-
-  presenter.repaint();
-}
-
-///////////////// SET VIEWERSTATUS VALUE AND APPLY CHANGES //////////////////////
-// if no value is passed, toggle/cycle the state
-
-// texture-solidcolor
-function setTexture(value){
-  VIEWER_STATE.texture = (value !== undefined) ? value : !VIEWER_STATE.texture;
-  presenter.setInstanceSolidColor('Group', !VIEWER_STATE.texture, true);
-  $("#btTexture").removeClass(VIEWER_STATE.texture? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.texture? "btn-info" : "btn-secondary");
-}
-
-// transparent-solid
-function setTransparency(value){
-  VIEWER_STATE.transparent = (value !== undefined) ? value : !VIEWER_STATE.transparent;
-  presenter.setInstanceTransparency('Group', VIEWER_STATE.transparent, true);
-  $("#btTransparency").removeClass(VIEWER_STATE.transparent? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.transparent? "btn-info" : "btn-secondary");
-}
-
-// lambertian-specular
-function setSpecular(value){
-  VIEWER_STATE.specular = (value !== undefined) ? value : !VIEWER_STATE.specular;
-  let spec = VIEWER_STATE.specular ? [0.3,0.3,0.3,256.0] : [0.0,0.0,0.0,256.0];
-  for (inst in presenter._scene.modelInstances){
-    presenter._scene.modelInstances[inst].specularColor = spec;
+  startupGrid(model_view.grid)
+  presenter.animateToTrackballPosition(model_view.viewside.split(',').map(Number))
+  lightDir = model.model_view.lightdir.split(',').map(Number)
+  presenter.rotateLight(lightDir[0],-lightDir[1])
+  let viewsideLabel = getViewside(model_view.viewside)
+  if(model_view.viewside !== defaultViewSide && viewsideLabel !== ''){
+    $("[name=viewside][value='"+model_view.viewside+"']").addClass('active')
+    $("#dropdownViewList").text(viewsideLabel)
   }
-  presenter.repaint();
-  $("#btSpecular").removeClass(VIEWER_STATE.specular? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.specular? "btn-info" : "btn-secondary");
+  $("[name=changeGrid][value=gridBase").removeClass('active')
+  $("[name=changeGrid][value="+model_view.grid+"]").addClass('active')
+  let gridLabel = $("[name=changeGrid][value="+model_view.grid+"]").text()
+  $("#dropdownGridList").text(gridLabel)
+  if(model_view.ortho==1){ $("[name=ortho]").trigger('click') }
+  if(model_view.xyz==1){ setTimeout(function(){ $("[name=xyzAxes]").trigger('click') },100) }
+  if (model_view.texture == 1) { $("[name=texture]").trigger('click') }
+  if(model_view.solid ==1){$("[name=solid]").trigger('click')}
+  if(model_view.lighting == 1){$("[name=lighting]").trigger('click')}
+  if(model_view.specular == 1){$("[name=specular]").trigger('click')}
 }
 
-// orhtographic view
-function setOrtho(value){
-  VIEWER_STATE.ortho = (value !== undefined) ? value : !VIEWER_STATE.ortho;
-  VIEWER_STATE.ortho ? presenter.setCameraOrthographic() : presenter.setCameraPerspective();
-  $("#btOrtho").removeClass(VIEWER_STATE.ortho? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.ortho? "btn-info" : "btn-secondary");
-}
-
-// reference axes
-function setAxes(value){
-  VIEWER_STATE.axes = (value !== undefined)? value : !VIEWER_STATE.axes;
-  VIEWER_STATE.axes ? addAxes() : removeAxes();
-  $("#btAxes").removeClass(VIEWER_STATE.axes? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.axes? "btn-info" : "btn-secondary");
-}
-
-function setGrid(value){
-  //available grid options: 'none' 'gridBase' 'gridBox' 'gridBB'
-  presenter.deleteEntity('gridBase');  //delete current grid, but I do not know which one is active, so I delete all possible grids
-  presenter.deleteEntity('gridBox');
-  presenter.deleteEntity('gridBB'); 
-  $("#btGrid").removeClass("btn-info btn-secondary");
-
-  if(value !== undefined)
-    VIEWER_STATE.grid = value;
-  else{
-    switch (VIEWER_STATE.grid) {  // cycles through grid options
-      case 'none': VIEWER_STATE.grid = 'gridBase'; break;      
-      case 'gridBase': VIEWER_STATE.grid = 'gridBox'; break;
-      case 'gridBox': VIEWER_STATE.grid = 'gridBB'; break;
-      case 'gridBB':  VIEWER_STATE.grid = 'none'; break;
-    }
+function getViewside(viewside){
+  let viewsideLabel='';
+  switch (viewside) {
+    case '0,90,0.0,0.0,0.0,1.3': viewsideLabel='top'; break;
+    case '0,-90,0.0,0.0,0.0,1.3': viewsideLabel='bottom'; break;
+    case '0,0,0.0,0.0,0.0,1.3': viewsideLabel='front'; break;
+    case '-90,0,0.0,0.0,0.0,1.3': viewsideLabel='left'; break;
+    case '90,0,0.0,0.0,0.0,1.3': viewsideLabel='right'; break;
+    case '180,0,0.0,0.0,0.0,1.3': viewsideLabel='back'; break;
   }
-
-  switch (VIEWER_STATE.grid) {  // cycles through grid options
-    case 'none':
-      $("#btGrid").addClass("btn-secondary");
-      break;
-    case 'gridBase':
-      addBaseGrid();
-      $("#btGrid").addClass("btn-info");
-      break;
-    case 'gridBox':
-      addBoxGrid();
-      $("#btGrid").addClass("btn-info");      
-      break;
-    case 'gridBB':
-      addBBGrid();
-      $("#btGrid").addClass("btn-info");      
-      break;
-  }    
-  presenter.repaint();
+  return viewsideLabel;
 }
-
-///////////////// SET VIEWERSTATUS VALUES AND APPLY CHANGES - END //////////////////////
-
-function viewFrom(direction){
-	var distance = DEFAULT_VIEWER_STATE.trackState[5];
-    switch(direction) {
-        case "default":
-          presenter.animateToTrackballPosition(DEFAULT_VIEWER_STATE.trackState);
-        break;
-        case "front":
-			    presenter.animateToTrackballPosition([0.0, 0.0, 0.0, 0.0, 0.0, distance]);
-        break;
-        case "back":
-			    presenter.animateToTrackballPosition([180.0, 0.0, 0.0, 0.0, 0.0, distance]);
-        break;			
-        case "top":
-			    presenter.animateToTrackballPosition([0.0, 90.0, 0.0, 0.0, 0.0, distance]);
-        break;
-        case "bottom":
-			    presenter.animateToTrackballPosition([0.0, -90.0, 0.0, 0.0, 0.0, distance]);
-        break;
-        case "left":
-			    presenter.animateToTrackballPosition([270.0, 0.0, 0.0, 0.0, 0.0, distance]);
-        break;
-        case "right":
-			    presenter.animateToTrackballPosition([90.0, 0.0, 0.0, 0.0, 0.0, distance]);
-        break;			
-    }
-}
-
 function actionsToolbar(action) {
   switch (action) {
+    case "home": home(); break;
+    case "zoomin": presenter.zoomIn(); break;
+    case "zoomout": presenter.zoomOut(); break;
     case "fullscreen_in":
     case "fullscreen_out": 
       $("[name=enlargeScreen]").toggle()
       fullscreenSwitch(action); 
     break;
     case "screenshot": presenter.saveScreenshot(); break;
+    case "light_on":
+      setInstructions("click the left mouse button and drag the cursor on model to change the light origin")
+      sectionToolInit(false)
+      measureSwitch(false);
+      $("#lightCanvas-box").removeClass('invisible')
+    break;
+    case "light_off":
+      clearInstructions();
+      $("#lightCanvas-box").addClass('invisible')
+    break;
     case "measure_on":
       presenter.enableMeasurementTool(true);
       measureSwitch(true);
@@ -620,6 +463,7 @@ function disableToolsFunction(){
   presenter.enablePickpointMode(false);
   enableAngleMeasurement(false);
   sectionToolInit(false)
+  $("#lightCanvas-box").addClass('invisible')
 }
 
 function fullscreenSwitch(action) {
@@ -633,37 +477,96 @@ function fullscreenSwitch(action) {
 
 function enterFullscreen() {
   if (isIOS()) return; //IOS DEVICES CHECK
+
   presenter._nativeWidth  = presenter.ui.width;
   presenter._nativeHeight = presenter.ui.height;
   presenter._nativeResizable = presenter._resizable;
   presenter._resizable = true;
+
   var viewer = $('#3dhop')[0];
   if (viewer.msRequestFullscreen) viewer.msRequestFullscreen();
   else if (viewer.mozRequestFullScreen) viewer.mozRequestFullScreen();
   else if (viewer.webkitRequestFullscreen) viewer.webkitRequestFullscreen();
-  presenter.repaint();
+
+  presenter.ui.postDrawEvent();
 }
 
 function exitFullscreen() {
+
   if (isIOS()) return; //IOS DEVICES CHECK
+
   $('#draw-canvas').attr('width', presenter._nativeWidth);
   $('#draw-canvas').attr('height',presenter._nativeHeight);
   $('#3dhop').css('width', presenter._nativeWidth);
   $('#3dhop').css('height', presenter._nativeHeight);
   presenter._resizable = presenter._nativeResizable;
+
   if (document.msExitFullscreen) document.msExitFullscreen();
   else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
   else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+
+  presenter.ui.postDrawEvent();
+}
+
+
+// reset view btn
+function home(){
+  // presenter.resetTrackball();
+  presenter.animateToTrackballPosition([15,15,0,0,0,2]);
+	presenter.rotateLight(0,0);
+  lightDir = [0,0];
+  $("[name=viewside").removeClass('active')
+  $("#dropdownViewList").text('set view')
+}
+
+// set view dropdown
+function viewFrom(direction){ presenter.animateToTrackballPosition(direction.split(',')) }
+
+// ortho checkbox
+function updateOrtho(){
+  $("[name=ortho]").is(':checked') 
+    ? presenter.setCameraOrthographic()
+    : presenter.setCameraPerspective() 
+}
+
+// texture-plain color checkbox
+function updateTexture(){
+  let state = $("[name=texture]").is(':checked')
+  presenter.setInstanceSolidColor('Group', state, false);
   presenter.repaint();
 }
 
+// transparent-solid checkbox
+function updateTransparency(){
+  let state = $("[name=solid]").is(':checked');
+  presenter.setInstanceTransparency('Group', state, false);
+  presenter.repaint();
+}
+
+// lighting-diffuse checkbox
+function updateLighting(){
+  let state = $("[name=lighting]").is(':checked') ? false : true;
+  presenter.enableSceneLighting(state);
+  presenter.repaint();
+}
+
+// specular-diffuse checkbox
+function updateSpecular(){
+  let spec = $("[name=specular]").is(':checked') ? [0.3,0.3,0.3,256.0] : [0.0,0.0,0.0,256.0];
+  for (inst in presenter._scene.modelInstances){
+    presenter._scene.modelInstances[inst].specularColor = spec;
+  }
+  presenter.repaint();
+}
+
+// switch XYZ axes
 function addAxes(){
 	var rad = (1.0 / presenter.sceneRadiusInv)/2.0;
 	var linesBuffer;
 	var point, tpoint;
-	// WARNING. I assume there is always a mesh_0 in the scene
+	
 	point = [rad, 0.0, 0.0, 1.0]
-	tpoint = SglMat4.mul4(presenter._scene.modelInstances["mesh_0"].transform.matrix, point);
+	tpoint = SglMat4.mul4(presenter._scene.modelInstances["nxz"].transform.matrix, point);
 	linesBuffer = [];
 	linesBuffer.push([0, 0, 0]);
 	linesBuffer.push([tpoint[0], tpoint[1], tpoint[2]]);	
@@ -672,7 +575,7 @@ function addAxes(){
 	axisX.zOff = 0.0;
 	
 	point = [0.0, rad, 0.0, 1.0]
-	tpoint = SglMat4.mul4(presenter._scene.modelInstances["mesh_0"].transform.matrix, point);
+	tpoint = SglMat4.mul4(presenter._scene.modelInstances["nxz"].transform.matrix, point);
 	linesBuffer = [];
 	linesBuffer.push([0, 0, 0]);
 	linesBuffer.push([tpoint[0], tpoint[1], tpoint[2]]);	
@@ -681,7 +584,7 @@ function addAxes(){
 	axisY.zOff = 0.0;
 
 	point = [0.0, 0.0, rad, 1.0]
-	tpoint = SglMat4.mul4(presenter._scene.modelInstances["mesh_0"].transform.matrix, point);	
+	tpoint = SglMat4.mul4(presenter._scene.modelInstances["nxz"].transform.matrix, point);	
 	linesBuffer = [];
 	linesBuffer.push([0, 0, 0]);
 	linesBuffer.push([tpoint[0], tpoint[1], tpoint[2]]);	
@@ -706,7 +609,7 @@ function startupGrid(grid){
       return;
     }
   }
-  //computeEncumbrance(); //not used yet
+  // computeEncumbrance();
   switch (grid) {
     case 'gridBase': addBaseGrid(); break;
     case 'gridBox': addBoxGrid(); break;
@@ -743,16 +646,6 @@ function computeSceneBB() {
     if(bb[4] < sceneBB[4]) sceneBB[4] = bb[4];
     if(bb[5] < sceneBB[5]) sceneBB[5] = bb[5];
   }
-}
-
-function computeEncumbrance() {
-  computeSceneBB();
-  var encumbrance = [0.0, 0.0, 0.0];
-  encumbrance[0] = Math.trunc(Math.ceil((sceneBB[0]-sceneBB[3])/gStep)+1);
-  encumbrance[1] = Math.trunc(Math.ceil((sceneBB[1]-sceneBB[4])/gStep)+1);
-  encumbrance[2] = Math.trunc(Math.ceil((sceneBB[2]-sceneBB[5])/gStep)+1);
-  //I should store encumbrance somewhere :)
-  //el('encumbrance').value = encumbrance[0] + " x " + encumbrance[1]  + " x " + encumbrance[2] + " cm";
 }
 
 function addBaseGrid() {
@@ -873,31 +766,15 @@ function addBBGrid() {
 	presenter.repaint();
 }
 
-//---------------------------------------------------------------------------------------
-function onTrackballUpdate(trackState){
-	//updateCube(-trackState[0], -trackState[1]);
-	updateGrid(trackState);	
+function changeGrid(currentGrid,newGrid) {
+  if (currentGrid !== 'gridOff') { presenter.deleteEntity(currentGrid); }
+  switch (newGrid) {
+    case 'gridBase': addBaseGrid(); break;
+    case 'gridBox': addBoxGrid(); break;
+    case 'gridBB': addBBGrid(); break;
+    case 'gridOff': presenter.deleteEntity(currentGrid); break;
+  }
 }
-function updateCube(angle, tilt) {
-    var transf = "translateZ(-100px) rotateX("+tilt+"deg) rotateY("+angle+"deg)";
-    $('.cube').css({"transform":transf});	
-}
-function updateGrid(trackState){
-	if (typeof presenter._scene.entities === 'undefined') return;
-	if (typeof presenter._scene.entities["gridBB"] === 'undefined') return;
-	var tt=[0.0,0.0,0.0];
-	tt[0] = (trackState[2] / presenter.sceneRadiusInv) + presenter.sceneCenter[0];
-	tt[1] = (trackState[3] / presenter.sceneRadiusInv) + presenter.sceneCenter[1];
-	tt[2] = (trackState[4] / presenter.sceneRadiusInv) + presenter.sceneCenter[2];
-	var mrX = SglMat4.rotationAngleAxis(sglDegToRad(-trackState[1]), [1.0, 0.0, 0.0]);
-	var mrY = SglMat4.rotationAngleAxis(sglDegToRad(trackState[0]), [0.0, 1.0, 0.0]);
-	var mrT = SglMat4.translation(tt);
-	var matrix = SglMat4.mul(SglMat4.mul(mrT, mrY), mrX);
-	presenter._scene.entities["gridBB"].transform.matrix = matrix;
-}
-//---------------------------------------------------------------------------------------
-
-
 
 function setInstructions(text){	
   $('#panel_instructions').html(text).removeClass('invisible').fadeIn('fast'); 
@@ -1268,127 +1145,84 @@ function displayViewState(){
 		presenter._scene.modelInstances[inst].specularColor = newSpecular;
 	}
 
-	presenter.rotateLight(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
+	presenter.rotateLight(VIEW_STATE.lightDir[0],-VIEW_STATE.lightDir[1]);
 	updateLightController(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
 	
 	presenter.repaint();
 }
-
-//EXPERIMENT
-$("#btLight").on('mousedown', openLightControl);
-$(document).on('mouseup', closeLightControl);
-
-function openLightControl(event){
-  console.log("openLightControl");
-  console.log(event);
-  console.log(event.clientX);
-  console.log(event.clientY);
-
-  var lightControllerCanvas = document.getElementById("lightcontroller");
-  lightControllerCanvas.width = 200;
-	lightControllerCanvas.height = 200;	
-  lightControllerCanvas.style.display = "block";
-  lightControllerCanvas.style.position = "absolute";
-  lightControllerCanvas.style.transform = "translate(-79px, -81px)";//"translate(-50%, -50%)";
-  lightControllerCanvas.style.zIndex = 1000;
-
-  updateLightController(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
-  (event.touches) ? lightControllerCanvas.addEventListener("touchmove", clickLightController, false) : lightControllerCanvas.addEventListener("mousemove", clickLightController, false);
-  //clickLightController(event);
-
-}
-function closeLightControl(event){
-  console.log("closeLightControl");
-
-  var lightControllerCanvas = document.getElementById("lightcontroller");
-  
-  lightControllerCanvas.style.display = "none";
-}
-//END EXPERIMENT
-
-
 ///////////////////
 // LIGHT CONTROL //
 ///////////////////
 function resizeLightController(){
-	var lightControllerCanvas = document.getElementById("lightcontroller");
-	var dim = Math.min(150, Math.min(lightControllerCanvas.parentElement.clientWidth,lightControllerCanvas.parentElement.clientHeight));
-	lightControllerCanvas.width = dim;
-	lightControllerCanvas.height = dim;	
+  var lightControllerCanvas = document.getElementById("lightcontroller");
+  var dim = Math.min(250, Math.min(lightControllerCanvas.parentElement.clientWidth,lightControllerCanvas.parentElement.clientHeight));
+  lightControllerCanvas.width = dim;
+  lightControllerCanvas.height = dim;
 }
+function updateLightController(xx,yy) {
+  var lightControllerCanvas = document.getElementById("lightcontroller");
+  var cwidth = lightControllerCanvas.width;
+  var cheight = lightControllerCanvas.height;
+  var midpoint = [Math.floor(cwidth/2.0),Math.floor(cheight/2.0)];
+  var radius = Math.min(midpoint[0],midpoint[1]);
+
+  var context = lightControllerCanvas.getContext("2d");
+  context.clearRect(0, 0, cwidth, cheight);
+
+  context.beginPath();
+  context.arc(midpoint[0], midpoint[1], radius, 0, 2 * Math.PI, false);
+  var grd=context.createRadialGradient(midpoint[0]+(xx*(radius-3)*2),midpoint[1]+(yy*(radius-3)*2),3,midpoint[0], midpoint[1],radius);
+  grd.addColorStop(0,"rgb(255,255,168)");
+  grd.addColorStop(1,"rgb(0,0,0)");
+  context.fillStyle = grd;
+  context.fill();
+  context.lineWidth = 1;
+  context.strokeStyle = 'black';
+  context.stroke();
+
+  presenter.ui.postDrawEvent();
+}
+
 function clickLightController(event) {
   var lightControllerCanvas = document.getElementById("lightcontroller");
   var cwidth = lightControllerCanvas.width;
   var cheight = lightControllerCanvas.height;
   var midpoint = [Math.floor(cwidth/2.0),Math.floor(cheight/2.0)];
   var radius = Math.min(midpoint[0],midpoint[1]);
+
   var XX = event.offsetX - midpoint[0];
   var YY = event.offsetY - midpoint[1];
+
   // check inside circle
   if((XX*XX + YY*YY) < ((radius)*(radius))) {
     var lx = (XX / radius)/2.0;
     var ly = (YY / radius)/2.0;
-    VIEWER_STATE.lightDir = [lx,-ly];
-    presenter.rotateLight(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
-    updateLightController(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
+
+    lightDir = [lx,ly];
+    
+    presenter.rotateLight(lightDir[0],-lightDir[1]); // inverted y
+    updateLightController(lightDir[0],lightDir[1]);
+
     (event.touches) ? lightControllerCanvas.addEventListener("touchmove", clickLightController, false) : lightControllerCanvas.addEventListener("mousemove", clickLightController, false);
   }
 }
-function doubleclickLightController(event) {
-  event.preventDefault();  
-  VIEWER_STATE.lighting = !VIEWER_STATE.lighting;
-  presenter.enableSceneLighting(VIEWER_STATE.lighting);
-  updateLightController(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
-}
-function updateLightController(xx,yy) {
-	var lightControllerCanvas = document.getElementById("lightcontroller");
-	var cwidth = lightControllerCanvas.width;
-	var cheight = lightControllerCanvas.height;
-	var midpoint = [Math.floor(cwidth/2.0),Math.floor(cheight/2.0)];
-	var radius = Math.min(midpoint[0],midpoint[1]);
-	var context = lightControllerCanvas.getContext("2d");
-	context.clearRect(0, 0, cwidth, cheight);
-	var lightcolor = presenter.isSceneLightingEnabled()?"yellow":"grey";
-	context.beginPath();
-	context.arc(midpoint[0], midpoint[1], radius, 0, 2 * Math.PI, false);
-	var grd=context.createRadialGradient(midpoint[0]+(xx*(radius-3)*2),midpoint[1]+(-yy*(radius-3)*2),3,midpoint[0], midpoint[1],radius);
-	grd.addColorStop(0,lightcolor);
-	grd.addColorStop(1,"black");
-	context.fillStyle = grd;
-	context.fill();
-	context.lineWidth = 1;
-	context.strokeStyle = 'black';
-	context.stroke();
-	//central spot
-	context.beginPath();
-	context.rect(midpoint[0]+(xx*radius*2)-1,midpoint[1]+(-yy*radius*2)-1,3,3);
-	context.lineWidth = 3;
-	context.strokeStyle = lightcolor;
-	context.stroke();
-	presenter.repaint();
-}
-function initLightController(lightX,lightY) {
-	resizeLightController();
-	var lightControllerCanvas = document.getElementById("lightcontroller");
-	lightControllerCanvas.addEventListener("touchstart", clickLightController, false);
-	lightControllerCanvas.addEventListener("mousedown", clickLightController, false);
-	lightControllerCanvas.addEventListener("dblclick", doubleclickLightController, false);
-	var canvas = document.getElementById("draw-canvas");
-	canvas.addEventListener("mouseup", function () { 
-		lightControllerCanvas.removeEventListener("mousemove", clickLightController, false); 
-		lightControllerCanvas.removeEventListener("touchmove", clickLightController, false);
-	}, false);
-	document.addEventListener("mouseup", function () { 
-		lightControllerCanvas.removeEventListener("mousemove", clickLightController, false);
-		lightControllerCanvas.removeEventListener("touchmove", clickLightController, false);
-	}, false);
-	presenter.rotateLight(lightX, lightY);
-	updateLightController(lightX, lightY);	
-}
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
 
+function setupLightController() {
+  // touch and click management
+  var canvas = document.getElementById("draw-canvas");
+  var lightControllerCanvas = document.getElementById("lightcontroller");
+  lightControllerCanvas.addEventListener("touchstart", clickLightController, false);
+  lightControllerCanvas.addEventListener("mousedown", clickLightController, false);
+  canvas.addEventListener("mouseup", function () {
+    lightControllerCanvas.removeEventListener("mousemove", clickLightController, false);
+    lightControllerCanvas.removeEventListener("touchmove", clickLightController, false);
+  }, false);
+  document.addEventListener("mouseup", function () {
+    lightControllerCanvas.removeEventListener("mousemove", clickLightController, false);
+    lightControllerCanvas.removeEventListener("touchmove", clickLightController, false);
+  }, false);
+}
+//////////////////////////////////////////////////////////////
 
 function buildModelParamArray(){
   let dati = {
@@ -1425,7 +1259,15 @@ function saveModelParam(dati){
   })
 }
 
+function computeEncumbrance() {
+  computeSceneBB();
+  var encumbrance = [0.0, 0.0, 0.0];
+  encumbrance[0] = Math.trunc(Math.ceil((sceneBB[0]-sceneBB[3])/gStep)+1);
+  encumbrance[1] = Math.trunc(Math.ceil((sceneBB[1]-sceneBB[4])/gStep)+1);
+  encumbrance[2] = Math.trunc(Math.ceil((sceneBB[2]-sceneBB[5])/gStep)+1);
 
+  el('encumbrance').value = encumbrance[0] + " x " + encumbrance[1]  + " x " + encumbrance[2] + " cm";
+}
 
 function resizeCanvas(){
   let w = $('#3dhop').parent().width()

@@ -7,7 +7,6 @@
   <head>
     <?php require("assets/meta.php"); ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/css/bootstrap5-toggle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/artifacts_add.css">
   </head>
   <body>
@@ -240,8 +239,8 @@
       require("assets/js.html");
     ?>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/js/bootstrap5-toggle.ecmas.min.js"></script>
     <script src="js/maps/geo_config.js" charset="utf-8"></script>
+    <script src="js/maps/geo_function.js" charset="utf-8"></script>
     <script src="js/artifact_add.js" charset="utf-8"></script>
     <script src="js/chronologyFunc.js" charset="utf-8"></script>
   </body>
