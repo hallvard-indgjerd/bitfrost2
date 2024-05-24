@@ -171,7 +171,7 @@ function getUsers(){
     data.forEach((item, i) => {
       let css = item.is_active == 1 ? 'text-success' : 'text-danger';
       let li = $("<a/>", {class: 'list-group-item list-group-item-action ' +
-    css}).attr("href","person_view.php?person="+item.id).appendTo('#userList .listWrap');
+    css}).attr("href","person_view.php?person="+item.person_id).appendTo('#userList .listWrap');
       $('<span/>').text(item.name).appendTo(li)
       $('<span/>').text(item.role).appendTo(li)
       $('<span/>').text(item.is_active == 1 ? 'true' : 'false').appendTo(li)

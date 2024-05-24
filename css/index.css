@@ -31,6 +31,7 @@
   flex-direction:column; 
   justify-content:center; 
   align-items:center;
+  color: var(--bs-secondary);
 }
 #itemsCount h5{ font-size: calc(12px + (26 - 12) * ((100vw - 300px) / (1600 - 300)));}
 #itemsCount > div::before{
@@ -44,10 +45,10 @@
   background-position: center;
   background-size: contain;
 }
-#artifactTot::before{top:0px; left:0px; background-image: url('../img/ico/axe.png');}
+/* #artifactTot::before{top:0px; left:0px; background-image: url('../img/ico/axe.png');}
 #modelTot::before{top:0px; right:0px; background-image: url('../img/ico/cube-outline.png');}
 #institutionTot::before{bottom:0px; left:0px; background-image: url('../img/ico/bank.png');}
-#filesTot::before{bottom:0px; right:0px; background-image: url('../img/ico/multimedia.png');}
+#filesTot::before{bottom:0px; right:0px; background-image: url('../img/ico/multimedia.png');} */
 
 #crono_chart{position:relative; width:100%; height:120px; margin-top: 10px;}
 main{margin-top: 480px !important;}
