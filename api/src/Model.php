@@ -24,6 +24,9 @@ class Model extends Conn{
         'name'=>$data['name'],
         'description'=>$data['description'], 
         'thumbnail'=>$this->uuid.".".$thumbExt,
+        'doi' => $data['doi'],
+        'doi_svg' => $data['doi_svg'],
+        'citation' => $data['citation'],
         'created_by' => $data['author'],
         'updated_by' => $data['author']
       );
@@ -168,7 +171,7 @@ class Model extends Conn{
   }
 
   public function getModel(int $id){
-    $out['model'] = $this->simple("select m.id, m.name, m.note, m.uuid, NULLIF(m.description, 'no description available') description, m.thumbnail, status.id status_id, status.value status, m.create_at, m.updated_at, concat(p.last_name,' ',p.first_name) created_by from model m inner join list_item_status status ON m.status = status.id inner join user on m.created_by = user.id inner join person p on user.person = p.id where m.id =  ".$id.";")[0];
+    $out['model'] = $this->simple("select m.id, m.name, m.note, m.uuid, NULLIF(m.description, 'no description available') description, m.thumbnail, status.id status_id, status.value status, m.create_at, m.updated_at, concat(p.last_name,' ',p.first_name) created_by, m.doi, m.doi_svg, m.citation from model m inner join list_item_status status ON m.status = status.id inner join user on m.created_by = user.id inner join person p on user.person = p.id where m.id =  ".$id.";")[0];
     //check if it's connected to an artifact
     $artifact_model = $this->simple("select artifact from artifact_model where model = ".$id.";");
     if(count($artifact_model) > 0){$out['artifact'] = $artifact_model[0]['artifact'];}

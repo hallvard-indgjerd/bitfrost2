@@ -1,6 +1,6 @@
 /*
 3DHOP - 3D Heritage Online Presenter
-Copyright (c) 2014-2020, Visual Computing Lab, ISTI - CNR
+Copyright (c) 2014-2023, Visual Computing Lab, ISTI - CNR
 All rights reserved.
 
 This program is free software: you can redistribute it and/or modify
@@ -23,15 +23,13 @@ SpiderGL.openNamespace();
 // CONSTANTS
 //----------------------------------------------------------------------------------------
 // version
-const HOP_VERSION             = "4.3";
+const HOP_VERSION             = "4.3.6";
 // selectors
 const HOP_ALL                 = 256;
 // starting debug mode
 const HOP_DEBUGMODE           = false;
 // default light direction
 const HOP_DEFAULTLIGHT        = [0, 0, -1];
-// default points size
-const HOP_DEFAULTPOINTSIZE    = 1.0;
 // sgltrackball
 const SGL_TRACKBALL_NO_ACTION = 0;
 const SGL_TRACKBALL_ROTATE    = 1;
@@ -41,7 +39,7 @@ const SGL_TRACKBALL_SCALE     = 4;
 
 Presenter = function (canvas) {
 	this._supportsWebGL = sglHandleCanvas(canvas, this, { stencil: true });
-	// console.log("3DHOP version: " + this.version);
+	console.log("3DHOP version: " + this.version);
 };
 
 Presenter.prototype = {
@@ -185,7 +183,8 @@ _parseTrackball : function (options) {
 	var r = sglGetDefaultObject({
 		type         : TurnTableTrackball,
 		trackOptions : {},
-		locked       : false
+		locked       : false,
+		dragSpeed    : 1.0
 	}, options);
 	return r;
 },
@@ -219,10 +218,11 @@ _parseConfig : function (options) {
 		showClippingBorder  : false,
 		clippingBorderSize  : 0.5,
 		clippingBorderColor : [0.0, 1.0, 1.0],
-		pointSize           : 3.0,
-		pointSizeMinMax     : [1.0, 5.0],
+		pointSize           : 1.0,
+		pointSizeMinMax     : [0.0, 2.0],
 		autoSaveScreenshot  : true,
 		screenshotBaseName  : "screenshot",
+		screenshotTime      : true,
 	}, options);
 	return r;
 },
@@ -1805,14 +1805,14 @@ _drawScene : function () {
 		var entity = entities[ent];
 		if (!entity.visible) continue;
 		if (!entity.renderable) continue;
-
+			
 		xform.model.push();
 		xform.model.multiply(space.transform.matrix);
 		xform.model.multiply(entity.transform.matrix);
-
+		
 		var entityUniforms = {
 			"uWorldViewProjectionMatrix" : xform.modelViewProjectionMatrix,
-			"uPointSize"                 : config.pointSize,
+			"uPointSize"                 : entity.pointSize,
 			"uColorID"                   : entity.color,
 			"uZOff"                      : entity.zOff,
 		};
@@ -1823,14 +1823,17 @@ _drawScene : function () {
 			gl.enable(gl.BLEND);
 			gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 		}
+		else
+			entityUniforms["uColorID"][3] = 1.0;	// if no transparency, use full alpha, otherwise the entity cancels the background
+
 		//drawing entity
 		renderer.begin();
 			renderer.setTechnique(entitiesTechnique);
-			if (entity.type == "lines")
-				renderer.setPrimitiveMode("LINE");
-			else if (entity.type == "points")
+			if (entity.type == "points")
 				renderer.setPrimitiveMode("POINT");
-			else if (entity.type == "triangles")
+			else if (entity.type == "lines" || entity.type == "lineStrip" || entity.type == "lineLoop")
+				renderer.setPrimitiveMode("LINE");
+			else if (entity.type == "triangles" || entity.type == "triangleStrip" || entity.type == "triangleFan")
 				renderer.setPrimitiveMode("FILL");
 			renderer.setDefaultGlobals();
 			renderer.setGlobals(entityUniforms);
@@ -1838,6 +1841,35 @@ _drawScene : function () {
 			renderer.renderModel();
 		renderer.end();
 
+		if(entity.useSeethrough)	// draw seethrough
+		{
+			gl.depthFunc(gl.GREATER);
+			gl.depthMask(false);
+			gl.enable(gl.BLEND);
+			gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+	
+			entityUniforms["uColorID"] = [entity.color[0] * 0.4, entity.color[1] * 0.4, entity.color[2] * 0.4,  entity.color[3] * 0.4];	// seethrough color
+	
+			renderer.begin();
+				renderer.setTechnique(entitiesTechnique);
+				if (entity.type == "points")
+					renderer.setPrimitiveMode("POINT");
+				else if (entity.type == "lines" || entity.type == "lineStrip" || entity.type == "lineLoop")
+					renderer.setPrimitiveMode("LINE");
+				else if (entity.type == "triangles" || entity.type == "triangleStrip" || entity.type == "triangleFan")
+					renderer.setPrimitiveMode("FILL");
+				renderer.setDefaultGlobals();
+				renderer.setGlobals(entityUniforms);
+				renderer.setModel(entity.renderable);
+				renderer.renderModel();
+			renderer.end();
+	
+			// GLstate cleanup
+			gl.disable(gl.BLEND);
+			gl.depthMask(true);
+			gl.depthFunc(gl.LESS);
+		}
+		
 		if(entity.useTransparency)
 		{
 			gl.depthMask(true);
@@ -2055,46 +2087,35 @@ _drawScene : function () {
 
 	// saving image, if necessary
 	if(this.isCapturingScreenshot){
-	  this.isCapturingScreenshot = false;
+	    this.isCapturingScreenshot = false;
 		this.screenshotData = this.ui._canvas.toDataURL('image/png',1).replace("image/png", "image/octet-stream");
-		if(this._scene.config.autoSaveScreenshot){
+		if(this._scene.config.autoSaveScreenshot)
+		{
 			var currentdate = new Date();
-			var fName = this._scene.config.screenshotBaseName + currentdate.getHours() + currentdate.getMinutes() + currentdate.getSeconds() + ".png";
-			if(this.ui._canvas.msToBlob) // IE or EDGEhtml
-			{
-				console.error("IE and EDGEhtml cannot save images");
-				var blob = this.ui._canvas.msToBlob();
-				window.navigator.msSaveBlob(blob, fName);
-			}
-			else // every other browser
-			{
-				var a  = document.createElement('a');
-				a.href = this.screenshotData;
-				a.download = fName;
-				a.target="_blank";
-				a.click();
-			}
+			var fName = this._scene.config.screenshotBaseName;
+			if(this._scene.config.screenshotTime) fName += "_" + String(currentdate.getHours()).padStart(2, '0') + String(currentdate.getMinutes()).padStart(2, '0') + String(currentdate.getSeconds()).padStart(2, '0');
+			fName += ".png";
+			
+			this._saveImage(fName);
 		}
 	}
-	// beppe ////////////////
-	if(this.isCreatingThumb){
-		console.log('fired');
-		this.isCreatingThumb = false;
-		this.ui._canvas.toBlob((blob) => {
-			const newImg = document.createElement("img");
-			const url = URL.createObjectURL(blob);
-			newImg.onload = () => {URL.revokeObjectURL(url);};
-			newImg.src = url;
-			newImg.id = 'newThumb';
-			document.body.appendChild(newImg);
-		},'image/png')
-		// let t = this.ui._canvas.toDataURL('image/png',1).replace("image/png", "image/octet-stream");
-		// let img = new Image();
-		// img.id = 'test'
-		// img.src = t;
-		// document.body.appendChild(img);
+},
+
+_saveImage : function(fName){
+	if(this.ui._canvas.msToBlob) // IE or EDGEhtml
+	{
+		console.error("IE and EDGEhtml cannot save images");
+		var blob = this.ui._canvas.msToBlob();
+		window.navigator.msSaveBlob(blob, fName);
 	}
-	/////////////////////////
+	else // every other browser
+	{
+		var a  = document.createElement('a');
+		a.href = this.screenshotData;
+		a.download = fName;
+		a.target="_blank";
+		a.click();
+	}
 },
 
 _drawScenePickingXYZ : function () {
@@ -2494,7 +2515,7 @@ _createMeshModels : function () {
 			if(mesh.mType == null)
 			{
 				var ext = mesh.url.split('.').pop().split(/\#|\?/)[0].toLowerCase();
-				if((ext === "nxs") || (ext === "nxz"))
+				if((ext === "nxs") || (ext === "nxz")) 
 					mesh.mType = "nexus";
 				else if(ext === "ply")
 					mesh.mType = "ply";
@@ -2626,9 +2647,6 @@ onInitialize : function () {
 	this.installDefaultShaders();
 
 	// screenshot support
-	//beppe ////////////////////
-	this.isCreatingThumb = false;
-	////////////////////////////
 	this.isCapturingScreenshot = false;
 	this.screenshotData = null;
 
@@ -2645,10 +2663,10 @@ onInitialize : function () {
 	// animation
 	this.ui.animateRate = 0;
 
-	// current cursor XY position
-	this.x 			= 0.0;
-	this.y 			= 0.0;
-
+	// current cursor XY position normalized [-1 1] on canvas size, and delta
+	this.x	= 0.0;
+	this.y	= 0.0;
+	
 	// scene data
 	this._scene         = null;
 	this._sceneParsed   = false;
@@ -2728,21 +2746,18 @@ installDefaultShaders : function () {
 
 onDrag : function (button, x, y, e) {
 	var ui = this.ui;
+	this.x = (x / (ui.width  - 1)) * 2.0 - 1.0;
+	this.y = (y / (ui.height - 1)) * 2.0 - 1.0;
 
 	if(this._clickable) this._clickable = false;
 
 	if(this._movingLight && ui.isMouseButtonDown(0)){
-		var dxl = (x / (ui.width  - 1)) * 2.0 - 1.0;
-		var dyl = (y / (ui.height - 1)) * 2.0 - 1.0;
-		this.rotateLight(dxl/2, dyl/2);
+		this.rotateLight(this.x/2.0, this.y/2.0);
 		return;
 	}
 
 	// if locked trackball, just return. we check AFTER the light-trackball test
 	if (this._scene.trackball.locked) return;
-
-	if(ui.dragDeltaX(button) != 0) this.x += (ui.cursorDeltaX/500);
-	if(ui.dragDeltaY(button) != 0) this.y += (ui.cursorDeltaY/500);
 
 	var action = SGL_TRACKBALL_NO_ACTION;
 	if ((ui.isMouseButtonDown(0) && ui.isKeyDown(17)) || ui.isMouseButtonDown(1) || ui.isMouseButtonDown(2)) {
@@ -2755,13 +2770,17 @@ onDrag : function (button, x, y, e) {
 	var testMatrix = this.trackball._matrix.slice();
 
 	this.trackball.action = action;
-	this.trackball.track(this.viewMatrix, this.x, this.y, 0.0);
+	this.trackball.track(this.viewMatrix, this.x*this._scene.trackball.dragSpeed, this.y*this._scene.trackball.dragSpeed, 0.0);
 
 	var diff;
 	for(var i=0; i<testMatrix.length; i++) {
 		if(testMatrix[i]!=this.trackball._matrix[i]) {diff=true; break;}
 	}
 	if(diff) this.repaint();
+},
+
+onMouseButtonUp : function (x, y, e) {
+	this.trackball.action = SGL_TRACKBALL_NO_ACTION;	
 },
 
 onMouseMove : function (x, y, e) {
@@ -2817,7 +2836,7 @@ onKeyDown : function (key, e) {
 	if (e.ctrlKey) {
 		if (e.key == 'p') // ctrl-p to save screenshot
 		{
-			e.preventDefault();
+			if(e.preventDefault) e.preventDefault();
 			this.isCapturingScreenshot = true;
 			this.repaint();
 		}
@@ -2841,7 +2860,7 @@ onKeyPress : function (key, e) {
 
 onKeyUp : function (key, e) {
 	if(this._keycombo && e.keyCode == '18') {
-		e.preventDefault();
+		if(e.preventDefault) e.preventDefault();
 		this._keycombo = false;
 	}
 },
@@ -2866,7 +2885,7 @@ onMouseWheel: function (wheelDelta, x, y, e) {
 	else {
 		// if locked trackball, just return.
 		if (this._scene.trackball.locked) return;
-
+		
 		var action = SGL_TRACKBALL_SCALE;
 
 		var factor = wheelDelta > 0.0 ? (0.90) : (1.10);
@@ -2935,7 +2954,7 @@ setScene : function (options) {
 
 	// trackball creation
 	this.trackball  = new scene.trackball.type();
-	this.trackball.setup(scene.trackball.trackOptions);
+	this.trackball.setup(scene.trackball.trackOptions, this);
 	this.trackball.track(SglMat4.identity(), 0.0, 0.0, 0.0);
 
 	// mesh models creation
@@ -2974,15 +2993,9 @@ saveScreenshot : function () {
 	this.repaint();
 },
 
-// beppe
-createThumb : function () {
-	this.isCreatingThumb = true;
-	this.repaint();
-},
-
 //------entities-------------------
 createEntity : function (eName, type, verticesList) {
-	// type "points", "lines", "triangles"
+	// type: points, lines, lineStrip, lineLoop, triangles, triangleStrip, triangleFan.
 	var nEntity = {};
 	nEntity.visible = true;
 	nEntity.type = type;
@@ -2991,15 +3004,12 @@ createEntity : function (eName, type, verticesList) {
 	nEntity.transform.matrix = SglMat4.identity();
 	nEntity.color = [1.0, 0.0, 1.0, 1.0];
 	nEntity.useTransparency = false;
+	nEntity.useSeethrough = false;
+	nEntity.pointSize = 6.0;
 	nEntity.zOff = 0.0;
 
 	var modelDescriptor = {};
-	if(type == "points")
-		modelDescriptor.primitives = ["points"];
-	else if(type == "lines")
-		modelDescriptor.primitives = ["lines"];
-	else if(type == "triangles")
-		modelDescriptor.primitives = ["triangles"];
+	modelDescriptor.primitives = [type];
 	modelDescriptor.vertices = {};
 	modelDescriptor.vertices.position = [];
 	modelDescriptor.vertices.normal = [];
@@ -3011,24 +3021,24 @@ createEntity : function (eName, type, verticesList) {
 		modelDescriptor.vertices.position.push(verticesList[vInd][0]);
 		modelDescriptor.vertices.position.push(verticesList[vInd][1]);
 		modelDescriptor.vertices.position.push(verticesList[vInd][2]);
-
+		
 		modelDescriptor.vertices.normal.push(0.0);
 		modelDescriptor.vertices.normal.push(0.0);
 		modelDescriptor.vertices.normal.push(0.0);
 	}
 	var gl = this.ui.gl;
 	nEntity.renderable = new SglModel(gl, modelDescriptor);
-
+	
 	// setting
 	this._scene.entities[eName] = {};
-	this._scene.entities[eName] = nEntity;
+	this._scene.entities[eName] = nEntity;;
+	this.repaint();	
 	return this._scene.entities[eName];
-	this.repaint();
 },
 
 deleteEntity : function (eName) {
 	delete this._scene.entities[eName];
-	this.repaint();
+	this.repaint();	
 },
 
 clearEntities : function () {
@@ -3958,16 +3968,23 @@ zoomOut: function() {
 // light
 
 rotateLight: function(x, y) {
-	x *= 2;
-	y *= 2;
-	var r = Math.sqrt(x*x + y*y);
+	var dx = x * 2.0;
+	var dy = y * 2.0;
+	var dz = 0.0;
+	var r = Math.sqrt(dx*dx + dy*dy);
 	if(r >= 1) {
-		x /= r;
-		y /= r;
-		r = 0.999;
+		dx /= r;
+		dy /= r;
+		dz = 0.0;
+	} else {
+		dz = Math.sqrt(1 - r*r);
 	}
-	var z = Math.sqrt(1 - r*r);
-	this._lightDirection = [-x, -y, -z];
+	this._lightDirection = [-dx, -dy, -dz];
+	this.repaint();
+},
+
+setLight: function(dir) {
+	this._lightDirection = SglVec3.normalize([-dir[0], -dir[1], -dir[2]]);
 	this.repaint();
 },
 

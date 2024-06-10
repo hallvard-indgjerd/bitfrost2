@@ -1,3 +1,39 @@
+const loader = $("#loadingDiv").length; 
+let ajaxCallsCompleted = true;
+let pageLoaded = false;
+let domContentLoaded = false;
+
+function checkAllCompleted() {
+  if (ajaxCallsCompleted && pageLoaded && domContentLoaded && loader > 0) {
+    console.log('Tutte le chiamate AJAX sono completate, la pagina è completamente caricata e il DOM è pronto');
+    $("#loadingDiv").fadeOut('fast')
+  }else{
+    $("#loadingDiv").show()
+  }
+}
+
+
+$(document).ajaxStart(function () {
+  ajaxCallsCompleted = false;
+  checkAllCompleted();
+});
+
+$(document).ajaxStop(function() {
+  ajaxCallsCompleted = true;
+  checkAllCompleted();
+});
+
+$(document).ready(function() {
+  domContentLoaded = true;
+  checkAllCompleted();
+});
+
+$(window).on('load', function() {
+  pageLoaded = true;
+  checkAllCompleted();
+});
+
+
 let btnHome, btnFullscreen;
 let collected = [];
 let filter = [];
@@ -40,14 +76,14 @@ function buildGallery(callback){
 
 function gallery(data){
   wrapDiv = "#wrapGallery";
-  $("#loadingDiv").remove()
   $(wrapDiv).html('');
   $("#viewGallery > span").text('('+data.length+')')
   data.forEach((item) => {
     let div = $("<div/>",{class:'card m-1 itemCard'}).attr("data-item",item.id).appendTo(wrapDiv);
-    $("<div/>", {class:'card-header'})
+    let header = $("<div/>", {class:'card-header'})
     .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
     .appendTo(div);
+    $("<p/>",{class:'txt-adc-dark fw-bold'}).html(item.id).appendTo(header);
     let body = $("<div/>",{class:'card-body'}).appendTo(div);
     $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
     $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+item.material+"</span>").appendTo(body);

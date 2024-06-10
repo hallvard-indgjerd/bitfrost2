@@ -16,8 +16,8 @@
       require("assets/header.php"); 
       require("assets/loadingDiv.html"); 
     ?>
-      <nav id="itemTool">
-        <div class="itemToolBlock">
+      <div id="itemTool" class="animated mainSection">
+        <div>
         <?php if (isset($_SESSION['id'])) { ?>
           <div class="btn-group btn-group-sm" role="group">
             <div class="btn-group btn-group-sm" role="group">
@@ -40,14 +40,13 @@
           </div>  
           <?php } ?>
         </div>
-        <div class="itemToolBack"></div>
-        <div class="itemToolBack">
-          <div class="btn-group btn-group-sm">
+        <div>
+          <div class="btn-group btn-group-sm" id="itemToolLastDiv">
             <button type="button" name="download" id="download" class="btn btn-light"><i class="mdi mdi-tray-arrow-down"></i> download</button>
             <button type="button" name="print" id="print" class="btn btn-light"><i class="mdi mdi-printer"></i> print</button>
           </div>
         </div>
-      </nav>
+      </div>
 
     <main class="animated mainSection">
       <input type="hidden" name="artifactId" value="<?php echo $_GET['item']; ?>">
@@ -262,7 +261,6 @@
     <script type="text/javascript" src="assets/3dhop/ply.js"></script>
     <script type="text/javascript" src="assets/3dhop/trackball_turntable.js"></script>
     <script type="text/javascript" src="assets/3dhop/trackball_turntable_pan.js"></script>
-    <script type="text/javascript" src="assets/3dhop/trackball_pantilt.js"></script>
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>

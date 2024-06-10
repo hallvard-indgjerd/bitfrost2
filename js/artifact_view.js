@@ -11,8 +11,6 @@ ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 
 $.ajax(ajaxSettings).done(function(data) {
-  console.log(data);
-  $("#loadingDiv").remove()
   let artifact = data.artifact;
   classid = artifact.category_class_id;
   classtype = data.artifact.category_class;

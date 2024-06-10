@@ -57,7 +57,7 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   #institutionInfo span{width:auto;}
   #model{top:0; right:0; width:70%; height: 600px;}
   #geographic{top:630px; left:0; width:100%;}
-  #map{position:relative;width:100%; height:300px;}
+  #map{position:relative;width:100%; height:300px !important;}
   #media{top:950px;left:0;width:50%;}
   .imgCard{ width:calc((100% / 3) - 10px); height:auto; font-size: 13px;}
   #stats{
@@ -79,7 +79,7 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   .model-full{width:100%;}
   .artifact-full{top:800px; left:0; width: 30%; height:450px;}
   .geographic-full{top:800px; left:30%; width:30%;}
-  .geographic-full > #map{height:450px;}
+  .geographic-full > #map{height:450px !important;}
   .media-full{top:800px; left:60%; width:20%;}
   .stats-full{top:800px; left:80%; width:20%;}
 }
@@ -107,10 +107,10 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   .model-primary{width:70%;}
   .model-full{width:100%;}
   
-  #map{position:relative;width:100%; height:290px;}
-  .geographic-primary{top:460px; left:0; width:30%;}
-  .geographic-full{top:800px; right:0; width:50%;}
-  .geographic-full > #map{height:450px;}
+  #map{position:relative;width:100%; height:290px !important;}
+  .geographic-primary{top:390px; left:0; width:30%;}
+  .geographic-full{top:730px; right:0; width:50%;}
+  .geographic-full > #map{height:450px !important;}
   
   #media, #stats{width:50%}
   #media{left:0;}
@@ -148,14 +148,14 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   .model-primary{width:70%;}
   .model-full{width:100%;}
   
-  #map{position:relative;width:100%; height:290px;}
-  .geographic-primary{top:560px; left:0; width:30%;}
-  .geographic-full{top:870px; right:0; width:50%;}
-  .geographic-full > #map{height:550px;}
+  #map{position:relative;width:100%; height:290px !important;}
+  .geographic-primary{top:490px; left:0; width:30%;}
+  .geographic-full{top:800px; right:0; width:50%;}
+  .geographic-full > #map{height:550px !important;}
   
   #media, #stats{width:50%}
   .media-primary,.stats-primary{top:870px; }
-  .media-full,.stats-full{top:1420px;}
+  .media-full,.stats-full{top:1450px;}
   
   #media{left:0;}
   #stats{right:0; display: flex; flex-direction: column; flex-wrap: wrap; justify-content: start; align-items: start;}

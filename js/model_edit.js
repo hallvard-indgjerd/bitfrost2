@@ -24,6 +24,9 @@ function startModel(){
   .done(function(data) {
     $("#name").val(data.model.name)
     $("#description").val(data.model.description)
+    $("#doi").val(data.model.doi)
+    $("#doi_svg").val(data.model.doi_svg)
+    $("#citation").val(data.model.citation)
     $("#note").val(data.model.note)
     let status_id, status_label = 'mark model as ';
     $("#status").val(data.model.status_id == 1 ? 2 :1)

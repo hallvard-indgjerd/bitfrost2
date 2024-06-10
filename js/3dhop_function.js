@@ -2,9 +2,6 @@ const artifactId = $("[name=artifactId]").val()
 const activeUser = $("[name=activeUsr]").val()
 const role = $("[name=role]").val()
 
-// variabili di configurazione ///
-const canvas = document.getElementById("draw-canvas");
-
 // presenter object
 var presenter = null;
 
@@ -17,7 +14,10 @@ var DEFAULT_VIEWER_STATE = {
   grid : 'gridBase', //'none' 'gridBase' 'gridBox' 'gridBB'
   axes : false,
   //view
-  trackState : [15,15,0,0,0,2],
+  trackType : "turntable", //turntable or sphere
+  homeTrackState : [15,15,0,0,0,3.0],
+  trackState : [15,15,0,0,0,3.0],
+  fov : 40,
   ortho : false,
   //shading
   texture : true,
@@ -25,11 +25,24 @@ var DEFAULT_VIEWER_STATE = {
   specular : false,
   //lighting
   lighting : true,
-  lightDir : [-0.17, 0.17], //top-left lighting
+  lightDir : [-0.17, 0.17], //initial lighting is top-left lighting
+  //measurements
+  activeMeasurement : null, //active measurement tool, can be null, or can be an object whose content depends on the tool
+  //sections
+  clipping : [false, false, false], //active x,y,z
+  clippingDir : [1, 1, 1], //direction x,y,z
+  clippingPoint : [0.5, 0.5, 0.5], //x,y,z
+  clippingRender : [true, true], //render planes, render border
+  //todo
 };
 var VIEWER_STATE = {};
 var VIEWER_ANNOTATIONS = {
-  //todo
+  object: artifactId,
+  user: activeUser,
+  time: new Date().toISOString(),
+  notes: {},
+  views: {},
+  spots: {}
 };
 
 let viewList = {}
@@ -37,21 +50,72 @@ let viewIndex = 0;
 let spotList = {}
 let spotIndex = 0;
 
-// MEASUREMENT STATE
+// MEASUREMENT STATE-----------------------------------------------
 let angleStage = 0;
 let anglePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]];
-
+let distanceStage = 0;
+let distancePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0]];
+let pickStage = 0;
+let pickPoints = [[0.0,0.0,0.0]];
+// SPOT PICKING STATE-----------------------------------------------
+let spotPicking = false;
+let spotPickingName = "";
+let spotPoints = [];
+//------------------------------------------------------------------
 
 let paradata;
 
 // interface: tooltips 
 var toolBtnList = [].slice.call(document.querySelectorAll('.toolBtn'))
 var tooltipBtnList = toolBtnList.map(function (tooltipBtn) { return new bootstrap.Tooltip(tooltipBtn,{trigger:'hover', html: true, placement:'left' })})
+
 /////////////////////////////////////////////////////////////////////
 ////// handlers /////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
+//--HORIZONTAL TOOLBAR ON TOP---------------------------------------------
+// home (reset all state), widescreen, screenshot, model info
 
 $("#btHome").on('click', function(){
-  resetViewer();
+  setViewerState(null);
+});
+
+$("#btWidescreen").on('click', function(){
+  let div = ['artifact','geographic','model','media', 'stats']
+  div.forEach((v)=>{$("#"+v).toggleClass(v+'-primary ' + v +'-full')});
+  resizeCanvas();
+  $("#btWidescreen").toggleClass("btn-secondary").toggleClass("btn-adc-blue");
+  $("#wrapAnnotations").toggleClass('invisible');
+  map.remove();
+  setTimeout(function(){
+    artifactMap()
+  },500)
+});
+
+$("#btScreenshot").on('click', function(){
+  screenshot();
+});
+
+$("#paradata-modal").hide()
+$("#btParadata").on('click', function(){
+  if($("#paradata-modal").is(':hidden')){
+    $("#paradata-modal").fadeIn('fast');
+    $("#btParadata").removeClass("btn-secondary").addClass("btn-adc-blue");    
+  }
+  else{
+    $("#paradata-modal").fadeOut('fast');
+    $("#btParadata").removeClass("btn-adc-blue").addClass("btn-secondary");  
+  }
+})
+$("[name=dismiss-paradata-modal]").on('click',function(){
+  $("#paradata-modal").fadeOut('fast');
+  $("#btParadata").removeClass("btn-adc-blue").addClass("btn-secondary");
+})
+
+//--RIGHT COMMAND PANEL---------------------------------------------
+
+$("#btLighting").on('click', function(){
+  setLighting();
 });
 
 $("#btTexture").on('click', function(){
@@ -71,6 +135,7 @@ $("#btAxes").on('click', function(){
   setAxes();
 });
 
+// cardinal views buttons
 $(".btView").on('click', function(){
   viewFrom($(this).data('direction'))
 })
@@ -79,156 +144,129 @@ $("#btOrtho").on('click', function(){
   setOrtho();
 });
 
-$("#paradata-modal").hide()
-$("[name=view_metadata").on('click', function(){
-  if($("#paradata-modal").is(':hidden')){
-    $("#paradata-modal").fadeIn('fast');
-  }
-  else{
-    $("#paradata-modal").fadeOut('fast');   
-  }
-})
-$("[name=dismiss-paradata-modal]").on('click',function(){
-  $("#paradata-modal").fadeOut('fast');
+//--TOOLS---------------------------------------------
+// measurement tools (3 buttons)
+$(".measureTools").on('click', function(){
+  let checked = $(this).is(':checked');
+  stopMeasure();
+  // calls a function named as the id of the clicked element, with the checked state as parameter
+  window[$(this).prop('id')](checked);
 })
 
-$("[name=toggleViewSpot]").on('click', function(){
-  $(this).find('span').toggleClass('mdi-chevron-down mdi-chevron-up');
+// section tool
+$(".sectionTool").on('click', function(){
+    sectionToolShow($(this).is(':checked'));
 })
 
-$("[name=fullscreenToggle]").on('click', function(){
-  let act = $(this).data('action') == 'fullscreen_in' ? 'fullscreen_out' : 'fullscreen_in';
-  $(this).find('span').toggleClass('mdi-fullscreen mdi-fullscreen-exit')
-  $(this).data('action', act);
-})
+//--LEFT ANNOTATION PANEL---------------------------------------------
 
-$("#modelToolsH button").on('click', function(){
-  actionsToolbar($(this).data('action'))
-})
+//--ANNOTATIONS
 
-$("[name=viewside]").on('click', function(e){ 
-  e.preventDefault()
-  let label = $(this).text()
-  $(this).addClass('active')
-  $("[name=viewside]").not(this).removeClass('active')
-  viewFrom($(this).val()) 
-  $("#dropdownViewList").text(label)
-})
+//export / import annotations
+$("#btExportAnnotations").on('click', function(){
+  exportAnnotations();
+});
+$("#btImportAnnotations").on('click', function(){
+  importAnnotations();
+});
+$("#ifileJSON").on('change', function(){
+  getJSON(this.files);
+});
 
-$("[name=lighting]").on('click', function(){
-  let label = $(this).is(':checked') ? 'unshaded' : 'lighting';
-  $(this).next('label').text(label);
-  updateLighting()
-})
+//update notes
+$("#annNotes").on('change', function(){
+  updateNotes();
+});
 
-$("[name=changeGrid]").on('click', function(e){ 
-  e.preventDefault()
-  let label = $(this).text()
-  let newGrid = $(this).val()
-  let currentGrid = $("#gridListValue").find('.active').val();
-  $(this).addClass('active')
-  $("[name=changeGrid]").not(this).removeClass('active')
-  $("#dropdownGridList").text(label)
-  changeGrid(currentGrid,newGrid);
-})
+// store current view+state into views
+$("#btAddView").on('click', function(){
+  storeView();
+});
 
-$("[name=xyzAxes]").on('click', function(){
-  $(this).is(':checked') ? addAxes() : removeAxes();
-})
+// add new spot
+$("#btAddSpot").on('click', function(){
+  addSpot();
+});
 
-$(".measureTool").on('click', function(){
-  let func = $(this).prop('id')
-  disableToolsFunction()
-  if($(this).is(':checked')){ 
-    $(".measureTool").not(this)/*.not("#section")*/.prop('checked', false) 
-  }
-  // if(func !== 'section'){}
-  let act = $(this).is(':checked') ? func+'_on' : func+'_off';
-  actionsToolbar(act);
-})
+
+
+
+
+//------------------------------------------------------------------
+
 
 $("#sectionReset").on('click',sectionReset)
 
-$(".togglePlaneIco").on('click', function(){
+$(".planeToggle").on('click', function(){
   let plane = $(this).prop('id').substring(0, 1);
-  let currentSrc = $(this).prop('src').split('/').pop();
-  let state;
   switch (plane) {
     case 'x':
-      state = currentSrc == 'sectionX_off.png' ? true : false;
-      sectionxSwitch(state)
+      VIEWER_STATE.clipping[0] = !VIEWER_STATE.clipping[0];
     break;   
     case 'y':
-      state = currentSrc == 'sectionY_off.png' ? true : false;
-      sectionySwitch(state)
+      VIEWER_STATE.clipping[1] = !VIEWER_STATE.clipping[1];      
     break;  
     case 'z':
-      state = currentSrc == 'sectionZ_off.png' ? true : false;
-      sectionzSwitch(state)
+      VIEWER_STATE.clipping[2] = !VIEWER_STATE.clipping[2];
     break;
   }
+  setSections();
 })
 
-$("#sections-box input[type=range]").on('input', function(){
-  let plane = $(this).attr('name').substring(0, 1)
-  let val = $(this).val()
+$(".planeRange").on('input', function(){
+  let plane = $(this).prop('id').substring(0, 1);
+  let val = $(this).val();
   switch (plane) {
     case 'x':
-      sectionxSwitch(true); 
-      presenter.setClippingPointX(val);   
+      VIEWER_STATE.clipping[0] = true;
+      VIEWER_STATE.clippingPoint[0] = val;
     break;
     case 'y':
-      sectionySwitch(true); 
-      presenter.setClippingPointY(val); 
+      VIEWER_STATE.clipping[1] = true;
+      VIEWER_STATE.clippingPoint[1] = val;
     break;
     case 'z':
-      sectionzSwitch(true); 
-      presenter.setClippingPointZ(val); 
+      VIEWER_STATE.clipping[2] = true;
+      VIEWER_STATE.clippingPoint[2] = val;
     break;
   }
+  setSections();  
 })
 
-$("[name=planeFlipCheckbox").on('click', function(){
+$(".planeFlip").on('click', function(){
   let plane = $(this).attr('id').substring(0, 1)
+  let val = $(this).is(':checked') ? -1 : 1;
   switch (plane) {
     case 'x':
-      sectionxSwitch(true);
-      let clipXVal = $('#xplaneFlip').is(':checked') ? -1 : 1;
-      presenter.setClippingX(clipXVal);   
+      VIEWER_STATE.clipping[0] = true;
+      VIEWER_STATE.clippingDir[0] = val;
       break;
       case 'y':
-        sectionySwitch(true);
-      let clipYVal = $('#yplaneFlip').is(':checked') ? -1 : 1;
-      presenter.setClippingY(clipYVal); 
+        VIEWER_STATE.clipping[1] = true;
+        VIEWER_STATE.clippingDir[1] = val;
       break;
       case 'z':
-        sectionzSwitch(true);
-        let clipZVal = $('#zplaneFlip').is(':checked') ? -1 : 1;
-      presenter.setClippingZ(clipZVal); 
+        VIEWER_STATE.clipping[2] = true;
+        VIEWER_STATE.clippingDir[2] = val;
     break;
   }
+  setSections();   
 })
 
 $("#showPlane").on('click', function(){
-  presenter.setClippingRendermode($(this).is(':checked'), presenter.getClippingRendermode()[1]);
+  VIEWER_STATE.clippingRender[0] = $(this).is(':checked');
+  setSections();
 })
 
 $("#showBorder").on('click', function(){
-  presenter.setClippingRendermode(presenter.getClippingRendermode()[0], $(this).is(':checked'));
+  VIEWER_STATE.clippingRender[1] = $(this).is(':checked');
+  setSections();  
 })
-$("[name=addViewBtn]").on('click',addView)
+
+// UUID COPY TO CLIPBOARD
 $("#model-uuid").on('click', function(){copy_to_clipboard('model-uuid')})
 
-$("[name=enlargeScreen").on('click', function(){
-  let div = ['artifact','geographic','model','media', 'stats']
-  div.forEach((v)=>{$("#"+v).toggleClass(v+'-primary ' + v +'-full')});
-  resizeCanvas();
-  $("#wrapViewSpot").toggleClass('invisible');  
-  map.remove();
-  setTimeout(function(){
-    artifactMap()
-  },500)
-})
+
 
 
 /////////////////////////////////////////////////////////////
@@ -285,8 +323,23 @@ function initModel(model){
     $("#toolBarModel").remove()
   } 
   Object.keys(mainData).forEach(function(key) {
-    if(mainData[key]){$("#model-"+key).text(mainData[key])}
-    if(!mainData[key] && !role){$("#model-"+key).parent().remove()}
+    if(mainData[key]){
+      if(key == 'doi' && mainData.doi){
+        let doi = $("#model-doi")
+        doi.attr('href',mainData.doi)
+        $("<img/>",{src:mainData.doi_svg}).appendTo(doi)
+
+        let btn = $("<a/>",{class:'btn btn-light', href:mainData.doi, target:'_blank', title:'view on Zenodo'}).text(' DOI').appendTo('#itemToolLastDiv').tooltip();
+        $("<i/>",{class:'mdi mdi-share-variant-outline'}).prependTo(btn)
+      }else{
+        $("#model-"+key).text(mainData[key])
+        $("#model-"+key).text(mainData[key])
+      }
+    }
+    if(!mainData[key] && !role){
+      if(key == 'doi'){$("#doiItem").remove()}
+      $("#model-"+key).parent().remove()
+    }
   })
   
   object.forEach((element, index) => {
@@ -327,17 +380,11 @@ function initModel(model){
   });
 
   startupViewer(object);
-
 }
 
-function defaultViewerState(){
-  // copy default state to viewer state
-  VIEWER_STATE = JSON.parse(JSON.stringify(DEFAULT_VIEWER_STATE));
-  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
-}
+
 
 function startupViewer(object){
-
   // init 3dhop environment
   init3dhop();
   // create viewer in canvas
@@ -348,29 +395,21 @@ function startupViewer(object){
 
   // initial scene setup
 	var myScene = {
-		meshes: {
-			"sphere" : { url: "archive/models/sphere.ply" },
+		meshes: { // default models used for utilities
+			"sphere" : { url: "archive/models/sphere.ply" },  
 			"cube"   : { url: "archive/models/cube.ply" },
 		},
-		modelInstances: {
+		modelInstances: { //still empty
 		},
-		spots: {
+		spots: { //still empty
 		},
-		trackball: { 
-			type: TurntablePanTrackball,
-			trackOptions: {
-				startPhi: 15.0,
-				startTheta: 15.0,
-				startDistance: 2.0,
-				minMaxPhi: [-180, 180],
-				minMaxTheta: [-90.0, 90.0],
-				minMaxDist: [0.1, 3.0]
-			}
+		trackball: { // default trackball settings, will be overwritten by the state
 		},
 		space: {
 			centerMode: "scene",
 			radiusMode: "scene",
-			cameraNearFar: [0.01, 5.0],
+			cameraNearFar: [0.01, 10.0],
+      cameraFOV: DEFAULT_VIEWER_STATE.fov,
 		},
 		config: {
 			pickedpointColor    : [1.0, 0.0, 1.0],
@@ -381,6 +420,36 @@ function startupViewer(object){
 			clippingBorderColor : [0.0, 1.0, 1.0]
 		}
 	};
+
+  if(DEFAULT_VIEWER_STATE.trackType == "turntable"){
+    myScene.trackball = {
+      type: TurntablePanTrackball,
+      trackOptions: {
+        startPhi: DEFAULT_VIEWER_STATE.trackState[0],
+        startTheta: DEFAULT_VIEWER_STATE.trackState[1],
+        startPanX: DEFAULT_VIEWER_STATE.trackState[2],
+        startPanY: DEFAULT_VIEWER_STATE.trackState[3],
+        startPanZ: DEFAULT_VIEWER_STATE.trackState[4],
+        startDistance: DEFAULT_VIEWER_STATE.trackState[5],
+        minMaxPhi: [-180, 180],
+        minMaxTheta: [-90.0, 90.0],
+        minMaxDist: [0.1, 5.0]
+      }
+    };
+  }
+  else if(DEFAULT_VIEWER_STATE.trackType == "sphere"){
+    myScene.trackball = {
+      type: SphereTrackball,
+      trackOptions: {
+        startMatrix   : [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
+        startPanX     : 0.0,
+        startPanY     : 0.0,
+        startPanZ     : 0.0,
+        startDistance : 2.0,
+        minMaxDist    : [0.2, 4.0],
+      }
+    };
+  }
 
   // populate meshes and instances
   object.forEach((element, index) => {
@@ -423,23 +492,70 @@ function startupViewer(object){
   startupGrid(VIEWER_STATE.grid);
 }
 
-// reset viewer
-function  resetViewer(){
-  defaultViewerState();
+////// VIEWERSTATE MANAGEMENT //////////////////////////////////////
 
-  viewFrom('default');
+function defaultViewerState(){
+  // copy default state to viewer state
+  VIEWER_STATE = JSON.parse(JSON.stringify(DEFAULT_VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+}
+
+// set viewer to a specific state, if none, resets to the default state
+function setViewerState(viewerState){
+  if(viewerState)
+    VIEWER_STATE = JSON.parse(JSON.stringify(viewerState));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers  
+  else
+    defaultViewerState(); // if no state is passed, reset to default values
+
+  presenter.animateToTrackballPosition(VIEWER_STATE.trackState);
   setOrtho(VIEWER_STATE.ortho);
+
+  setLighting(VIEWER_STATE.lighting, VIEWER_STATE.lightDir);
 
   setTexture(VIEWER_STATE.texture);
   setTransparency(VIEWER_STATE.transparent);
   setSpecular(VIEWER_STATE.specular);
 
-  presenter.enableSceneLighting(VIEWER_STATE.lighting);
-  updateLightController(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
-  presenter.rotateLight(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
-
   setGrid(VIEWER_STATE.grid);
   setAxes(VIEWER_STATE.axes);
+
+  setSections();
+
+  //active measurement tool
+  if(VIEWER_STATE.activeMeasurement){
+    measureDistance(false);
+    measurePickpoint(false);
+    measureAngle(false);
+    $(".measureTools").prop('checked', false);
+
+    let type = VIEWER_STATE.activeMeasurement.type;
+    if(type == 'distance'){
+      distanceTool(true);
+      distanceStage = 2;
+      distancePoints[0] = VIEWER_STATE.activeMeasurement.p0.slice();
+      distancePoints[1] = VIEWER_STATE.activeMeasurement.p1.slice();
+      computeDistance();
+		  presenter.repaint();
+    }
+    if(type == 'pick'){
+      pickTool(true);
+      pickStage = 1;
+      pickPoints[0] = VIEWER_STATE.activeMeasurement.p0.slice();
+      computePickpoint();
+		  presenter.repaint();
+    }
+    if(type == 'angle'){
+      angleTool(true);
+      angleStage = 3;
+      anglePoints[0] = VIEWER_STATE.activeMeasurement.p0.slice();
+      anglePoints[1] = VIEWER_STATE.activeMeasurement.p1.slice();
+      anglePoints[2] = VIEWER_STATE.activeMeasurement.p2.slice();
+      computeAngle();
+      presenter.repaint();      
+    }
+  }
+  else{
+    stopMeasure();
+  }
 
   presenter.repaint();
 }
@@ -447,18 +563,30 @@ function  resetViewer(){
 ///////////////// SET VIEWERSTATUS VALUE AND APPLY CHANGES //////////////////////
 // if no value is passed, toggle/cycle the state
 
+// lighting and light direction
+function setLighting(value, lightdir){
+  VIEWER_STATE.lighting = (value !== undefined) ? value : !VIEWER_STATE.lighting;
+  presenter.enableSceneLighting(VIEWER_STATE.lighting);
+  $("#btLighting").removeClass(VIEWER_STATE.lighting? "btn-secondary" : "btn-adc-blue").addClass(VIEWER_STATE.lighting? "btn-adc-blue" : "btn-secondary");
+  if(lightdir !== undefined){
+    VIEWER_STATE.lightDir = lightdir;
+  }
+  updateLightController(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
+  presenter.rotateLight(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
+}
+
 // texture-solidcolor
 function setTexture(value){
   VIEWER_STATE.texture = (value !== undefined) ? value : !VIEWER_STATE.texture;
   presenter.setInstanceSolidColor('Group', !VIEWER_STATE.texture, true);
-  $("#btTexture").removeClass(VIEWER_STATE.texture? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.texture? "btn-info" : "btn-secondary");
+  $("#btTexture").removeClass(VIEWER_STATE.texture? "btn-secondary" : "btn-adc-blue").addClass(VIEWER_STATE.texture? "btn-adc-blue" : "btn-secondary");
 }
 
 // transparent-solid
 function setTransparency(value){
   VIEWER_STATE.transparent = (value !== undefined) ? value : !VIEWER_STATE.transparent;
   presenter.setInstanceTransparency('Group', VIEWER_STATE.transparent, true);
-  $("#btTransparency").removeClass(VIEWER_STATE.transparent? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.transparent? "btn-info" : "btn-secondary");
+  $("#btTransparency").removeClass(VIEWER_STATE.transparent? "btn-secondary" : "btn-adc-blue").addClass(VIEWER_STATE.transparent? "btn-adc-blue" : "btn-secondary");
 }
 
 // lambertian-specular
@@ -469,29 +597,30 @@ function setSpecular(value){
     presenter._scene.modelInstances[inst].specularColor = spec;
   }
   presenter.repaint();
-  $("#btSpecular").removeClass(VIEWER_STATE.specular? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.specular? "btn-info" : "btn-secondary");
+  $("#btSpecular").removeClass(VIEWER_STATE.specular? "btn-secondary" : "btn-adc-blue").addClass(VIEWER_STATE.specular? "btn-adc-blue" : "btn-secondary");
 }
 
 // orhtographic view
 function setOrtho(value){
   VIEWER_STATE.ortho = (value !== undefined) ? value : !VIEWER_STATE.ortho;
   VIEWER_STATE.ortho ? presenter.setCameraOrthographic() : presenter.setCameraPerspective();
-  $("#btOrtho").removeClass(VIEWER_STATE.ortho? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.ortho? "btn-info" : "btn-secondary");
+  $("#btOrtho").removeClass(VIEWER_STATE.ortho? "btn-secondary" : "btn-adc-blue").addClass(VIEWER_STATE.ortho? "btn-adc-blue" : "btn-secondary");
 }
 
 // reference axes
 function setAxes(value){
   VIEWER_STATE.axes = (value !== undefined)? value : !VIEWER_STATE.axes;
   VIEWER_STATE.axes ? addAxes() : removeAxes();
-  $("#btAxes").removeClass(VIEWER_STATE.axes? "btn-secondary" : "btn-info").addClass(VIEWER_STATE.axes? "btn-info" : "btn-secondary");
+  $("#btAxes").removeClass(VIEWER_STATE.axes? "btn-secondary" : "btn-adc-blue").addClass(VIEWER_STATE.axes? "btn-adc-blue" : "btn-secondary");
 }
 
 function setGrid(value){
   //available grid options: 'none' 'gridBase' 'gridBox' 'gridBB'
-  presenter.deleteEntity('gridBase');  //delete current grid, but I do not know which one is active, so I delete all possible grids
+  //delete current grid, but I do not know which one is active, so I delete all possible grids
+  presenter.deleteEntity('gridBase');
   presenter.deleteEntity('gridBox');
   presenter.deleteEntity('gridBB'); 
-  $("#btGrid").removeClass("btn-info btn-secondary");
+  $("#btGrid").removeClass("btn-adc-blue btn-secondary");
 
   if(value !== undefined)
     VIEWER_STATE.grid = value;
@@ -510,27 +639,213 @@ function setGrid(value){
       break;
     case 'gridBase':
       addBaseGrid();
-      $("#btGrid").addClass("btn-info");
+      $("#btGrid").addClass("btn-adc-blue");
       break;
     case 'gridBox':
       addBoxGrid();
-      $("#btGrid").addClass("btn-info");      
+      $("#btGrid").addClass("btn-adc-blue");      
       break;
     case 'gridBB':
       addBBGrid();
-      $("#btGrid").addClass("btn-info");      
+      $("#btGrid").addClass("btn-adc-blue");      
       break;
   }    
   presenter.repaint();
 }
-
 ///////////////// SET VIEWERSTATUS VALUES AND APPLY CHANGES - END //////////////////////
 
+
+//////////////////////////////// ANNOTATIONS //////////////////////////////////////
+function exportAnnotations(){
+  VIEWER_ANNOTATIONS.time = new Date().toISOString(); // update time to current time
+	var element = document.createElement('a');
+	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(VIEWER_ANNOTATIONS, null, 2)));
+	element.setAttribute('download', "annotations.json");
+	element.style.display = 'none';
+	document.body.appendChild(element);
+	element.click();
+	document.body.removeChild(element);
+}
+function importAnnotations(){
+	document.getElementById("ifileJSON").click();
+}
+function getJSON(files){
+	if((files)&&(files.length>0)){
+	    var reader = new FileReader();
+		reader.onload = importJSON;
+		reader.readAsText(files[0]);
+	}
+}
+function importJSON(event){
+  var newAnn = JSON.parse(event.target.result);
+	console.log(newAnn); //DEBUG DEBUG DEBUG
+
+  if(newAnn.object != VIEWER_ANNOTATIONS.object){
+    alert('Object mismatch! cannot import annotations');
+    return;
+  }
+  
+  VIEWER_ANNOTATIONS = newAnn;
+  displayNotes();
+  displayViews();
+  displaySpots();
+  presenter.repaint();
+
+  VIEWER_ANNOTATIONS.user = activeUser; //no matter who saved them, they are now of the current user
+}
+
+function updateNotes(){
+	VIEWER_ANNOTATIONS.notes.text = document.getElementById("annNotes").value;
+}
+function displayNotes(){
+  document.getElementById("annNotes").value = VIEWER_ANNOTATIONS.notes.text;
+}
+
+function storeView(){
+  // get first free index
+  let viewIndex = 100;
+  while( VIEWER_ANNOTATIONS.views["V"+viewIndex]){ viewIndex++; }
+  let viewName = "V"+viewIndex;
+
+  VIEWER_ANNOTATIONS.views[viewName] = {};
+  VIEWER_ANNOTATIONS.views[viewName].view = null;
+  VIEWER_ANNOTATIONS.views[viewName].state = JSON.parse(JSON.stringify(VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+  VIEWER_ANNOTATIONS.views[viewName].text = "";
+  VIEWER_ANNOTATIONS.views[viewName].url = "";
+
+  displayViews(); // update views list
+}
+function displayViews(){
+  let listDiv = $("#viewsListDiv");
+
+  let content = "";
+  content += "<ul class='list-group'>";
+  for (view in VIEWER_ANNOTATIONS.views){
+    content += "<li class='list-group-item'>";
+    content += "<i>"+view+"</i> ";    
+    content += "<textarea rows='3' style='width:100%;' placeholder='...' onchange='updateViewText(\""+view+"\",this.value);'>" + VIEWER_ANNOTATIONS.views[view].text + "</textarea>";
+    content += "<button type='button' class='btn btn-secondary mx-1 btGoView' data-viewName='"+view+"' onclick='applyView(\""+view+"\")'><span class='mdi mdi-directions'></span></button>";    
+    content += "<button type='button' class='btn  btn-sm btn-secondary mx-1 btEditView' data-viewName='"+view+"' onclick='updateViewState(\""+view+"\")'><span class='mdi mdi-tooltip-edit'></span></button>";
+    content += "<button type='button' class='btn  btn-sm btn-danger mx-1 btDelView' data-viewName='"+view+"' onclick='deleteView(\""+view+"\")'><span class='mdi mdi-delete-forever'></span></button>";
+    content += "</li>";
+  }
+  content += "</ul>";
+
+  listDiv.html(content);
+}
+function applyView(viewName){
+  setViewerState(VIEWER_ANNOTATIONS.views[viewName].state);
+}
+function updateViewState(viewName){
+  VIEWER_ANNOTATIONS.views[viewName].state = JSON.parse(JSON.stringify(VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+}
+function updateViewText(viewName, value){
+  VIEWER_ANNOTATIONS.views[viewName].text = value;
+}
+function deleteView(viewName){
+  if(confirm('A view is being deleted, are you sure?')){
+    delete VIEWER_ANNOTATIONS.views[viewName];
+    displayViews(); // update views list
+  }
+}
+
+function addSpot(){
+  if (spotPicking) return;  //already in spot picking mode
+  stopMeasure();
+  spotPicking = true;
+  // get first free index
+  let spotIndex = 100;
+  while( VIEWER_ANNOTATIONS.spots["S"+spotIndex]){ spotIndex++; }
+  spotPickingName = "S"+spotIndex;
+  $('#draw-canvas').css("cursor","crosshair");
+  presenter._onEndPickingPoint = onSpotPick;
+  presenter.enablePickpointMode(true);
+}
+function onSpotPick(point){ 
+  VIEWER_ANNOTATIONS.spots[spotPickingName] = {};
+  VIEWER_ANNOTATIONS.spots[spotPickingName].point = point;
+  VIEWER_ANNOTATIONS.spots[spotPickingName].text = "";
+  VIEWER_ANNOTATIONS.spots[spotPickingName].url = "";
+  spotPickEnd(); // stop spot picking mode
+  displaySpots(); // update spots list
+}
+function spotPickEnd(){
+  $('#draw-canvas').css("cursor","default");
+  presenter.enablePickpointMode(false);
+  spotPicking = false;
+  spotPickingName = "";
+  spotPoints = [];
+}
+function displaySpots(){
+  let listDiv = $("#spotsListDiv");
+  let content = "";
+  content += "<ul class='list-group'>";
+  for (spot in VIEWER_ANNOTATIONS.spots){
+    content += "<li class='list-group-item'>";
+    content += "<i>"+spot+"</i> - ";
+    var clampTo = (measure_unit == "m")? 3 : 2;
+    content += "["+VIEWER_ANNOTATIONS.spots[spot].point[0].toFixed(clampTo)+", "+VIEWER_ANNOTATIONS.spots[spot].point[1].toFixed(clampTo)+", "+VIEWER_ANNOTATIONS.spots[spot].point[2].toFixed(clampTo)+"]";
+    content += "<textarea rows='2' style='width:100%;' placeholder='...' onchange='updateSpotText(\""+spot+"\",this.value);'>" + VIEWER_ANNOTATIONS.spots[spot].text + "</textarea>";
+    content += "<button type='button' class='btn btn-sm btn-danger mx-1 btDelView' data-viewName='"+spot+"' onclick='deleteSpot(\""+spot+"\")'><span class='mdi mdi-delete-forever'></span></button>";
+    content += "</li>";
+  }
+  content += "</ul>";
+  listDiv.html(content);
+
+  if(!presenter._scene) return;
+	presenter._scene.spots = {};
+	presenter._spotsProgressiveID = 10;	// reset to avoid accumulation
+
+  for (spot in VIEWER_ANNOTATIONS.spots){
+    var radius = 2.5;
+
+		// place according to current object transform
+		var opoint = [VIEWER_ANNOTATIONS.spots[spot].point[0], VIEWER_ANNOTATIONS.spots[spot].point[1], VIEWER_ANNOTATIONS.spots[spot].point[2], 1.0];
+		var tpoint = SglMat4.mul4(presenter._scene.modelInstances["mesh_0"].transform.matrix, opoint);
+
+    var newSpot = {
+			mesh            : "sphere",
+			color           : [1.0, 0.0, 1.0],//VIEWER_ANNOTATIONS.spots[spot].color,
+			alpha           : 0.7,
+			transform : { 
+				translation : [tpoint[0],tpoint[1],tpoint[2]],
+				scale : [radius, radius, radius],
+				},
+			visible         : true, //VIEWER_ANNOTATIONS.spots[spot].visible,
+		};
+		presenter._scene.spots[spot] = presenter._parseSpot(newSpot);	
+		presenter._scene.spots[spot].rendermode = "FILL";  //maybe this is not necessary
+  }  
+	presenter.repaint();
+  /*
+	presenter.enableOnHover(true);
+	presenter._onEnterSpot = onESpot;
+	presenter._onLeaveSpot = onLSpot;	
+*/
+}
+function updateSpotText(spotName, value){
+  VIEWER_ANNOTATIONS.spots[spotName].text = value;
+}
+function deleteSpot(spotName){
+  if(confirm('A spot is being deleted, are you sure?')){
+    delete VIEWER_ANNOTATIONS.spots[spotName];
+    displaySpots();        
+  }
+} 
+//////////////////////////////// ANNOTATIONS END //////////////////////////////////////
+
+//--------------------------------------------------------------------------------------
+function screenshot() {
+  presenter.saveScreenshot();
+}
+//--------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------
 function viewFrom(direction){
-	var distance = DEFAULT_VIEWER_STATE.trackState[5];
+	var distance = DEFAULT_VIEWER_STATE.homeTrackState[5];
     switch(direction) {
         case "default":
-          presenter.animateToTrackballPosition(DEFAULT_VIEWER_STATE.trackState);
+          presenter.animateToTrackballPosition(DEFAULT_VIEWER_STATE.homeTrackState);
         break;
         case "front":
 			    presenter.animateToTrackballPosition([0.0, 0.0, 0.0, 0.0, 0.0, distance]);
@@ -552,110 +867,72 @@ function viewFrom(direction){
         break;			
     }
 }
+//--------------------------------------------------------------------------------------
 
-function actionsToolbar(action) {
-  switch (action) {
-    case "fullscreen_in":
-    case "fullscreen_out": 
-      $("[name=enlargeScreen]").toggle()
-      fullscreenSwitch(action); 
-    break;
-    case "screenshot": presenter.saveScreenshot(); break;
-    case "measure_on":
-      presenter.enableMeasurementTool(true);
-      measureSwitch(true);
-      $("#measure-box-title").text('Measured length')
-      $("#measure-output").text('0.00'+measure_unit);
-		  setInstructions("pick two points A-B on the object to measure their distance")
-    break;
-    case "measure_off":
-      measureSwitch(false);
-		  clearInstructions();
-    break;
-    case "pick_on": 
-      presenter.enablePickpointMode(true);
-      measureSwitch(true);
-      $("#measure-box-title").text('XYZ picked point')
-      $("#measure-output").text('[ 0 , 0 , 0 ]');
-      setInstructions("pick a point A on the object to read its coordinates");
-    break;
-    case "pick_off":
-      measureSwitch(false);
-		  clearInstructions();
-    break;
-    case "angle_on": 
-      enableAngleMeasurement(true);
-      measureSwitch(true);
-      $("#measure-box-title").text('Angle')
-      $("#measure-output").text('0°');
-      setInstructions("pick three points A-O-B on the object to calculate the angle A&Ocirc;B");
-    break;
-    case "angle_off":
-      enableAngleMeasurement(false);
-      measureSwitch(false);
-		  clearInstructions();
-    break;
-    case "section_on":
-      sectionToolInit(true)
-    break;
-    case "section_off":
-      sectionToolInit(false)
-    break;
+// MEASUREMENT TOOLS START STOP---------------------------------------------------------
+function distanceTool(state){
+  if(state){
+    $("#distanceTool").prop('checked', true);
+    measureDistance(true);
+    measurePanelSwitch(true, "Pick two points A-B on the object to measure their distance", "Measured length", "0.00 "+measure_unit);
+  }
+  else{
+    $("#distanceTool").prop('checked', false);
+    measureDistance(false);
+    measurePanelSwitch(false);
   }
 }
 
-function measureSwitch(state) {
+function pickTool(state){
+  if(state){
+    $("#pickTool").prop('checked', true);        
+    measurePickpoint(true);
+    measurePanelSwitch(true, "pick a point A on the object to read its coordinates", "Picked point", "[ 0 , 0 , 0 ]");
+  }
+  else{
+    $("#pickTool").prop('checked', false);        
+    measurePickpoint(false);
+    measurePanelSwitch(false);
+  }
+}
+
+function angleTool(state){
+  if(state){
+    $("#angleTool").prop('checked', true);
+    measureAngle(true);
+    measurePanelSwitch(true, "pick three points A-O-B on the object to measure the angle A&Ocirc;B", "Angle measurement", "0°");
+  }
+  else{
+    $("#angleTool").prop('checked', false);
+    measureAngle(false);
+    measurePanelSwitch(false);
+  }
+}
+
+function stopMeasure(){
+  $(".measureTools").prop('checked', false);  
+  measureDistance(false);
+  measurePickpoint(false);
+  measureAngle(false);
+  measurePanelSwitch(false);
+  VIEWER_STATE.activeMeasurement = null;
+}
+
+function measurePanelSwitch(state, instructions, title, output) {
+  if(instructions) $('#panel_instructions').html(instructions); 
+  if(title) $("#measure-box-title").text(title);
+  if(output) $("#measure-output").text(output);
+
   if(state){
     $('#measure-box').removeClass('invisible').fadeIn('fast');
     $('#draw-canvas').css("cursor","crosshair");
   }else{
-    $('#measure-box').addClass('invisible').fadeOut('fast');
+    $('#measure-box').addClass('invisible');
     $('#draw-canvas').css("cursor","default");
   }
 }
 
-function disableToolsFunction(){
-  presenter.enableLightTrackball(false);
-  presenter.enableMeasurementTool(false);
-  presenter.enablePickpointMode(false);
-  enableAngleMeasurement(false);
-  sectionToolInit(false)
-}
-
-function fullscreenSwitch(action) {
-  if(action == 'fullscreen_in'){
-    if (window.navigator.userAgent.indexOf('Trident/') < 0) enterFullscreen();
-  }
-  else{
-    if (window.navigator.userAgent.indexOf('Trident/') < 0) exitFullscreen();
-  }
-}
-
-function enterFullscreen() {
-  if (isIOS()) return; //IOS DEVICES CHECK
-  presenter._nativeWidth  = presenter.ui.width;
-  presenter._nativeHeight = presenter.ui.height;
-  presenter._nativeResizable = presenter._resizable;
-  presenter._resizable = true;
-  var viewer = $('#3dhop')[0];
-  if (viewer.msRequestFullscreen) viewer.msRequestFullscreen();
-  else if (viewer.mozRequestFullScreen) viewer.mozRequestFullScreen();
-  else if (viewer.webkitRequestFullscreen) viewer.webkitRequestFullscreen();
-  presenter.repaint();
-}
-
-function exitFullscreen() {
-  if (isIOS()) return; //IOS DEVICES CHECK
-  $('#draw-canvas').attr('width', presenter._nativeWidth);
-  $('#draw-canvas').attr('height',presenter._nativeHeight);
-  $('#3dhop').css('width', presenter._nativeWidth);
-  $('#3dhop').css('height', presenter._nativeHeight);
-  presenter._resizable = presenter._nativeResizable;
-  if (document.msExitFullscreen) document.msExitFullscreen();
-  else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
-  else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-  presenter.repaint();
-}
+//--------------------------------------------------------------------------------------
 
 function addAxes(){
 	var rad = (1.0 / presenter.sceneRadiusInv)/2.0;
@@ -875,6 +1152,7 @@ function addBBGrid() {
 
 //---------------------------------------------------------------------------------------
 function onTrackballUpdate(trackState){
+  VIEWER_STATE.trackState = trackState; // store trackball state in current state
 	//updateCube(-trackState[0], -trackState[1]);
 	updateGrid(trackState);	
 }
@@ -899,30 +1177,153 @@ function updateGrid(trackState){
 
 
 
-function setInstructions(text){	
-  $('#panel_instructions').html(text).removeClass('invisible').fadeIn('fast'); 
-}
-function clearInstructions(){	
-  $('#panel_instructions').html("").addClass('invisible').fadeOut('fast'); 
-}
-function onEndMeasure(measure) {
+function onEndMeasure(measure, p0, p1) {
 	var clampTo = (measure_unit == "m")? 3 : 2;
-	$('#measure-output').html(measure.toFixed(clampTo) + measure_unit); 
+	$('#measure-output').html(measure.toFixed(clampTo) + measure_unit);
+  //sets active measurment in the viewer state
+  VIEWER_STATE.activeMeasurement = {};
+  VIEWER_STATE.activeMeasurement.type = "distance";
+  VIEWER_STATE.activeMeasurement.value = measure;
+  VIEWER_STATE.activeMeasurement.p0 = p0.slice();
+  VIEWER_STATE.activeMeasurement.p1 = p1.slice();
 }
+
 function onEndPick(point) {
 	var clampTo = (measure_unit == "m")? 3 : 2;
 	//undo object transform
 	var opoint = [point[0], point[1], point[2], 1.0];	
-	var tpoint = SglMat4.mul4(SglMat4.inverse(presenter._scene.modelInstances["nxz"].transform.matrix), opoint);
+	var tpoint = SglMat4.mul4(SglMat4.inverse(presenter._scene.modelInstances["mesh_0"].transform.matrix), opoint);
 	var x = tpoint[0].toFixed(clampTo);
 	var y = tpoint[1].toFixed(clampTo);
 	var z = tpoint[2].toFixed(clampTo);
   $('#measure-output').html("[ "+x+" , "+y+" , "+z+" ]");
+  //sets active measurment in the viewer state
+  VIEWER_STATE.activeMeasurement = {};
+  VIEWER_STATE.activeMeasurement.type = "pick";
+  VIEWER_STATE.activeMeasurement.p0 = point.slice();
 }
 
-function enableAngleMeasurement(state){
+
+// pickpoint measurement functions
+function measurePickpoint(state){
+  pickStage = 0;
+  pickPoints = [0.0,0.0,0.0];
+  if(state){
+    presenter._onEndPickingPoint = onPickpointPick;
+    presenter.enablePickpointMode(true);
+  }else{
+    presenter.deleteEntity("pickpointP");
+    presenter.deleteEntity("pickpointL");    
+    presenter.enablePickpointMode(false);
+    presenter._onEndPickingPoint = onEndPick;    
+  }
+}
+function onPickpointPick(point) {
+  if(pickStage == 1){ pickStage = 0; }//reset for new measure
+  pickPoints[pickStage] = [point[0],point[1],point[2]];
+  presenter._pickValid=false;
+  computePickpoint();
+}
+function computePickpoint(){ 
+  var opoint = [pickPoints[0][0], pickPoints[0][1], pickPoints[0][2], 1.0];	
+  var tpoint = SglMat4.mul4(SglMat4.inverse(presenter._scene.modelInstances["mesh_0"].transform.matrix), opoint);
+	var clampTo = (measure_unit == "m")? 3 : 2;   
+	var x = tpoint[0].toFixed(clampTo);
+	var y = tpoint[1].toFixed(clampTo);
+	var z = tpoint[2].toFixed(clampTo);
+  $('#measure-output').html("[ "+x+" , "+y+" , "+z+" ]");
+  //sets active measurment in the viewer state
+  VIEWER_STATE.activeMeasurement = {};
+  VIEWER_STATE.activeMeasurement.type = "pick";
+  VIEWER_STATE.activeMeasurement.p0 = pickPoints[0].slice();  
+  displayPickpoint();
+}
+function displayPickpoint(){
+	var pointsBuffer = [];
+	var linesBuffer = [];
+	  
+	pointsBuffer.push(pickPoints[0]);
+	var pickpointP = presenter.createEntity("pickpointP", "points", pointsBuffer);
+	pickpointP.color = [0.8, 0.3, 0.7, 1.0];
+  pickpointP.pointSize = 10;
+  pickpointP.useSeethrough = true;
+
+  linesBuffer.push(SglVec3.add(pickPoints[0], [ 5.0, 0.0, 0.0]));
+  linesBuffer.push(SglVec3.add(pickPoints[0], [-5.0, 0.0, 0.0]));  
+  linesBuffer.push(SglVec3.add(pickPoints[0], [ 0.0, 5.0, 0.0]));
+  linesBuffer.push(SglVec3.add(pickPoints[0], [ 0.0,-5.0, 0.0]));
+  linesBuffer.push(SglVec3.add(pickPoints[0], [ 0.0, 0.0, 5.0]));
+  linesBuffer.push(SglVec3.add(pickPoints[0], [ 0.0, 0.0,-5.0]));
+  var pickpointL = presenter.createEntity("pickpointL", "lines", linesBuffer);
+  pickpointL.color = [0.8, 0.3, 0.7, 1.0];
+  pickpointL.zOff = 0.0;
+
+  presenter.repaint();
+}
+
+// distence measurement functions
+function measureDistance(state){
+  distanceStage = 0;
+  distancePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0]];
+  if(state){
+    presenter._onEndPickingPoint = onDistancePick;
+    presenter.enablePickpointMode(true);
+  }else{
+    presenter.deleteEntity("distanceP");
+    presenter.deleteEntity("distanceL");
+    presenter.enablePickpointMode(false);
+    presenter._onEndPickingPoint = onEndPick;
+  }
+}
+function onDistancePick(point) {
+  if(distanceStage == 2){ distanceStage = 0; }//reset for new measure
+  distancePoints[distanceStage] = [point[0],point[1],point[2]];
+  distanceStage++;
+  displayDistance();
+  presenter._pickValid=false;
+  if(distanceStage == 2){computeDistance();}
+}
+function computeDistance(){
+  var distance = SglVec3.length(SglVec3.sub(distancePoints[0], distancePoints[1]));
+  var clampTo = (measure_unit == "m")? 3 : 2;
+  $('#measure-output').html(distance.toFixed(clampTo) + measure_unit);
+  //display distance 
+  displayDistance();
+  //sets active measurment in the viewer state
+  VIEWER_STATE.activeMeasurement = {};
+  VIEWER_STATE.activeMeasurement.type = "distance";
+  VIEWER_STATE.activeMeasurement.value = distance;
+  VIEWER_STATE.activeMeasurement.p0 = distancePoints[0].slice();
+  VIEWER_STATE.activeMeasurement.p1 = distancePoints[1].slice();
+}
+function displayDistance(){
+	var pointsBuffer = [];
+	for(ii=0; ii<distanceStage; ii++){
+		pointsBuffer.push(distancePoints[ii]);
+	}
+	var angleP = presenter.createEntity("distanceP", "points", pointsBuffer);
+	angleP.color = [0.5, 1.0, 0.5, 1.0];
+  angleP.pointSize = 10;
+  angleP.useSeethrough = true;
+
+  if(distanceStage == 2){
+    var distance = SglVec3.length(SglVec3.sub(distancePoints[0], distancePoints[1]));
+    var thickness = Math.min((measure_unit == "mm")? 0.25 : 0.25/1000.0, distance/20.0);
+    var triBuffer = tube(distancePoints[0], distancePoints[1], thickness);
+    var distanceBar = presenter.createEntity("distanceL", "triangleStrip", triBuffer);
+    distanceBar.color = [0.5, 1.0, 0.5, 1.0];
+    distanceBar.useTransparency = false;
+    distanceBar.useSeethrough = true;
+    distanceBar.zOff = 0.0;
+    presenter.repaint();
+  }
+}
+
+// angle measurement functions
+function measureAngle(state){
+	angleStage = 0;
+	anglePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]];
 	if(state){
-		resetAngle();
 		presenter._onEndPickingPoint = onAnglePick;
 		presenter.enablePickpointMode(true);	
 	}else{
@@ -931,262 +1332,194 @@ function enableAngleMeasurement(state){
 		presenter.deleteEntity("angleV");
 		presenter.enablePickpointMode(false);
 		presenter._onEndPickingPoint = onEndPick;
-		resetAngle();		
 	}
 }
-
 function onAnglePick(point) {
 	if(angleStage == 3){ angleStage = 0; }//reset for new measure
 	anglePoints[angleStage] = [point[0],point[1],point[2]];
 	angleStage++;
 	displayAngle();
-	if(angleStage == 3){displayAngleEnd();}
+  presenter._pickValid=false;  
+	if(angleStage == 3){
+    computeAngle();
+  }
 }
-
-function displayAngle(){
-	var pointsBuffer = [];
-	var linesBuffer = [];
-	var ii = 0;
-
-	for(ii=0; ii<angleStage; ii++){
-		pointsBuffer.push(anglePoints[ii]);
-	}
-	for(ii=0; ii<angleStage-1; ii++){
-		linesBuffer.push(anglePoints[ii]);
-		linesBuffer.push(anglePoints[ii+1]);
-	}
-
-	var angleP = presenter.createEntity("angleP", "points", pointsBuffer);
-	angleP.color = [0.2, 0.3, 0.9, 1.0];
-	angleP.zOff = 0.001;
-
-	var angleL = presenter.createEntity("angleL", "lines", linesBuffer);
-	angleL.color = [0.2, 0.3, 0.9, 1.0];
-	angleL.zOff = 0.001;
-
-	presenter.deleteEntity("angleV");
-	presenter.repaint();
-}
-
-function displayAngleEnd(){
+function computeAngle(){
 	var v1 = SglVec3.normalize(SglVec3.sub(anglePoints[0], anglePoints[1]));
 	var v2 = SglVec3.normalize(SglVec3.sub(anglePoints[2], anglePoints[1]));
 	var angle = sglRadToDeg(Math.acos(SglVec3.dot(v1,v2)));
 	$('#measure-output').html(angle.toFixed(2) + "&deg;");
-
-	var len = 0.75 * Math.min(SglVec3.length(SglVec3.sub(anglePoints[0], anglePoints[1])), SglVec3.length(SglVec3.sub(anglePoints[2], anglePoints[1])));
-
-	var triBuffer = [];
-	triBuffer.push(anglePoints[1]);
-	triBuffer.push(SglVec3.add(SglVec3.muls(v1,len),anglePoints[1]));
-	triBuffer.push(SglVec3.add(SglVec3.muls(v2,len),anglePoints[1]));
-	var angleV = presenter.createEntity("angleV", "triangles", triBuffer);
-	angleV.color = [0.2, 0.5, 0.7, 0.3];
-	angleV.zOff = 0.01;
-	angleV.useTransparency = true;
+  //display angle
+  displayAngle();
+  //sets active measurment in the viewer state
+  VIEWER_STATE.activeMeasurement = {};
+  VIEWER_STATE.activeMeasurement.type = "angle";
+  VIEWER_STATE.activeMeasurement.angle = angle;
+  VIEWER_STATE.activeMeasurement.p0 = anglePoints[0].slice();
+  VIEWER_STATE.activeMeasurement.p1 = anglePoints[1].slice();
+  VIEWER_STATE.activeMeasurement.p2 = anglePoints[2].slice();
 }
+function displayAngle(){
+	var pointsBuffer = [];
+	for(ii=0; ii<angleStage; ii++){
+		pointsBuffer.push(anglePoints[ii]);
+	}
+	var angleP = presenter.createEntity("angleP", "points", pointsBuffer);
+	angleP.color = [0.2, 0.3, 0.9, 1.0];
+  angleP.pointSize = 8;
+  angleP.useSeethrough = true;
 
-function resetAngle(){
-	angleStage = 0;
-	anglePoints = [[0.0,0.0,0.0],[0.0,0.0,0.0],[0.0,0.0,0.0]];
-}
+  var linesBuffer = [];
+  for(ii=0; ii<angleStage-1; ii++){
+		linesBuffer.push(anglePoints[ii]);
+		linesBuffer.push(anglePoints[ii+1]);
+	}
+	var angleL = presenter.createEntity("angleL", "lines", linesBuffer);
+	angleL.color = [0.2, 0.3, 0.9, 1.0];
+  angleL.useSeethrough = true;
+  angleL.zOff = 0.001;
 
-function sectionToolInit(state){
-  if(state){
-    measureSwitch(false)
-    clearInstructions()
-    $("#sections-box").removeClass('invisible').fadeIn('fast')
-    return false;
+  if(angleStage == 3){
+    var v1 = SglVec3.normalize(SglVec3.sub(anglePoints[0], anglePoints[1]));
+    var v2 = SglVec3.normalize(SglVec3.sub(anglePoints[2], anglePoints[1]));      
+    var len = 0.75 * Math.min(SglVec3.length(SglVec3.sub(anglePoints[0], anglePoints[1])), SglVec3.length(SglVec3.sub(anglePoints[2], anglePoints[1])));
+    var triBuffer = [];
+    triBuffer.push(anglePoints[1]);
+    triBuffer.push(SglVec3.add(SglVec3.muls(v1,len),anglePoints[1]));
+    triBuffer.push(SglVec3.add(SglVec3.muls(v2,len),anglePoints[1]));
+    var angleV = presenter.createEntity("angleV", "triangles", triBuffer);
+    angleV.color = [0.2, 0.5, 0.7, 0.3];
+    angleV.useTransparency = true;
+    angleV.useSeethrough = true;
+    angleV.zOff = 0.001;
   }
-  $("#sections-box").addClass('invisible').fadeOut('fast')
+  else{
+    presenter.deleteEntity("angleV");
+  }
+	presenter.repaint();
+}
+
+// function that fills the buffer to create an entity of a triangled tube between two points
+// thickness is HALF the thickness of the tube
+function tube(p0, p1, thickness){
+  var dt = thickness;
+  
+	var dir = SglVec3.normalize(SglVec3.sub(p1, p0));
+	vInitial = [0.0, 0.0, 0.0];
+	do {
+		vInitial[0] = Math.random()+0.01;
+		vInitial[1] = Math.random()+0.01;
+		vInitial[2] = Math.random()+0.01;
+		vInitial = SglVec3.normalize(vInitial);
+	} while (SglVec3.dot(dir, vInitial) > 0.9);
+	var v0 = SglVec3.normalize(SglVec3.cross(dir, vInitial));
+	var v1 = SglVec3.normalize(SglVec3.cross(dir, v0));
+
+	// from Optimizing Triangle Strips for Fast Rendering https://www.cs.umd.edu/gvil/papers/av_ts.pdf
+	// triangle strip of a cube
+	var vertices = [];
+	vertices[1] = SglVec3.add(p0, SglVec3.muls(v0, dt));
+	vertices[2] = SglVec3.add(p0, SglVec3.muls(v1,-dt));
+	vertices[3] = SglVec3.add(p0, SglVec3.muls(v1, dt));
+	vertices[4] = SglVec3.add(p0, SglVec3.muls(v0,-dt));
+	vertices[5] = SglVec3.add(p1, SglVec3.muls(v0, dt));
+	vertices[6] = SglVec3.add(p1, SglVec3.muls(v1,-dt));
+	vertices[7] = SglVec3.add(p1, SglVec3.muls(v0,-dt));
+	vertices[8] = SglVec3.add(p1, SglVec3.muls(v1, dt));
+	var triBuffer = [];
+	triBuffer.push(vertices[4]);
+	triBuffer.push(vertices[3]);
+	triBuffer.push(vertices[7]);
+	triBuffer.push(vertices[8]);
+	triBuffer.push(vertices[5]);
+	triBuffer.push(vertices[3]);
+	triBuffer.push(vertices[1]);
+	triBuffer.push(vertices[4]);
+	triBuffer.push(vertices[2]);
+	triBuffer.push(vertices[7]);
+	triBuffer.push(vertices[6]);
+	triBuffer.push(vertices[5]);
+	triBuffer.push(vertices[2]);
+	triBuffer.push(vertices[1]);
+
+  return triBuffer;
+}
+
+// sections functions------------------------------------------------
+
+function sectionToolShow(state){  // show/hide section panel
+  if(state){
+    $("#sections-box").removeClass('invisible').fadeIn('fast')
+  }
+  else {
+    $("#sections-box").addClass('invisible').fadeOut('fast')
+  }
+}
+
+function setSections(){
+  /*
+  in VIEWER_STATE
+  clipping : [false, false, false], //active x,y,z
+  clippingDir : [1, 1, 1], //direction x,y,z
+  clippingPoint : [0.5, 0.5, 0.5], //x,y,z
+  clippingRender : [true, true], //render planes, render border
+  */
+
+  // update rendering in presenter
+  presenter.setClippingX(VIEWER_STATE.clipping[0]?VIEWER_STATE.clippingDir[0]:0);
+  presenter.setClippingY(VIEWER_STATE.clipping[1]?VIEWER_STATE.clippingDir[1]:0);
+  presenter.setClippingZ(VIEWER_STATE.clipping[2]?VIEWER_STATE.clippingDir[2]:0);
+
+  presenter.setClippingPointX(VIEWER_STATE.clippingPoint[0]); 
+  presenter.setClippingPointY(VIEWER_STATE.clippingPoint[1]); 
+  presenter.setClippingPointZ(VIEWER_STATE.clippingPoint[2]);
+
+  presenter.setClippingRendermode(VIEWER_STATE.clippingRender[0], VIEWER_STATE.clippingRender[1]);
+
+  presenter.repaint();
+
+  // update interface
+  $("#xPlaneToggle").attr('src', VIEWER_STATE.clipping[0]?'img/ico/sectionX_on.png':'img/ico/sectionX_off.png');
+  $("#yPlaneToggle").attr('src', VIEWER_STATE.clipping[1]?'img/ico/sectionY_on.png':'img/ico/sectionY_off.png');
+  $("#zPlaneToggle").attr('src', VIEWER_STATE.clipping[2]?'img/ico/sectionZ_on.png':'img/ico/sectionZ_off.png');
+
+  $("#xPlaneRange").val(VIEWER_STATE.clippingPoint[0]);
+  $("#yPlaneRange").val(VIEWER_STATE.clippingPoint[1]);
+  $("#zPlaneRange").val(VIEWER_STATE.clippingPoint[2]);
+
+  $("#xPlaneFlip").prop('checked', VIEWER_STATE.clippingDir[0]==-1);
+  $("#yPlaneFlip").prop('checked', VIEWER_STATE.clippingDir[1]==-1);
+  $("#zPlaneFlip").prop('checked', VIEWER_STATE.clippingDir[2]==-1);
+
+  $("#showPlane").prop('checked', VIEWER_STATE.clippingRender[0]);
+  $("#showEdges").prop('checked', VIEWER_STATE.clippingRender[1]);
+
+  togglePlanesEdgesTool();  
 }
 
 function sectionReset(){
-  sectionxSwitch(false)
-  sectionySwitch(false)
-  sectionzSwitch(false)
-  presenter.setClippingX(0);
-  presenter.setClippingY(0);
-  presenter.setClippingZ(0);
-  togglePlanesEdgesTool()
-  $("#sections-box").find("[type=range").val(0.5)
-  $("[name=planeFlipCheckbox]").prop('checked', false)
-}
-
-function sectionxSwitch(state) {
-	if(state){
-    $("#xplane").attr('src', 'img/ico/sectionX_on.png');
-    let clipVal = $('#xplaneFlip').is(':checked') ? -1 : 1;
-		presenter.setClippingX(clipVal);
-	}else{
-    $("#xplane").attr('src', 'img/ico/sectionX_off.png');
-    presenter.setClippingX(0);
-  }
-  togglePlanesEdgesTool()
-}
-
-function sectionySwitch(state) {
-	if(state){
-    $("#yplane").attr('src', 'img/ico/sectionY_on.png');
-    let clipVal = $('#xplaneFlip').is(':checked') ? -1 : 1;
-		presenter.setClippingY(clipVal);
-	}else{
-    $("#yplane").attr('src', 'img/ico/sectionY_off.png');
-    presenter.setClippingY(0);
-  }
-  togglePlanesEdgesTool()
-}
-
-function sectionzSwitch(state) {
-  if(state){
-    $("#zplane").attr('src', 'img/ico/sectionZ_on.png');
-    let clipVal = $('#zplaneFlip').is(':checked') ? -1 : 1;
-		presenter.setClippingZ(clipVal);
-	}else{
-    $("#zplane").attr('src', 'img/ico/sectionZ_off.png');
-    presenter.setClippingZ(0);
-  }
-  togglePlanesEdgesTool()
+  VIEWER_STATE.clipping = DEFAULT_VIEWER_STATE.clipping.slice();
+  VIEWER_STATE.clippingDir = DEFAULT_VIEWER_STATE.clippingDir.slice();
+  VIEWER_STATE.clippingPoint = DEFAULT_VIEWER_STATE.clippingPoint.slice();
+  VIEWER_STATE.clippingRender = DEFAULT_VIEWER_STATE.clippingRender.slice();
+  setSections();
 }
 
 function togglePlanesEdgesTool(){
-  if(presenter.getClippingX() == 0 && presenter.getClippingY() == 0 && presenter.getClippingZ() == 0){
-    $("#planesEdgesDiv").addClass('invisible')
-  }else{
+  if (VIEWER_STATE.clipping[0] || VIEWER_STATE.clipping[1] || VIEWER_STATE.clipping[2]){
     $("#planesEdgesDiv").removeClass('invisible')
   }
-}
-
-// views
-function addView(){
-  viewIndex++;
-  let newView = {}
-  newView.view = null;
-	newView.state = {};
-	newView.tools = {};
-	newView.text = "Description of view " + viewIndex;
-	viewList[viewIndex] = newView;
-	updateView(viewIndex);
-	fillViewsPanel();
-}
-
-function updateView(view){
-  viewList[view].view = track2view(presenter.getTrackballPosition());
-  // l'oggetto VIEW_STATE non mi serve
-	// for(field in VIEW_STATE){viewList[view].state[field] = VIEW_STATE[field]};
-  viewList[view].state['viewside'] = presenter.getTrackballPosition();
-  viewList[view].state['grid'] = $("#gridListValue").find('.active').val();
-  viewList[view].state['ortho'] = $("[name=ortho]").is(':checked');
-  viewList[view].state['axes'] = $("[name=xyzAxes]").is(':checked');
-  viewList[view].state['lightDir'] = lightDir;
-  viewList[view].state['solid'] = $("[name=texture]").is(':checked');
-  viewList[view].state['transparency'] = $("[name=solid]").is(':checked');
-  viewList[view].state['lighting'] = $("[name=lighting]").is(':checked');
-  viewList[view].state['specular'] = $("[name=specular]").is(':checked');
-  
-	// measurements
-  /*
-    quando crei una view salvi: posizione, come viene visualizzato l'oggetto e 1 solo tipo di tool di misurazione
-    una possibilità sarebbe quella di salvare più misurazioni, per fare questo quando cambio tool non devo disattivare quello appena utilizzato e nella view non dovrei salvare la posizione.
-    Tra i tool si potrebbe aggiungere il disegno di una specifica area 
-  */
-  var toolState = {}
-	if(angleStage == 3){
-		toolState.angleA = anglePoints[0];
-		toolState.angleB = anglePoints[1];
-		toolState.angleC = anglePoints[2];
-		viewList[view].tools.angleMeasure = toolState;
-	}	
-  else if((presenter._isMeasuringDistance) && (presenter._measurementStage == 3)){
-		toolState.distanceA = presenter._pointA;
-		toolState.distanceB = presenter._pointB;
-		viewList[view].tools.distanceMeasure = toolState;
-	}
-	else if((presenter._isMeasuringPickpoint)&(presenter._pickValid)&&(presenter._onEndPickingPoint == onEndPick)){ 
-    //extra condition: I am really pointpicking, or i am picking for another tool?
-		toolState.distanceA = presenter._pointA;
-		toolState.pickA = presenter._pickedPoint;
-		viewList[view].tools.pickPoint = toolState;
-	}
-  console.log(viewList);
-}
-
-function deleteView(view){
-  if(confirm('A view is being deleted, are you sure?')){
-    viewIndex--;
-    delete viewList[view];
-    fillViewsPanel();
+  else{
+    $("#planesEdgesDiv").addClass('invisible');
   }
 }
 
-function gotoView(view){
-	for(field in viewList[view].state){VIEW_STATE[field] = viewList[view].state[field];}
-	displayViewState();
-	presenter.animateToTrackballPosition(view2track(viewList[view].view));
-  viewList[view].view.fov == "0" ? updateOrtho(true) : updateOrtho(false);
-	// measurements
-	if(viewList[view].tools.distanceMeasure){
-		toolsReset();
-		presenter._isMeasuringDistance = true;
-		presenter._measurementStage = 3;
-		presenter._pointA = viewList[view].tools.distanceMeasure.distanceA;
-		presenter._pointB = viewList[view].tools.distanceMeasure.distanceB;
-		measureSwitch(true);
-		setInstructions("pick two points A-B on the object to measure their distance");		
-		onEndMeasure(SglVec3.length(SglVec3.sub(presenter._pointA, presenter._pointB)), presenter._pointA, presenter._pointB);
-		presenter.repaint();
-	}	else if(viewList[view].tools.pickPoint){
-		toolsReset();
-		presenter._isMeasuringPickpoint = true;
-		presenter._pickValid = true;
-		presenter._pickedPoint = viewList[view].tools.pickPoint.pickA;
-		pickpointSwitch(true);
-		setInstructions("pick a point A on the object to read its coordinates");		
-		onEndPick(presenter._pickedPoint);
-		presenter.repaint();		
-	}	else if(viewList[view].tools.angleMeasure){
-		toolsReset();
-		enableAngleMeasurement(true);
-		setInstructions("pick three points A-O-B on the object to calculate the angle A&Ocirc;B");		
-		angleStage = 3;
-		anglePoints[0] = viewList[view].tools.angleMeasure.angleA;
-		anglePoints[1] = viewList[view].tools.angleMeasure.angleB;
-		anglePoints[2] = viewList[view].tools.angleMeasure.angleC;
-		presenter.repaint();
-		displayAngle();
-		displayAngleEnd();
-	}
-}
 
-function fillViewsPanel(){
-  const wrapDiv = $("#wrapViews");
-  if(viewIndex == 0){
-    wrapDiv.html('No views');
-    $("[name=saveViewBtn").addClass('invisible')
-    return false;
-  }
-  wrapDiv.html('');
 
-  for (const view in viewList) {
-    let viewDiv = $("<div/>", {class:'view mb-3'}).appendTo(wrapDiv);
-    let viewToolbar = $("<div/>", {class:'viewToolbar'}).appendTo(viewDiv);
-    let viewDescription = $("<div/>", {class:'viewDescription'}).appendTo(viewDiv);
-    let btnGroup = $("<div/>", {class:'btn-group-vertical', role:'group'}).appendTo(viewToolbar);
-    let go2viewBtn = $("<button/>", {class:'btn btn-secondary btn-sm', title:'go to view'}).attr({"data-bs-toggle":"tooltip", "data-bs-placement":"left"}).appendTo(btnGroup).tooltip();
-    let updateviewBtn = $("<button/>", {class:'btn btn-secondary btn-sm', title:"edit view"}).attr({"data-bs-toggle":"tooltip", "data-bs-placement":"left"}).appendTo(btnGroup).tooltip();
-    let deleteviewBtn = $("<button/>", {class:'btn btn-secondary btn-sm', title:"delete view"}).attr({"data-bs-toggle":"tooltip", "data-bs-placement":"left"}).appendTo(btnGroup).tooltip();
-    $("<span/>", {class:'mdi mdi-cube-scan'}).appendTo(go2viewBtn)
-    $("<span/>", {class:'mdi mdi-pencil'}).appendTo(updateviewBtn)
-    $("<span/>", {class:'mdi mdi-delete-forever'}).appendTo(deleteviewBtn)
-    $("<textarea/>",{rows:5, class:'form-control'}).css("resize","none").val(viewList[view]['text']).appendTo(viewDescription)
-    deleteviewBtn.on('click', function(){
-      $(this).tooltip('hide');
-      deleteView(view)
-    })
-  }
-  if(activeUser){$("[name=saveViewBtn").removeClass('invisible');}
-}
 
+
+
+// trackball utilities--------------------------------------------------------------
 function track2view(trackState){
 	var view = {};
 	view.space = "object";
@@ -1213,29 +1546,23 @@ function track2view(trackState){
 	view.up[0] = vu[0];
 	view.up[1] = vu[1];
 	view.up[2] = vu[2];
-	
 	if(presenter.getCameraType() == "orthographic")
 		view.fov = 0.0;
 	else
 		view.fov = presenter._scene.space.cameraFOV;
 	return view;
 }
-
 function view2track(view){
 	var trackState = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
-	
 	trackState[2] = (view.target[0] - presenter.sceneCenter[0]) * presenter.sceneRadiusInv;
 	trackState[3] = (view.target[1] - presenter.sceneCenter[1]) * presenter.sceneRadiusInv;
 	trackState[4] = (view.target[2] - presenter.sceneCenter[2]) * presenter.sceneRadiusInv;
-	
 	var vdir = [(view.target[0]-view.position[0]), (view.target[1]-view.position[1]), (view.target[2]-view.position[2])];
 	var len = SglVec3.length(vdir);
 	vdir = [vdir[0] / len, vdir[1] / len, vdir[2] / len];
 	trackState[5] = len * presenter.sceneRadiusInv;
-
 	trackState[1] = sglRadToDeg(-Math.asin(vdir[1]));
 	trackState[0] = sglRadToDeg(Math.asin(-vdir[0] / Math.cos(Math.asin(-vdir[1]))));		
-
 	if((trackState[1]<45.0)&&(trackState[1]>-45.0)){
 		trackState[0] = sglRadToDeg(Math.asin(-vdir[0] / Math.cos(Math.asin(-vdir[1]))));
 		if(vdir[2]>0.0) trackState[0] = 180.0 - trackState[0];
@@ -1247,43 +1574,19 @@ function view2track(view){
 	}
 	return trackState;
 }
+//---------------------------------------------------------------------------------------
 
-function displayViewState(){
-	$('#i_solidColor').bootstrapToggle((VIEW_STATE.solid)?'on':'off', true);
-	presenter.setInstanceSolidColor('Group', VIEW_STATE.solid, false);
-
-	$('#i_transparency').bootstrapToggle((VIEW_STATE.transparency)?'on':'off', true);
-	presenter.setInstanceTransparency('Group', VIEW_STATE.transparency, false);
-
-	$('#i_useLighting').bootstrapToggle((VIEW_STATE.lighting)?'on':'off', true);
-	presenter.enableSceneLighting(VIEW_STATE.lighting);
-
-	$('#i_useSpecular').bootstrapToggle((VIEW_STATE.specular)?'on':'off', true);	
-	var newSpecular;
-	if(VIEW_STATE.specular)
-		newSpecular = [0.3,0.3,0.3,256.0];
-	else
-		newSpecular = [0.0,0.0,0.0,256.0];
-	for (inst in presenter._scene.modelInstances){
-		presenter._scene.modelInstances[inst].specularColor = newSpecular;
-	}
-
-	presenter.rotateLight(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
-	updateLightController(VIEW_STATE.lightDir[0],VIEW_STATE.lightDir[1]);
-	
-	presenter.repaint();
-}
 
 //EXPERIMENT
 $("#btLight").on('mousedown', openLightControl);
 $(document).on('mouseup', closeLightControl);
+$('#draw-canvas').on('mouseup', closeLightControl);
 
 function openLightControl(event){
-  console.log("openLightControl");
-  console.log(event);
-  console.log(event.clientX);
-  console.log(event.clientY);
-
+  //console.log("openLightControl");
+  //console.log(event);
+  //console.log(event.clientX);
+  //console.log(event.clientY);
   var lightControllerCanvas = document.getElementById("lightcontroller");
   lightControllerCanvas.width = 200;
 	lightControllerCanvas.height = 200;	
@@ -1291,17 +1594,12 @@ function openLightControl(event){
   lightControllerCanvas.style.position = "absolute";
   lightControllerCanvas.style.transform = "translate(-79px, -81px)";//"translate(-50%, -50%)";
   lightControllerCanvas.style.zIndex = 1000;
-
   updateLightController(VIEWER_STATE.lightDir[0],VIEWER_STATE.lightDir[1]);
   (event.touches) ? lightControllerCanvas.addEventListener("touchmove", clickLightController, false) : lightControllerCanvas.addEventListener("mousemove", clickLightController, false);
   //clickLightController(event);
-
 }
 function closeLightControl(event){
-  console.log("closeLightControl");
-
   var lightControllerCanvas = document.getElementById("lightcontroller");
-  
   lightControllerCanvas.style.display = "none";
 }
 //END EXPERIMENT

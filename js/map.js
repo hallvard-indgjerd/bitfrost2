@@ -42,7 +42,7 @@ function artifactByCounty(){
     filter:["artifact.category_class > 0"]
   };
   $.ajax(ajaxSettings).done(function(data) {
-    $("#loadingMap").remove()
+    // $("#loadingDiv").remove()
     data.forEach(el => {
       countyJson.features.push({
         "type": "Feature",

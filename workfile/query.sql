@@ -1,18 +1,19 @@
-with 
-  user as (
-    select p.id person_id, u.id user_id, concat(p.first_name,' ',p.last_name) name, role.value role, u.is_active
-    from person p
-    inner join user u on u.person = p.id
-    INNER JOIN list_user_role role on u.role = role.id
-  ),
-  artifact as (
-    select user.user_id author, coalesce(count(artifact.id),0) tot from user left join artifact on artifact.author = user.user_id group by user.user_id
-  ),
-  model as (
-    select user.user_id author, coalesce(count(model.id),0) tot from user left join model_object model on model.author = user.user_id group by user.user_id
-  )
-select user.*, artifact.tot artifact, model.tot model
-from user
-inner join model on model.author = user.user_id
-inner join artifact on artifact.author = user.user_id
-order by user.name asc;
+SELECT
+    macro.id AS macro_id
+    ,macro.definition AS macro_definition
+    ,MIN(spec.start) AS macro_min_start
+    ,MAX(spec.end) AS macro_max_end
+    ,generic.id AS generic_id
+    ,generic.definition AS generic_definition
+    ,MIN(spec.start) AS generic_min_start
+    ,MAX(spec.end) AS generic_max_end
+    ,spec.id AS specific_id
+    ,spec.definition AS specific_definition
+    ,spec.start AS specific_start
+    ,spec.end AS specific_end
+FROM  time_series_macro macro
+JOIN  time_series_generic generic ON generic.macro = macro.id
+JOIN  time_series_specific spec ON spec.generic = generic.id
+GROUP BY macro.id, generic.id, spec.id
+ORDER BY macro.id, generic.id, spec.id
+;

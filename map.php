@@ -11,8 +11,8 @@
 <body>
   <?php require("assets/header.php"); ?>
   <main class="animated mainSection" id="mapWrap">
+    <div id="loadingDiv"><p>...loading</p></div>
     <div id="map" class="mainSection">
-      <div id="loadingMap"><h1>...loading</h1></div>
     </div>
   </main>
   <?php

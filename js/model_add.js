@@ -175,28 +175,3 @@ function abortHandler(event){
   el("status").innerHTML = "Upload Aborted";
   console.log(event);
 }
-
-// function getThumbnail(){
-//   presenter._scene.config.autoSaveScreenshot = false;
-//   presenter.saveScreenshot();
-//   var img = document.createElement("img");
-//   document.body.appendChild(img);
-//   img.src = presenter.screenshotData;
-// }
-
-// async function convertThumb(){
-//   const res = await fetch(thumb);
-//   const blob = await res.blob();
-//   const fd = new FormData();
-//   fd.append("thumb", blob, uuid+".png");
-//   var ajax = new XMLHttpRequest();
-//   ajax.addEventListener("load", completeThumb, false);
-//   ajax.addEventListener("error", errorHandler, false);
-//   ajax.addEventListener("abort", abortHandler, false);
-//   ajax.open("POST", thumbEndpoint);
-//   ajax.send(fd);
-// }
-
-// function completeThumb(event){
-//   console.log(event.target.responseText);
-// }
