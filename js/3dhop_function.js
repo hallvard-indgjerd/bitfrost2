@@ -14,7 +14,7 @@ var DEFAULT_VIEWER_STATE = {
   grid : 'gridBase', //'none' 'gridBase' 'gridBox' 'gridBB'
   axes : false,
   //view
-  trackType : "turntable", //turntable or sphere
+  navigation : "turntable", //turntable or sphere
   homeTrackState : [15,15,0,0,0,3.0],
   trackState : [15,15,0,0,0,3.0],
   fov : 40,
@@ -45,10 +45,8 @@ var VIEWER_ANNOTATIONS = {
   spots: {}
 };
 
-let viewList = {}
-let viewIndex = 0;
-let spotList = {}
-let spotIndex = 0;
+let viewList = {};
+let spotList = {};
 
 // MEASUREMENT STATE-----------------------------------------------
 let angleStage = 0;
@@ -421,7 +419,7 @@ function startupViewer(object){
 		}
 	};
 
-  if(DEFAULT_VIEWER_STATE.trackType == "turntable"){
+  if(DEFAULT_VIEWER_STATE.navigation == "turntable"){
     myScene.trackball = {
       type: TurntablePanTrackball,
       trackOptions: {
@@ -437,7 +435,7 @@ function startupViewer(object){
       }
     };
   }
-  else if(DEFAULT_VIEWER_STATE.trackType == "sphere"){
+  else if(DEFAULT_VIEWER_STATE.navigation == "sphere"){
     myScene.trackball = {
       type: SphereTrackball,
       trackOptions: {
