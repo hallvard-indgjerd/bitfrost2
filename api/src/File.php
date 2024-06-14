@@ -28,8 +28,14 @@ class File extends Conn{
 
   public function __construct() {
     $this->uuid = Uuid::uuid4();
-    $this->imageDir = $_SERVER['DOCUMENT_ROOT']."/prototype/archive/image/";
-    $this->documentDir = $_SERVER['DOCUMENT_ROOT']."/prototype/archive/document/";
+    $currentDir = __DIR__;
+    if (strpos($currentDir, 'prototype_dev') !== false) {
+      $rootFolder = 'prototype_dev';
+  } else {
+      $rootFolder = 'prototype';
+  }
+    $this->imageDir = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/image/";
+    $this->documentDir = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/document/";
   }
 
   public function addMedia($data, $file=null){
