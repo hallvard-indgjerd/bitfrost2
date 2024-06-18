@@ -25,6 +25,7 @@ if($("[name=logged]").val() == 0){
 }
 currentPageActiveLink('index.php');
 getFilterList();
+chronoFilter();
 buildGallery(gallery);
 buildCollection()
 buildStat();
@@ -49,14 +50,22 @@ $("a.sortBy").on('click', function(){
 
 $(".buildGallery").on('change', function(){ getFilter(); })
 $(".byDescription").on('click', function(){ getFilter(); })
+$("body").on('click', "#macroList .dropdown-item", el => {
+  $("#macroList .dropdown-item").removeClass('active');
+  $(el.target).addClass('active')
+  $("#chronoDropDownBtn").text($(el.target).text())
+  getFilter();
+})
 $("#resetGallery").on('click', function(){
   filter = [];
   sort = "rand()";
   byCategory.val('');
   byMaterial.val('');
   byDescription.val('');
-  byChronology.val('');
+  // byChronology.val('');
   byInstitution.val('');
+  $("#macroList .dropdown-item").removeClass('active');
+  $("#chronoDropDownBtn").text("chronology")
   activeFilter = 0;
   buildGallery(gallery)
 })
@@ -73,6 +82,8 @@ $("#resetCollection").on('click', function(){
   checkActiveFilter()
 })
 $("#viewCollection > span").text('('+collected.length+')')
+
+$("#toggleMenu").on('click',resizeDOM);
 
 
 $(window).scroll(function(){
@@ -131,10 +142,15 @@ function cronoChart() {
 
 function getFilter(){
   filter = [];
+  let chrono = $("#macroList .dropdown-item.active");
   if(byCategory.val()){filter.push("class.id = "+byCategory.val())}
   if(byMaterial.val()){filter.push("material.id = "+byMaterial.val())}
-  if(byChronology.val()){
-    let span = byChronology.val().split("|");
+  // if(byChronology.val()){
+  //   let span = byChronology.val().split("|");
+  //   filter.push("artifact.start >= "+span[0]+" and artifact.start < "+span[1])
+  // }
+  if (chrono.length > 0) {
+    let span = chrono.val().split("|");
     filter.push("artifact.start >= "+span[0]+" and artifact.start < "+span[1])
   }
   if(byDescription.val()){filter.push("(artifact.description like '%"+byDescription.val()+"%' or artifact.name like '%"+byDescription.val()+"%')")}
@@ -153,9 +169,9 @@ function getFilterList(){
     data.material.forEach((item, i) => {
       $("<option/>").text(item.value).val(item.id).appendTo(byMaterial);
     });
-    data.chronology.forEach((item, i) => {
-      $("<option/>").text(item.period).val(item.start+"|"+item.end).appendTo(byChronology);
-    });
+    // data.chronology.forEach((item, i) => {
+    //   $("<option/>").text(item.period).val(item.start+"|"+item.end).appendTo(byChronology);
+    // });
     data.institution.forEach((item, i) => {
       $("<option/>").text(item.value).val(item.id).appendTo(byInstitution);
     });
@@ -193,8 +209,6 @@ function artifactByCounty(){
   };
   $.ajax(ajaxSettings).done(function(data) { mapStat(data); })
 }
-
-$("#toggleMenu").on('click',resizeDOM);
 
 function resizeDOM(){
   if(

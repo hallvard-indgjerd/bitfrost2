@@ -39,116 +39,6 @@ let collected = [];
 let filter = [];
 let sort = "rand()";
 
-function buildData(){
-  $("[data-table]").each(function(){
-    if ($(this).is("input:text") ||
-      $(this).is("input[type=number]") ||
-      $(this).is("select") ||
-      $(this).is("textarea")
-    ) {
-      if (!$(this).is(':disabled')) {
-        if ($(this).val()) {
-          tab.push($(this).data('table'));
-          field.push({tab:$(this).data('table'),field:$(this).attr('id')});
-          val.push({tab:$(this).data('table'),field:$(this).attr('id'),val:$(this).val()});
-        }
-      }
-    }
-    if ($(this).is(':checkbox')) {
-      let v = $(this).is(':checked') ? 1 : 0;
-      tab.push($(this).data('table'));
-      field.push({tab:$(this).data('table'),field:$(this).attr('id')});
-      val.push({tab:$(this).data('table'),field:$(this).attr('id'),val:v});
-    }
-  });
-  tab = tab.filter((v, p) => tab.indexOf(v) == p);
-  $.each(tab,function(i,v){ dati[v]={} })
-  $.each(field,function(i,v){ dati[v.tab][v.field]={} })
-  $.each(val,function(i,v){ dati[v.tab][v.field]=v.val })
-}
-
-function buildGallery(callback){
-  checkActiveFilter()
-  ajaxSettings.url=API+"model.php";
-  ajaxSettings.data={trigger:'buildGallery', filter:filter, sort:sort};
-  $.ajax(ajaxSettings).done(callback)
-}
-
-function gallery(data){
-  wrapDiv = "#wrapGallery";
-  $(wrapDiv).html('');
-  $("#viewGallery > span").text('('+data.length+')')
-  data.forEach((item) => {
-    let div = $("<div/>",{class:'card m-1 itemCard'}).attr("data-item",item.id).appendTo(wrapDiv);
-    let header = $("<div/>", {class:'card-header'})
-    .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
-    .appendTo(div);
-    $("<p/>",{class:'txt-adc-dark fw-bold'}).html(item.id).appendTo(header);
-    let body = $("<div/>",{class:'card-body'}).appendTo(div);
-    $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
-    $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+item.material+"</span>").appendTo(body);
-    $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
-    $("<p/>",{class:'mb-2'}).html(cutString(item.description, 80)).appendTo(body);
-    let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
-    $("<a/>",{class:'btn btn-sm btn-adc-blue ms-3', href:'artifact_view.php?item='+item.id}).text('View').appendTo(footer);
-    let collectBtn = $("<button/>",{class:'btn btn-sm btn-adc-blue ms-3 addItemBtn', id: 'addItem'+item.id}).text('Collect').appendTo(footer);
-    let uncollectBtn = $("<button/>",{class:'btn btn-sm btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('Remove').appendTo(footer).hide();
-
-    collectBtn.on('click',function(){
-      if(!collected.includes(item)){
-        collected.push(item);
-        $(this).hide();
-        uncollectBtn.show();
-        buildCollection();
-      }
-    })
-
-    uncollectBtn.on('click',function(){
-      let idx = collected.findIndex(i => i.id === item.id);
-      collected.splice(idx, 1);
-      $(this).hide();
-      collectBtn.show();
-      buildCollection();
-    })
-  })
-}
-
-function checkDevice(){
-  let device;
-
-  if(
-    screen.width >= 1024 &&
-    screen.orientation.type.split('-')[0] == 'landscape' &&
-    (screen.orientation.angle == 90 || screen.orientation.angle == 270)
-  ){device = 'tablet-landscape'}
-  
-  if(//tablet and hybrid laptop (ex. surface pro), portrait
-    (screen.width >= 768 && screen.width < 1024) &&
-    screen.orientation.type.split('-')[0] == 'portrait' &&
-    (screen.orientation.angle == 0 || screen.orientation.angle == 180)
-  ){device = 'tablet-portrait'}
-
-  if(//laptop and desktop
-    screen.width >= 1024 &&
-    screen.orientation.type.split('-')[0] == 'landscape' &&
-    (screen.orientation.angle == 0 || screen.orientation.angle == 180)
-  ){device='pc'}
-  return device;
-}
-
-function checkName(data){
-  let dati = {}
-  dati.trigger='checkName';
-  dati.name = data.name;
-  dati.element = data.element;
-  ajaxSettings.url=API+"get.php";
-  ajaxSettings.data = dati
-  $.ajax(ajaxSettings).done(function(data){
-    let output = data.length==0 ? '<div class="alert alert-success">Ok, the value is not present in the database, you can use this name</div>':'<div class="alert alert-danger">The value already exists in the database, you cannot use it</div>';
-    $("#checkNameResult").html(output);
-  });
-}
-
 function buildCollection(){
   console.log(collected);
   let wrap = $("#wrapCollection");
@@ -189,6 +79,79 @@ function buildCollection(){
   })
 }
 
+function buildData(){
+  $("[data-table]").each(function(){
+    if ($(this).is("input:text") ||
+      $(this).is("input[type=number]") ||
+      $(this).is("select") ||
+      $(this).is("textarea")
+    ) {
+      if (!$(this).is(':disabled')) {
+        if ($(this).val()) {
+          tab.push($(this).data('table'));
+          field.push({tab:$(this).data('table'),field:$(this).attr('id')});
+          val.push({tab:$(this).data('table'),field:$(this).attr('id'),val:$(this).val()});
+        }
+      }
+    }
+    if ($(this).is(':checkbox')) {
+      let v = $(this).is(':checked') ? 1 : 0;
+      tab.push($(this).data('table'));
+      field.push({tab:$(this).data('table'),field:$(this).attr('id')});
+      val.push({tab:$(this).data('table'),field:$(this).attr('id'),val:v});
+    }
+  });
+  tab = tab.filter((v, p) => tab.indexOf(v) == p);
+  $.each(tab,function(i,v){ dati[v]={} })
+  $.each(field,function(i,v){ dati[v.tab][v.field]={} })
+  $.each(val,function(i,v){ dati[v.tab][v.field]=v.val })
+}
+
+function buildGallery(callback){
+  checkActiveFilter()
+  ajaxSettings.url=API+"model.php";
+  ajaxSettings.data={trigger:'buildGallery', filter:filter, sort:sort};
+  $.ajax(ajaxSettings).done(callback)
+}
+
+function checkDevice(){
+  let device;
+
+  if(
+    screen.width >= 1024 &&
+    screen.orientation.type.split('-')[0] == 'landscape' &&
+    (screen.orientation.angle == 90 || screen.orientation.angle == 270)
+  ){device = 'tablet-landscape'}
+  
+  if(//tablet and hybrid laptop (ex. surface pro), portrait
+    (screen.width >= 768 && screen.width < 1024) &&
+    screen.orientation.type.split('-')[0] == 'portrait' &&
+    (screen.orientation.angle == 0 || screen.orientation.angle == 180)
+  ){device = 'tablet-portrait'}
+
+  if(//laptop and desktop
+    screen.width >= 1024 &&
+    screen.orientation.type.split('-')[0] == 'landscape' &&
+    (screen.orientation.angle == 0 || screen.orientation.angle == 180)
+  ){device='pc'}
+  return device;
+}
+
+function checkName(data){
+  let dati = {}
+  dati.trigger='checkName';
+  dati.name = data.name;
+  dati.element = data.element;
+  ajaxSettings.url=API+"get.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings).done(function(data){
+    let output = data.length==0 ? '<div class="alert alert-success">Ok, the value is not present in the database, you can use this name</div>':'<div class="alert alert-danger">The value already exists in the database, you cannot use it</div>';
+    $("#checkNameResult").html(output);
+  });
+}
+
+
+
 function cutString(string, length) {
   let short = string.substr(0, length);
   if (/^\S/.test(string.substr(length)))
@@ -208,6 +171,45 @@ function generateRandomPassword(){
     $("#new_pwd, #confirm_pwd").val(data)
     getPwdStrength()
   });
+}
+
+function gallery(data){
+  wrapDiv = "#wrapGallery";
+  $(wrapDiv).html('');
+  $("#viewGallery > span").text('('+data.length+')')
+  data.forEach((item) => {
+    let div = $("<div/>",{class:'card m-1 itemCard'}).attr("data-item",item.id).appendTo(wrapDiv);
+    let header = $("<div/>", {class:'card-header'})
+    .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
+    .appendTo(div);
+    $("<p/>",{class:'txt-adc-dark fw-bold'}).html(item.id).appendTo(header);
+    let body = $("<div/>",{class:'card-body'}).appendTo(div);
+    $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
+    $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+item.material+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html(cutString(item.description, 80)).appendTo(body);
+    let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
+    $("<a/>",{class:'btn btn-sm btn-adc-blue ms-3', href:'artifact_view.php?item='+item.id}).text('View').appendTo(footer);
+    let collectBtn = $("<button/>",{class:'btn btn-sm btn-adc-blue ms-3 addItemBtn', id: 'addItem'+item.id}).text('Collect').appendTo(footer);
+    let uncollectBtn = $("<button/>",{class:'btn btn-sm btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('Remove').appendTo(footer).hide();
+
+    collectBtn.on('click',function(){
+      if(!collected.includes(item)){
+        collected.push(item);
+        $(this).hide();
+        uncollectBtn.show();
+        buildCollection();
+      }
+    })
+
+    uncollectBtn.on('click',function(){
+      let idx = collected.findIndex(i => i.id === item.id);
+      collected.splice(idx, 1);
+      $(this).hide();
+      collectBtn.show();
+      buildCollection();
+    })
+  })
 }
 
 function getCity(query){
@@ -335,6 +337,32 @@ function handleCategoryChange(){
     $("#category_specs option").length == 1 ? $("#catSpecsMsg").fadeIn('fast') : $("#catSpecsMsg").hide();
   }
   setTimeout(showMsgList, 500)
+}
+
+function chronoFilter(){
+  ajaxSettings.url=API+"get.php";
+  ajaxSettings.data={trigger:'chronoFilter'};
+  $.ajax(ajaxSettings).done(function(data) {
+    data.macro.forEach(macro => {
+      let macroLi = $("<li/>").appendTo("#macroList")
+      let macroBtn = $("<button/>", {class:'dropdown-item'}).html(macro.definition + '<span class="mdi mdi-chevron-right float-end"></span>').val(macro.start+"|"+macro.end).appendTo(macroLi)
+      let genericSubMenu = $("<ul/>", {class:'dropdown-menu dropdown-submenu'}).appendTo(macroLi)
+      macro.generic.forEach(generic => {
+        let genericLi = $("<li/>").appendTo(genericSubMenu)
+        let genericBtn = $("<button/>", {class:'dropdown-item'}).html(generic.definition + '<span class="mdi mdi-chevron-right float-end"></span>').val(generic.start+"|"+generic.end).appendTo(genericLi)
+        let specificSubMenu = $("<ul/>", {class:'dropdown-menu dropdown-submenu'}).appendTo(genericLi)
+        generic.specific.forEach(specific => {
+          if(generic.definition !== specific.definition){
+            let specificLi = $("<li/>").appendTo(specificSubMenu)
+            let specificBtn = $("<button/>", {class:'dropdown-item'}).html(specific.definition).val(specific.start+"|"+specific.end).appendTo(specificLi)
+          }else{
+            specificSubMenu.remove()
+            genericBtn.find('span').remove();
+          }
+        })
+      })
+    });
+  })
 }
 
 function handleChronoChange(){

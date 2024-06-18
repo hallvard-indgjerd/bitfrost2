@@ -22,6 +22,20 @@
   border-top: 1px solid #cacaca;
 }
 
+#chronoDropDownBtn::after{
+  position: absolute;
+  top: 0%;
+  right: 11px;
+  content: "keyboard_arrow_down";
+  font-family: 'Material Icons';
+  font-size: 20px;
+  border:none !important;
+}
+
+.dropdown-menu li {position: relative;}
+.dropdown-menu .dropdown-submenu {display: none;position: absolute;left: 100%;top: -7px; width:200px;}
+.dropdown-menu > li:hover > .dropdown-submenu {display: block;}
+
 #itemsCount{position:relative; width:100%; margin:0 !important; padding:0 !important; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;}
 #itemsCount > div{
   width:calc(50% - 8px); 

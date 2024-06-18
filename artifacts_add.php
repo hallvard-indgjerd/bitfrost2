@@ -84,9 +84,42 @@
               </div>
             </div>
           </fieldset>
-          <fieldset>
+          <fieldset id="timeline">
             <legend>Chronological definition</legend>
-            <div class="row">
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label for="serie">select a timeline map</label>
+                <select name="serie" id="serie" class="form-select">
+                  <option value="" disabled selected>-select a timeline-</option>
+                  <option value="1">generic</option>
+                  <option value="2">sweden</option>
+                </select>
+                <div class="mt-3 text-secondary">Please select a timeline map from those available. Each time map will update the chronological filters of the lower and upper bounds by setting them to the specific local time span. </div>
+              </div>
+              <div class="col-md-5">
+                <div class="mb-3">
+                  <label for="dropdownMenuButtonLower">Lower bound</label>
+                  <div class="dropdown mb-3">
+                    <button id="dropdownMenuButtonLower" class="btn btn-light dropdown-toggle form-control text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>select a period</button>
+                    <ul class="dropdown-menu firstLevel w-100" aria-labelledby="dropdownMenuButton" id="dropdown-menu-lower"></ul>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="dropdownMenuButtonUpper">Upper bound</label>
+                  <div class="dropdown">
+                    <button id="dropdownMenuButtonUpper" class="btn btn-light dropdown-toggle form-control text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>select a period</button>
+                    <ul class="dropdown-menu firstLevel w-100" aria-labelledby="dropdownMenuButton" id="dropdown-menu-upper"></ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="start" class="fw-bold text-danger">From</label>
+                <input type="number" class="form-control w-auto mb-3" id="start" step="1" data-table="artifact" value="" min="" max="" required>
+                <label for="end" class="fw-bold text-danger">To</label>
+                <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="" max="" required>
+              </div>
+            </div>
+            <!-- <div class="row">
               <div class="col">
                 <legend>Lower bound</legend>
               </div>
@@ -125,7 +158,7 @@
                 <label for="end" class="fw-bold text-danger">End year</label>
                 <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="-3000000" max="<?php echo Date('Y'); ?>" required>
               </div>
-            </div>
+            </div> -->
           </fieldset>
           <fieldset>
             <legend>Conservation info</legend>

@@ -14,4 +14,5 @@ function getSelectOptions($obj){return json_encode($obj->getSelectOptions($_POST
 function getFilterList($obj){return json_encode($obj->getFilterList());}
 function checkName($obj){return json_encode($obj->checkName($_POST));}
 function getTimeSeries($obj){return json_encode($obj->getTimeSeries($_POST['filters']));}
+function chronoFilter($obj){return json_encode($obj->chronoFilter());}
 ?>
