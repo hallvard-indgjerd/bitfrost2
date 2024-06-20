@@ -80,7 +80,6 @@ function getArtifact(){
 
 function updateMeta(btn){
   checkMaterialArray()
-  // materialTechniqueArray.forEach(function(v,i){ materialTechniqueArray[i]['artifact']=artifact })
   if (form[0].checkValidity()) {
     btn.preventDefault()
     dati.trigger = 'editArtifact';
@@ -103,7 +102,6 @@ function updateMeta(btn){
     ajaxSettings.data = dati
     $.ajax(ajaxSettings)
     .done(function(data) {
-      // console.log(data);
       if (data.res==0) {
         $("#toastDivError .errorOutput").text(data.output);
         $("#toastDivError").removeClass("d-none");

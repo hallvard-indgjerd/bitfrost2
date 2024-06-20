@@ -37,10 +37,10 @@ $(window).on('load', function() {
 let btnHome, btnFullscreen;
 let collected = [];
 let filter = [];
+let filter2 = [];
 let sort = "rand()";
 
 function buildCollection(){
-  console.log(collected);
   let wrap = $("#wrapCollection");
   $("#viewCollection > span").text('('+collected.length+')')
   wrap.html('')
@@ -110,7 +110,7 @@ function buildData(){
 function buildGallery(callback){
   checkActiveFilter()
   ajaxSettings.url=API+"model.php";
-  ajaxSettings.data={trigger:'buildGallery', filter:filter, sort:sort};
+  ajaxSettings.data={trigger:'buildGallery', filter:filter2, sort:sort};
   $.ajax(ajaxSettings).done(callback)
 }
 
@@ -174,10 +174,18 @@ function generateRandomPassword(){
 }
 
 function gallery(data){
+  console.log(data);
   wrapDiv = "#wrapGallery";
   $(wrapDiv).html('');
   $("#viewGallery > span").text('('+data.length+')')
   data.forEach((item) => {
+    var materialObject = JSON.parse(item.material);
+    var materialValues = [];
+    for (var key in materialObject) {
+      if (materialObject.hasOwnProperty(key)) {
+          materialValues.push(materialObject[key]);
+      }
+    }
     let div = $("<div/>",{class:'card m-1 itemCard'}).attr("data-item",item.id).appendTo(wrapDiv);
     let header = $("<div/>", {class:'card-header'})
     .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
@@ -185,7 +193,7 @@ function gallery(data){
     $("<p/>",{class:'txt-adc-dark fw-bold'}).html(item.id).appendTo(header);
     let body = $("<div/>",{class:'card-body'}).appendTo(div);
     $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
-    $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+item.material+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+materialValues.join(', ')+"</span>").appendTo(body);
     $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
     $("<p/>",{class:'mb-2'}).html(cutString(item.description, 80)).appendTo(body);
     let footer = $("<div/>",{class:'card-footer'}).appendTo(div);

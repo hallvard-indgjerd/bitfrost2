@@ -84,12 +84,12 @@
               </div>
             </div>
           </fieldset>
-          <fieldset id="timeline">
+          <fieldset id="timeline-map">
             <legend>Chronological definition</legend>
             <div class="row mb-3">
               <div class="col-md-3">
-                <label for="serie">select a timeline map</label>
-                <select name="serie" id="serie" class="form-select">
+                <label for="timeline" class="fw-bold text-danger">select a timeline map</label>
+                <select name="timeline" id="timeline" class="form-select" data-table="artifact" required>
                   <option value="" disabled selected>-select a timeline-</option>
                   <option value="1">generic</option>
                   <option value="2">sweden</option>
@@ -119,46 +119,6 @@
                 <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="" max="" required>
               </div>
             </div>
-            <!-- <div class="row">
-              <div class="col">
-                <legend>Lower bound</legend>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4">
-                <label for="startGenericList">Filter start year by generic cultural period definition</label>
-                <select class="form-select" id="startGenericList">
-                  <option value="">-- no filter --</option>
-                </select>
-              </div>
-              <div class="col-md-4">
-                <label for="startSpecificList">Filter start year by specific cultural period definition</label>
-                <select class="form-select" id="startSpecificList" disabled></select>
-              </div>
-              <div class="col-md-4">
-                <label for="start" class="fw-bold text-danger">Start year</label>
-                <input type="number" class="form-control w-auto" id="start" step="1" data-table="artifact" value="" min="-3000000" max="<?php echo Date('Y'); ?>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <legend>Upper bound</legend>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4">
-                <label for="endGenericList">Filter end year by generic cultural period definition</label>
-                <select class="form-select" id="endGenericList" disabled></select>
-              </div>
-              <div class="col-md-4">
-                <label for="endSpecificList">Filter end year by specific cultural period definition</label>
-                <select class="form-select" id="endSpecificList" disabled></select>
-              </div>
-              <div class="col-md-4">
-                <label for="end" class="fw-bold text-danger">End year</label>
-                <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="-3000000" max="<?php echo Date('Y'); ?>" required>
-              </div>
-            </div> -->
           </fieldset>
           <fieldset>
             <legend>Conservation info</legend>
@@ -275,6 +235,6 @@
     <script src="js/maps/geo_config.js" charset="utf-8"></script>
     <script src="js/maps/geo_function.js" charset="utf-8"></script>
     <script src="js/artifact_add.js" charset="utf-8"></script>
-    <script src="js/chronologyFunc.js" charset="utf-8"></script>
+    <!-- <script src="js/chronologyFunc.js" charset="utf-8"></script> -->
   </body>
 </html>

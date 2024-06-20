@@ -183,7 +183,8 @@ function newArtifact(el){
 
 
 //chronology section
-$("#serie").on('change', function(){
+$("#start").on('change keyup', handleChronoChange)
+$("#timeline").on('change', function(){
   let serie = $(this).val()
   getTimeline(serie,setIndex)
 })

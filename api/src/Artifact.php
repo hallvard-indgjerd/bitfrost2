@@ -38,7 +38,6 @@ class Artifact extends Conn{
       $this->pdo()->rollBack();
       return ["res"=>0, "output"=>$e->getMessage()];
     }
-
   }
 
   public function editArtifact(array $dati){
@@ -93,7 +92,7 @@ class Artifact extends Conn{
     if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
     $sql = "select id, name, description, cast(last_update as date) as last_update from artifact_view ".$filter. " order by last_update desc";
     return $this->simple($sql);
-   }
+  }
 
   public function getArtifact(int $id){
     $artifact = "select * from artifact_view where id = ".$id.";";

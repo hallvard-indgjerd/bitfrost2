@@ -16,6 +16,7 @@ select
   a.category_specs category_specs_id,
   category_specs.value category_specs,
   a.type,
+  a.timeline,
   a.start,
   a.end,
   a.description,
