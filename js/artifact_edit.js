@@ -10,6 +10,7 @@ function getArtifact(){
   $.ajax(ajaxSettings)
   .done(function(data) {
     console.log(data);
+    getTimeline(data.artifact.timeline,setIndex)
     $("#pageTitle").text(data.artifact.name)
     $("#name").val(data.artifact.name)
     $("#status").val(data.artifact.status_id)
@@ -20,6 +21,7 @@ function getArtifact(){
       if(data.artifact.category_specs_id){$("#category_specs").val(data.artifact.category_specs_id)}
     })
     $("#type").val(data.artifact.type)
+    $("#timeline").val(data.artifact.timeline)
 
     data.artifact_material_technique.forEach(function(v){
       let t = v.technique ? v.technique : null;
