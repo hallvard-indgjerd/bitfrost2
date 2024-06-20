@@ -31,9 +31,9 @@ class File extends Conn{
     $currentDir = __DIR__;
     if (strpos($currentDir, 'prototype_dev') !== false) {
       $rootFolder = 'prototype_dev';
-  } else {
+    } else {
       $rootFolder = 'prototype';
-  }
+    }
     $this->imageDir = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/image/";
     $this->documentDir = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/document/";
   }

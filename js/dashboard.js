@@ -1,11 +1,13 @@
 const usrId = $("[name=usrId]").val()
 const usrCls = $("[name=usrCls]").val()
+let issues = 0;
 mapInit()
 getArtifacts()
 getModels()
 getInstitutions()
 getUsers()
 getPersons()
+artifactIssues()
 
 $("#modelDashboardGallery").css("height",$(".listDashBoard").height())
 
@@ -123,7 +125,6 @@ function getInstitutions(){
   $.ajax(ajaxSettings).done(function(data){
     $('#institutionList .badge').text(data.length)
     data.forEach((item, i) => {
-      console.log(item);
       let logo = item.logo ? item.logo : 'default.jpg';
       let card = $("<div/>",{class:"card mb-3"}).appendTo(cardWrap)  
       let row = $("<div/>", {class:'row g-0'}).appendTo(card)
@@ -213,4 +214,12 @@ function deleteInstitution(inst){
       if(data.res = 1){ getInstitutions() }
     })
   }
+}
+
+function artifactIssues(){
+  ajaxSettings.url=API+"artifact.php";
+  ajaxSettings.data = {trigger:'artifactIssues'}
+  $.ajax(ajaxSettings).done(function(data){
+    console.log(data);
+  })
 }

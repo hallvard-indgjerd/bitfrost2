@@ -144,5 +144,28 @@ class Artifact extends Conn{
   public function getArtifactName(int $id){
     return $this->simple("select name from artifact where id = ".$id.";")[0];
   }
+
+  public function artifactIssues(){
+    $sql = "SELECT a.id, a.name, a.start, a.end FROM artifact a ";
+    $chronoNotInRange = $sql . "LEFT JOIN time_series_specific time ON a.start BETWEEN time.start AND time.end OR a.end BETWEEN time.start AND time.end OR (a.start <= time.start AND a.end >= time.end) WHERE time.start IS NULL;";
+    $chronoNullValue = $sql . "where a.start is null or a.end is null";
+    $sqlNoDescription = $sql . "where a.description is null";
+    $out['chronoNotInRange'] = $this->simple($chronoNotInRange);
+    $out['chronoNullValue'] = $this->simple($chronoNullValue);
+    $out['noDescription'] = $this->simple($sqlNoDescription);
+
+    $db_files = [];
+    $files = $this->simple("select object from model_object;");
+    foreach ($files as $file) {$db_files[]=$file['object'];}
+    if (strpos(__DIR__, 'prototype_dev') !== false) {
+      $rootFolder = $_SERVER['DOCUMENT_ROOT'].'/prototype_dev/archive/models/';
+    } else {
+      $rootFolder = $_SERVER['DOCUMENT_ROOT'].'/prototype/archive/models/';
+    }
+    $folder_files = array_diff(scandir($rootFolder), array('..', '.'));
+    $out['missingModel'] = array_diff($db_files,$folder_files);
+
+    return $out;
+  }
 }
 ?>

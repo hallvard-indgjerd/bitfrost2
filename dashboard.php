@@ -10,7 +10,11 @@
     <link rel="stylesheet" href="css/dashboard.css">
   </head>
   <body>
-    <?php require("assets/header.php"); ?>
+    <?php 
+      require("assets/header.php");
+      require("assets/loadingDiv.html");  
+    ?>
+    
     <main class="animated mainSection">
       <input type="hidden" name="usrId" value="<?php echo $_SESSION['id']; ?>">
       <input type="hidden" name="usrCls" value="<?php echo $_SESSION['role']; ?>">

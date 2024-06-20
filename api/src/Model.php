@@ -177,7 +177,11 @@ class Model extends Conn{
           array_push($filterArtifact,$filter['description']);
           unset($filterArr[$index]['description']);
         }
-        foreach ($filter as $key => $value) {$filterArtifact[] = $key . $value;}
+      }
+      foreach ($filterArr as $index => $filter) {
+        foreach ($filter as $key => $value) {
+          $filterArtifact[] = $key . $value;
+        }
       }
     }
     $sql = "
