@@ -5,7 +5,7 @@ let domContentLoaded = false;
 
 function checkAllCompleted() {
   if (ajaxCallsCompleted && pageLoaded && domContentLoaded && loader > 0) {
-    console.log('Tutte le chiamate AJAX sono completate, la pagina è completamente caricata e il DOM è pronto');
+    //Tutte le chiamate AJAX sono completate, la pagina è completamente caricata e il DOM è pronto
     $("#loadingDiv").fadeOut('fast')
   }else{
     $("#loadingDiv").show()

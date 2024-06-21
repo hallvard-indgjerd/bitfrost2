@@ -146,10 +146,9 @@ class Artifact extends Conn{
   }
 
   public function artifactIssues(){
-    $sql = "SELECT a.id, a.name, a.start, a.end FROM artifact a ";
-    $chronoNotInRange = $sql . "LEFT JOIN time_series_specific time ON a.start BETWEEN time.start AND time.end OR a.end BETWEEN time.start AND time.end OR (a.start <= time.start AND a.end >= time.end) WHERE time.start IS NULL;";
-    $chronoNullValue = $sql . "where a.start is null or a.end is null";
-    $sqlNoDescription = $sql . "where a.description is null";
+    $chronoNotInRange = "SELECT a.id, a.name, a.start, coalesce(a.end, '-') end FROM artifact a LEFT JOIN time_series_specific time ON a.start BETWEEN time.start AND time.end OR a.end BETWEEN time.start AND time.end OR (a.start <= time.start AND a.end >= time.end) WHERE time.start IS NULL and a.start is not null order by a.id asc;";
+    $chronoNullValue = "SELECT a.id, a.name, coalesce(a.start, '-') start, coalesce(a.end, '-') end FROM artifact a where a.start is null and a.end is null order by a.id asc";
+    $sqlNoDescription = "SELECT a.id, a.name FROM artifact a where a.description is null order by a.id asc";
     $out['chronoNotInRange'] = $this->simple($chronoNotInRange);
     $out['chronoNullValue'] = $this->simple($chronoNullValue);
     $out['noDescription'] = $this->simple($sqlNoDescription);
@@ -163,7 +162,11 @@ class Artifact extends Conn{
       $rootFolder = $_SERVER['DOCUMENT_ROOT'].'/prototype/archive/models/';
     }
     $folder_files = array_diff(scandir($rootFolder), array('..', '.'));
-    $out['missingModel'] = array_diff($db_files,$folder_files);
+    $missingModel = array_diff($db_files,$folder_files);
+    $missingModelList = implode("','", array_map('addslashes', $missingModel));
+    $missingModelList = "'".$missingModelList."'";
+    $sqlMissingModel = "select a.id artifact, m.model, a.name, m.object from artifact a inner join artifact_model am on am.artifact = a.id inner join model_object m on am.model = m.model where m.object in (".$missingModelList.") order by a.id asc;";
+    $out['missingModel'] = $this->simple($sqlMissingModel);
 
     return $out;
   }
