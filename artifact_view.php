@@ -42,8 +42,8 @@
         </div>
         <div>
           <div class="btn-group btn-group-sm" id="itemToolLastDiv">
-            <button type="button" name="download" id="download" class="btn btn-light"><i class="mdi mdi-tray-arrow-down"></i> download</button>
-            <button type="button" name="print" id="print" class="btn btn-light"><i class="mdi mdi-printer"></i> print</button>
+            <!-- <button type="button" name="download" id="download" class="btn btn-light"><i class="mdi mdi-tray-arrow-down"></i> download</button>
+            <button type="button" name="print" id="print" class="btn btn-light"><i class="mdi mdi-printer"></i> print</button> -->
           </div>
         </div>
       </div>
