@@ -271,14 +271,13 @@ $("#model-uuid").on('click', function(){copy_to_clipboard('model-uuid')})
 //////////////// FUNCTIONS //////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-function changeModelStatus(){
+function changeModelStatus(model){
   let status = $("button[name=modelVisibility").val()
   let dati = {trigger:'changeModelStatus', dati:{id:model, status:status}}
+  ajaxSettings.url=API+"model.php";
   ajaxSettings.data = dati;
-  console.log(ajaxSettings);
   $.ajax(ajaxSettings)
     .done(function(data) {
-      console.log(data);
       if (data.res==1) {
         $("#toastDivError .errorOutput").text(data.msg);
         $("#toastDivError").removeClass("d-none");
@@ -293,6 +292,7 @@ function changeModelStatus(){
 
 function initModel(model){
   let mainData = model.model;
+  const modelId = mainData.id;
   let object = model.model_object;
   let model_view = model.model_view;
   paradata = model.model_object[0]
@@ -316,7 +316,11 @@ function initModel(model){
   let modelStatus = $("#model-status").addClass(statusAlert)
   if(activeUser){
     modelStatus.tooltip({title:statusTooltip, placement:'top', trigger:'hover'});
-    $("button[name=modelVisibility").addClass(statusBtnClass).val(statusBtnValue).tooltip({title:statusBtnTooltip, placement:'top', trigger:'hover'}).on('click',changeModelStatus)
+    $("button[name=modelVisibility")
+      .addClass(statusBtnClass)
+      .val(statusBtnValue)
+      .tooltip({title:statusBtnTooltip, placement:'top', trigger:'hover'})
+      .on('click',function(){changeModelStatus(modelId)})
   }else{
     $("#toolBarModel").remove()
   } 

@@ -84,7 +84,8 @@ $.ajax(ajaxSettings).done(function(data) {
   $("#artifact_license>a").attr("href",metadata.license.link).text(metadata.license.license+" ("+metadata.license.acronym+")")
 
   if(data.model){
-    $("#editModelBtn > a").attr('href','model_view.php?item='+data.model.model.id);
+    console.log(data.model);
+    $("[name=editModelBtn]").attr('href','model_edit.php?item='+data.model.model.id);
     let model = data.model.model_object[0];
     if (model.object) {
       if((role && role < 5) || (activeUser && model.author_id === activeUser)){
