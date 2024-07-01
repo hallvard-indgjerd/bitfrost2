@@ -79,8 +79,6 @@ $("#btHome").on('click', function(){
 });
 
 $("#btWidescreen").on('click', function(){
-  let div = ['artifact','geographic','model','media', 'stats']
-  div.forEach((v)=>{$("#"+v).toggleClass(v+'-primary ' + v +'-full')});
   resizeCanvas();
   $("#btWidescreen").toggleClass("btn-secondary").toggleClass("btn-adc-blue");
   $("#wrapAnnotations").toggleClass('invisible');

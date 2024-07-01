@@ -9,6 +9,9 @@ if($("[name=logged]").val() == 0){
 }
 
 $("body").on('click',"#btWidescreen", function(){
+  let div = ['artifact','geographic','model','media', 'stats']
+  div.forEach((v)=>{ $("#"+v).toggleClass(v+'-primary ' + v +'-full') });
+  resizeCanvas();
   setTimeout(function(){ artifactMap() },500) 
 });
 
