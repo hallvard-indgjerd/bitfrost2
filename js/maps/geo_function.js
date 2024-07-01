@@ -124,6 +124,7 @@ function mapInit(){
 }
 
 function artifactMap(){
+  if (map !== undefined) { map.remove(); }
   map = L.map('map',{maxBounds:mapExt})
   map.setMinZoom(4);
   osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);

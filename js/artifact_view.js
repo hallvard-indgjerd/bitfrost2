@@ -7,9 +7,13 @@ if($("[name=logged]").val() == 0){
 }else{
   $("#itemTool").addClass(checkDevice()=='pc' ? 'small' :'large');
 }
+
+$("body").on('click',"#btWidescreen", function(){
+  setTimeout(function(){ artifactMap() },500) 
+});
+
 ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
-
 $.ajax(ajaxSettings).done(function(data) {
   let artifact = data.artifact;
   classid = artifact.category_class_id;

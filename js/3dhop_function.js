@@ -84,15 +84,9 @@ $("#btWidescreen").on('click', function(){
   resizeCanvas();
   $("#btWidescreen").toggleClass("btn-secondary").toggleClass("btn-adc-blue");
   $("#wrapAnnotations").toggleClass('invisible');
-  map.remove();
-  setTimeout(function(){
-    artifactMap()
-  },500)
 });
 
-$("#btScreenshot").on('click', function(){
-  screenshot();
-});
+$("#btScreenshot").on('click', function(){screenshot();});
 
 $("#paradata-modal").hide()
 $("#btParadata").on('click', function(){

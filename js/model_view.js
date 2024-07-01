@@ -25,11 +25,7 @@ $("[name=checkNameBtn]").on('click', function(){
   checkName({name:name,element:'model'})
 })
 
-function resizeDOM(){
-  setTimeout(function() {
-    resizeCanvas()
-    }, 500);
-}
+function resizeDOM(){ setTimeout(function(){ resizeCanvas() }, 500); }
 
 function startModel(){
   ajaxSettings.data={trigger:'getModel', id:model};
