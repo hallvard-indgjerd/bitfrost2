@@ -85,7 +85,7 @@ $.ajax(ajaxSettings).done(function(data) {
 
   if(data.model){
     console.log(data.model);
-    $("[name=editModelBtn]").attr('href','model_edit.php?item='+data.model.model.id);
+    $("[name=editModelBtn],#editModelBtn>a").attr('href','model_edit.php?item='+data.model.model.id);
     let model = data.model.model_object[0];
     if (model.object) {
       if((role && role < 5) || (activeUser && model.author_id === activeUser)){
