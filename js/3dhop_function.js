@@ -9,6 +9,10 @@ var presenter = null;
 var sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
 var gStep, measure_unit;
 
+// COLLECTION DATA
+var COLLECTIONDATA = {};
+var COLLECTIONITEM = undefined;
+
 // VIEWER STATE
 var DEFAULT_VIEWER_STATE = {
   grid : 'gridBase', //'none' 'gridBase' 'gridBox' 'gridBB'
@@ -40,13 +44,11 @@ var VIEWER_ANNOTATIONS = {
   object: artifactId,
   user: activeUser,
   time: new Date().toISOString(),
+  version: "2.0",
   notes: {},
   views: {},
   spots: {}
 };
-
-let viewList = {};
-let spotList = {};
 
 // MEASUREMENT STATE-----------------------------------------------
 let angleStage = 0;
@@ -373,10 +375,19 @@ function initModel(model){
     }
   });
 
+  // retrieve collectiond ata from LocalStorage
+  COLLECTIONDATA = JSON.parse(localStorage.getItem('collection')) || {};
+  COLLECTIONITEM = COLLECTIONDATA.find((item) => item.id == artifactId);
+  if(COLLECTIONITEM){
+    console.log('item in collection!');
+    //retrieve annotations, if present
+    if(COLLECTIONITEM.annotations){
+      VIEWER_ANNOTATIONS = COLLECTIONITEM.annotations;
+      // but I cannot display them now, because the viewewr is not yet initialized
+    }
+  }
   startupViewer(object);
 }
-
-
 
 function startupViewer(object){
   // init 3dhop environment
@@ -484,6 +495,17 @@ function startupViewer(object){
   }
   
   startupGrid(VIEWER_STATE.grid);
+  startupAnnotations(); // display annotations loaded from localstorage
+}
+
+function startupAnnotations(){ // display annotations loaded from localstorage
+  if(!presenter._isSceneReady()){
+    setTimeout(function(){startupAnnotations()},50);
+    return;
+  }
+  displayNotes();
+  displayViews();
+  displaySpots();
 }
 
 ////// VIEWERSTATE MANAGEMENT //////////////////////////////////////
@@ -690,6 +712,7 @@ function importJSON(event){
 
 function updateNotes(){
 	VIEWER_ANNOTATIONS.notes.text = document.getElementById("annNotes").value;
+  storeAnnotations();
 }
 function displayNotes(){
   document.getElementById("annNotes").value = VIEWER_ANNOTATIONS.notes.text;
@@ -708,6 +731,7 @@ function storeView(){
   VIEWER_ANNOTATIONS.views[viewName].url = "";
 
   displayViews(); // update views list
+  storeAnnotations();
 }
 function displayViews(){
   let listDiv = $("#viewsListDiv");
@@ -732,14 +756,17 @@ function applyView(viewName){
 }
 function updateViewState(viewName){
   VIEWER_ANNOTATIONS.views[viewName].state = JSON.parse(JSON.stringify(VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+  storeAnnotations();
 }
 function updateViewText(viewName, value){
   VIEWER_ANNOTATIONS.views[viewName].text = value;
+  storeAnnotations();
 }
 function deleteView(viewName){
   if(confirm('A view is being deleted, are you sure?')){
     delete VIEWER_ANNOTATIONS.views[viewName];
     displayViews(); // update views list
+    storeAnnotations();
   }
 }
 
@@ -762,6 +789,7 @@ function onSpotPick(point){
   VIEWER_ANNOTATIONS.spots[spotPickingName].url = "";
   spotPickEnd(); // stop spot picking mode
   displaySpots(); // update spots list
+  storeAnnotations();
 }
 function spotPickEnd(){
   $('#draw-canvas').css("cursor","default");
@@ -819,14 +847,29 @@ function displaySpots(){
 }
 function updateSpotText(spotName, value){
   VIEWER_ANNOTATIONS.spots[spotName].text = value;
+  storeAnnotations();
 }
 function deleteSpot(spotName){
   if(confirm('A spot is being deleted, are you sure?')){
     delete VIEWER_ANNOTATIONS.spots[spotName];
-    displaySpots();        
+    displaySpots();
+    storeAnnotations();      
   }
 } 
 //////////////////////////////// ANNOTATIONS END //////////////////////////////////////
+
+function storeAnnotations(){
+  if(COLLECTIONITEM){
+    VIEWER_ANNOTATIONS.time = new Date().toISOString(); // update time to current time
+    COLLECTIONITEM.annotations = VIEWER_ANNOTATIONS;
+    storeCollection();
+  }
+}
+
+function storeCollection(){
+  localStorage.setItem('collection', JSON.stringify(COLLECTIONDATA));
+}
+
 
 //--------------------------------------------------------------------------------------
 function screenshot() {
