@@ -41,11 +41,12 @@ var DEFAULT_VIEWER_STATE = {
 };
 var VIEWER_STATE = {};
 var VIEWER_ANNOTATIONS = {
+  type: "DC_SO_ANN",
+  version: "2.0",
   object: artifactId,
   user: activeUser,
   time: new Date().toISOString(),
-  version: "2.0",
-  notes: {},
+  notes: {text:""},
   views: {},
   spots: {}
 };
@@ -376,14 +377,13 @@ function initModel(model){
   });
 
   // retrieve collectiond ata from LocalStorage
-  COLLECTIONDATA = JSON.parse(localStorage.getItem('collection')) || {};
-  COLLECTIONITEM = COLLECTIONDATA.find((item) => item.id == artifactId);
+  COLLECTIONDATA = JSON.parse(localStorage.getItem('DYNCOLLECTION')) || {};
+  COLLECTIONITEM = COLLECTIONDATA.items.find((item) => item.id == artifactId);
   if(COLLECTIONITEM){
-    console.log('item in collection!');
     //retrieve annotations, if present
     if(COLLECTIONITEM.annotations){
       VIEWER_ANNOTATIONS = COLLECTIONITEM.annotations;
-      // but I cannot display them now, because the viewewr is not yet initialized
+      // but I cannot display them now, because the viewewr is not yet initialized. I'll schedule it at the end of the startupViewer function
     }
   }
   startupViewer(object);
@@ -672,6 +672,12 @@ function setGrid(value){
 
 
 //////////////////////////////// ANNOTATIONS //////////////////////////////////////
+
+function validateAnnotations(annotations){
+  if (annotations.type !== "DC_SO_ANN") return false;
+  return true;
+}
+
 function exportAnnotations(){
   VIEWER_ANNOTATIONS.time = new Date().toISOString(); // update time to current time
 	var element = document.createElement('a');
@@ -694,8 +700,7 @@ function getJSON(files){
 }
 function importJSON(event){
   var newAnn = JSON.parse(event.target.result);
-	console.log(newAnn); //DEBUG DEBUG DEBUG
-
+	//console.log(newAnn); //DEBUG DEBUG DEBUG
   if(newAnn.object != VIEWER_ANNOTATIONS.object){
     alert('Object mismatch! cannot import annotations');
     return;
@@ -862,12 +867,12 @@ function storeAnnotations(){
   if(COLLECTIONITEM){
     VIEWER_ANNOTATIONS.time = new Date().toISOString(); // update time to current time
     COLLECTIONITEM.annotations = VIEWER_ANNOTATIONS;
-    storeCollection();
+    storeCollectionData();
   }
 }
 
-function storeCollection(){
-  localStorage.setItem('collection', JSON.stringify(COLLECTIONDATA));
+function storeCollectionData(){
+  localStorage.setItem('DYNCOLLECTION', JSON.stringify(COLLECTIONDATA));
 }
 
 

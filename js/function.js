@@ -3,6 +3,104 @@ let ajaxCallsCompleted = true;
 let pageLoaded = false;
 let domContentLoaded = false;
 
+/////////////// COLLECTION DATA STRUCTURE ///////////////
+var COLLECTIONDATA = {
+  type: "DC_COLL",
+  version: "2.0",
+  user: $("[name=activeUsr]").val(), //active user id
+  time: new Date().toISOString(),
+  email: 'john.doe@nowhere.nw',
+  author: 'John Doe',
+  title: 'My Collection',
+  description: 'Brief description of the collection content and motivation...',
+  items: [],
+};
+
+// store and retrieve from LocalStorage
+function retrieveCollectionData(){
+  return JSON.parse(localStorage.getItem('DYNCOLLECTION')) || undefined;
+}
+function storeCollectionData(){
+  COLLECTIONDATA.time = new Date().toISOString(); // update time to current time
+  localStorage.setItem('DYNCOLLECTION', JSON.stringify(COLLECTIONDATA));
+}
+
+function validateCollection(collection){
+  if (collection.type !== "DC_COLL") return false;
+  return true;
+}
+
+/////////////////////////////////////////////////////////
+//handlers for export / import collection
+$("#btExportCollection").on('click', function(){
+  exportCollection();
+});
+$("#btImportCollection").on('click', function(){
+  importCollection();
+});
+$("#ifileJSON").on('change', function(){
+  getJSON(this.files);
+});
+
+//export / import collection
+function exportCollection(){
+  storeCollectionData();
+  if(!COLLECTIONDATA.items.length){
+    alert('Cannot export an empty collection!');
+    return;
+  }
+  var element = document.createElement('a');
+	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(COLLECTIONDATA, null, 2)));
+	element.setAttribute('download', "collection.json");
+	element.style.display = 'none';
+	document.body.appendChild(element);
+	element.click();
+	document.body.removeChild(element);
+}
+function importCollection(){
+  document.getElementById("ifileJSON").click();
+}
+function getJSON(files){
+	if((files)&&(files.length>0)){
+	    var reader = new FileReader();
+		reader.onload = importJSON;
+		reader.readAsText(files[0]);
+	}
+}
+function importJSON(event){
+  var newColl = JSON.parse(event.target.result);
+  if(!validateCollection(newColl)) return;  // check if the imported data is a valid collection
+  COLLECTIONDATA = newColl;
+  COLLECTIONDATA.user = $("[name=activeUsr]").val(); //no matter who saved them, they are now of the current user
+  storeCollectionData();  
+  updateCollection();
+}
+
+/////////////////////////////////////////////////////////
+// handlers for collection metadata update/display
+
+$("#collDesc").on('change', function(){ storeCollectionMetadata(); });
+$("#collTitle").on('change', function(){ storeCollectionMetadata(); });
+
+// collection metadata store/display
+function storeCollectionMetadata(){
+	COLLECTIONDATA.email = document.getElementById("collEmail").value;
+	COLLECTIONDATA.author = document.getElementById("collAuthor").value;
+	COLLECTIONDATA.title = document.getElementById("collTitle").value;
+	COLLECTIONDATA.description = document.getElementById("collDesc").value;
+  storeCollectionData();
+}
+
+function displayCollectionMetadata(){
+  document.getElementById("collEmail").value = COLLECTIONDATA.email;
+  document.getElementById("collAuthor").value = COLLECTIONDATA.author;
+  document.getElementById("collTitle").value = COLLECTIONDATA.title;
+  document.getElementById("collDesc").value = COLLECTIONDATA.description;
+}
+
+/////////////////////////////////////////////////////////
+
+
 function checkAllCompleted() {
   if (ajaxCallsCompleted && pageLoaded && domContentLoaded && loader > 0) {
     $("#loadingDiv").fadeOut('fast')
@@ -172,17 +270,33 @@ function gallery(data){
       collectBtn.show();
       removeFromCollection(item.id)
     })
-
-    updateCollection()
-  })
+  });
+  updateCollection(); // MC: I moved outside of the loop to avoid upfdating the collection for each item
 }
+
+
 
 function updateCollection() {
   const collectionDiv = $('#wrapCollection');
   collectionDiv.html('');
-  const collection = JSON.parse(localStorage.getItem('collection')) || [];
-  $("#viewCollection > span").text(collection.length)
-  collection.forEach(item => {
+
+  // check if collection is present in localstorage, otherwise, store empty collection
+  const mycollection = retrieveCollectionData();
+  if (mycollection) {
+    COLLECTIONDATA = mycollection;
+  }
+  else {
+    storeCollectionData();
+  }
+
+  // set number of objects in tab header
+  $("#viewCollection > span").text(COLLECTIONDATA.items.length);
+  // empty collection banner
+  (COLLECTIONDATA.items.length == 0)? $("#emptyCollection").show() : $("#emptyCollection").hide();
+  // metadata
+  displayCollectionMetadata();
+  // add cards
+  COLLECTIONDATA.items.forEach(item => {
     var materialObject = JSON.parse(item.material);
     var materialValues = [];
     for (var key in materialObject) {
@@ -212,19 +326,19 @@ function updateCollection() {
 }
 
 function addToCollection(id) {
-  let collection = JSON.parse(localStorage.getItem('collection')) || [];
+  COLLECTIONDATA = retrieveCollectionData();
   const item = items.find(item => item.id === id);
-  if (item && !collection.some(colItem => colItem.id === id)) {
-    collection.push(item);
-    localStorage.setItem('collection', JSON.stringify(collection));
+  if (item && !COLLECTIONDATA.items.some(colItem => colItem.id === id)) {
+    COLLECTIONDATA.items.push(item);
+    storeCollectionData();
   }
   updateCollection();
 }
 
 function removeFromCollection(id) {
-  let collection = JSON.parse(localStorage.getItem('collection')) || [];
-  collection = collection.filter(item => item.id !== id);
-  localStorage.setItem('collection', JSON.stringify(collection));
+  COLLECTIONDATA = JSON.parse(localStorage.getItem('DYNCOLLECTION'));
+  COLLECTIONDATA.items = COLLECTIONDATA.items.filter(item => item.id !== id);
+  storeCollectionData();
   updateCollection();
 }
 

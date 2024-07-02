@@ -71,28 +71,39 @@
           <div id="fullCollection" class="container">
             <div class="row">
               <div class="col">
-                <h3>Create your collection</h3>
+                <h3>Your Dynamic Collection</h3>
               </div>
             </div>
             <div class="row">
               <div class="col-6">
                 <p class="txt-adc-dark">In order to create a new collection we need your email to send you the direct link with which you can view the newly created collection.</p>
                 <p class="txt-adc-dark">If you prefer not share your email you can download a json file with your collection</p>
-                <button type="button" class="btn btn-adc-blue" name="jsonFile"><span class="mdi mdi-cloud-download"></span> download json</button>
+
+                <button id="btExportCollection" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" title="Export collection as JSON">
+                  <span class="mdi mdi-download"></span> Export
+                </button>
+                <button id="btImportCollection" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" title="Import collection from JSON">
+                  <span class="mdi mdi-upload"></span> Import
+                </button>
+                <input type="file" id="ifileJSON" accept=".json,.JSON,.Json" style="display:none">
+
               </div>
               <div class="col-6">
                 <div class="mb-3">
-                  <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control form-control-sm" id="email" required>
-                </div>
-                <p class="txt-adc-dark m-0">Please insert a title and a brief description for the collection</p>
-                <div class="mb-2">
-                  <label for="title" class="form-label">title</label>
-                  <input type="text" class="form-control form-control-sm" id="title" required>
+                  <label for="collEmail" class="form-label">Email</label>
+                  <input type="email" class="form-control form-control-sm" id="collEmail">
                 </div>
                 <div class="mb-3">
-                  <label for="description" class="form-label">Brief description</label>
-                  <textarea class="form-control form-control-sm" id="description" rows="5"></textarea>
+                  <label for="collAuthor" class="form-label">Author</label>
+                  <input type="text" class="form-control form-control-sm" id="collAuthor" required>
+                </div>                
+                <div class="mb-3">
+                  <label for="collTitle" class="form-label">Title</label>
+                  <input type="text" class="form-control form-control-sm" id="collTitle" required>
+                </div>
+                <div class="mb-3">
+                  <label for="collDesc" class="form-label">Description</label>
+                  <textarea class="form-control form-control-sm" id="collDesc" rows="5"></textarea>
                 </div>
               </div>
             </div>
