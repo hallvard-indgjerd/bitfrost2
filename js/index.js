@@ -27,7 +27,6 @@ currentPageActiveLink('index.php');
 getFilterList();
 chronoFilter();
 buildGallery(gallery);
-buildCollection()
 buildStat();
 artifactByCounty()
 
@@ -76,13 +75,11 @@ $("#createFromFiltered").on('click', function(){
   $(this).hide()
 })
 $("#resetCollection").on('click', function(){
-  collected = [];
   $(".removeItemBtn").hide()
   $(".addItemBtn").show()
   buildCollection()
   checkActiveFilter()
 })
-$("#viewCollection > span").text('('+collected.length+')')
 
 $("#toggleMenu").on('click',resizeDOM);
 
