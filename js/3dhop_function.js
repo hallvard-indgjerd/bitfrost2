@@ -512,13 +512,13 @@ function startupAnnotations(){ // display annotations loaded from localstorage
 
 function defaultViewerState(){
   // copy default state to viewer state
-  VIEWER_STATE = JSON.parse(JSON.stringify(DEFAULT_VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+  VIEWER_STATE = structuredClone(DEFAULT_VIEWER_STATE);
 }
 
 // set viewer to a specific state, if none, resets to the default state
 function setViewerState(viewerState){
   if(viewerState)
-    VIEWER_STATE = JSON.parse(JSON.stringify(viewerState));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers  
+    VIEWER_STATE = structuredClone(viewerState);
   else
     defaultViewerState(); // if no state is passed, reset to default values
 
@@ -731,7 +731,7 @@ function storeView(){
 
   VIEWER_ANNOTATIONS.views[viewName] = {};
   VIEWER_ANNOTATIONS.views[viewName].view = null;
-  VIEWER_ANNOTATIONS.views[viewName].state = JSON.parse(JSON.stringify(VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+  VIEWER_ANNOTATIONS.views[viewName].state = structuredClone(VIEWER_STATE);
   VIEWER_ANNOTATIONS.views[viewName].text = "";
   VIEWER_ANNOTATIONS.views[viewName].url = "";
 
@@ -760,7 +760,7 @@ function applyView(viewName){
   setViewerState(VIEWER_ANNOTATIONS.views[viewName].state);
 }
 function updateViewState(viewName){
-  VIEWER_ANNOTATIONS.views[viewName].state = JSON.parse(JSON.stringify(VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+  VIEWER_ANNOTATIONS.views[viewName].state = structuredClone(VIEWER_STATE);
   storeAnnotations();
 }
 function updateViewText(viewName, value){

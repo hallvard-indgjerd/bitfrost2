@@ -76,9 +76,10 @@
             </div>
             <div class="row">
               <div class="col-6">
-                <p class="txt-adc-dark">In order to create a new collection we need your email to send you the direct link with which you can view the newly created collection.</p>
-                <p class="txt-adc-dark">If you prefer not share your email you can download a json file with your collection</p>
+                <p class="txt-adc-dark">The Dynamic Collection you create resides in the LocalStorage area on your browser, and is not memorized in the server or shared with others.</p>
+                <p class="txt-adc-dark">You may download the Collection as a json file, and you can share it with colleagues and students ay you see fit.</p>
 
+                <p>
                 <button id="btExportCollection" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" title="Export collection as JSON">
                   <span class="mdi mdi-download"></span> Export
                 </button>
@@ -86,7 +87,12 @@
                   <span class="mdi mdi-upload"></span> Import
                 </button>
                 <input type="file" id="ifileJSON" accept=".json,.JSON,.Json" style="display:none">
-
+                </p>
+                <p>
+                <button id="btResetCollection" type="button" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Delete collection">
+                  <span class="mdi mdi-delete"></span> Delete
+                </button>
+                </p>
               </div>
               <div class="col-6">
                 <div class="mb-3">

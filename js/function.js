@@ -4,10 +4,11 @@ let pageLoaded = false;
 let domContentLoaded = false;
 
 /////////////// COLLECTION DATA STRUCTURE ///////////////
-var COLLECTIONDATA = {
+var DEFAULTCOLLECTION = {
   type: "DC_COLL",
   version: "2.0",
-  user: $("[name=activeUsr]").val(), //active user id
+  id: self.crypto.randomUUID(),
+  user: $("[name=activeUsr]").val() || "unregistered", //active user id
   time: new Date().toISOString(),
   email: 'john.doe@nowhere.nw',
   author: 'John Doe',
@@ -15,6 +16,13 @@ var COLLECTIONDATA = {
   description: 'Brief description of the collection content and motivation...',
   items: [],
 };
+
+var COLLECTIONDATA = {};
+
+function resetCollection(){
+  COLLECTIONDATA = structuredClone(DEFAULTCOLLECTION);
+  storeCollectionData();
+}
 
 // store and retrieve from LocalStorage
 function retrieveCollectionData(){
@@ -31,7 +39,7 @@ function validateCollection(collection){
 }
 
 /////////////////////////////////////////////////////////
-//handlers for export / import collection
+//handlers for export / import / delete collection
 $("#btExportCollection").on('click', function(){
   exportCollection();
 });
@@ -40,6 +48,13 @@ $("#btImportCollection").on('click', function(){
 });
 $("#ifileJSON").on('change', function(){
   getJSON(this.files);
+});
+$("#btResetCollection").on('click', function(){
+  if(COLLECTIONDATA.items.length == 0)return;
+  if(confirm('Delete the current Collection?')){
+    resetCollection();
+    updateCollection();
+  }
 });
 
 //export / import collection
@@ -71,7 +86,7 @@ function importJSON(event){
   var newColl = JSON.parse(event.target.result);
   if(!validateCollection(newColl)) return;  // check if the imported data is a valid collection
   COLLECTIONDATA = newColl;
-  COLLECTIONDATA.user = $("[name=activeUsr]").val(); //no matter who saved them, they are now of the current user
+  COLLECTIONDATA.user = $("[name=activeUsr]").val() || "unregistered"; //no matter who saved them, they are now of the current user
   storeCollectionData();  
   updateCollection();
 }
@@ -286,7 +301,7 @@ function updateCollection() {
     COLLECTIONDATA = mycollection;
   }
   else {
-    storeCollectionData();
+    resetCollection();
   }
 
   // set number of objects in tab header
