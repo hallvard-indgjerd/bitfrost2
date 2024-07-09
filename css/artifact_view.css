@@ -47,7 +47,7 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   .accordionArtifact{height:550px; padding-right:5px; overflow-x: hidden; overflow-y: auto;}
   .accordionArtifact .accordion-button{padding:10px;}
   .accordionArtifact .accordion-body{padding:0;}
-  .accordionArtifact span{font-size: 12px;}
+  .accordionArtifact span, .accordionArtifact table{font-size: 12px;}
   .accordionArtifact::-webkit-scrollbar { width: 5px;}
   .accordionArtifact::-webkit-scrollbar-track { background: #f1f1f1; }
   .accordionArtifact::-webkit-scrollbar-thumb { background: #888; }
@@ -90,7 +90,7 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   .accordionArtifact{height:380px; padding-right:5px; overflow-x: hidden; overflow-y: auto;}
   .accordionArtifact .accordion-button{padding:10px;}
   .accordionArtifact .accordion-body{padding:0;}
-  .accordionArtifact span{font-size: 12px;}
+  .accordionArtifact span, .accordionArtifact table{font-size: 12px;}
   .accordionArtifact::-webkit-scrollbar { width: 5px;}
   .accordionArtifact::-webkit-scrollbar-track { background: #f1f1f1; }
   .accordionArtifact::-webkit-scrollbar-thumb { background: #888; }
@@ -133,7 +133,7 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   .artifact-primary{top:0;width: 30%;}
   .artifact-full{top:870px; width: 50%;}
   .accordionArtifact{height:500px; padding-right:5px; overflow-x: hidden; overflow-y: auto;}
-  .accordionArtifact span{font-size: 14px;}
+  .accordionArtifact span, .accordionArtifact table{font-size: 14px;}
   .accordionArtifact::-webkit-scrollbar { width: 5px;}
   .accordionArtifact::-webkit-scrollbar-track { background: #f1f1f1; }
   .accordionArtifact::-webkit-scrollbar-thumb { background: #888; }

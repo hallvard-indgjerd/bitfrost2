@@ -98,8 +98,6 @@ class Artifact extends Conn{
     $artifact = "select * from artifact_view where id = ".$id.";";
     $out['artifact'] = $this->simple($artifact)[0];
     $out['artifact_material_technique'] = $this->getArtifactMaterial($id);
-    if (!empty($out['artifact']['start'])) { $out['artifact']['from'] = $this->getChronology($out['artifact']['start'])[0]; }
-    if (!empty($out['artifact']['end'])) { $out['artifact']['to'] = $this->getChronology($out['artifact']['end'])[0]; }
     $out['storage_place'] = $this->institution->getInstitution($out['artifact']['storage_place']);
     if(count($this->getArtifactMeasure($id))>0){$out['artifact_measure'] = $this->getArtifactMeasure($id);}
     $out['artifact_metadata'] = $this->getArtifactMetadata($id);
@@ -108,7 +106,22 @@ class Artifact extends Conn{
     if(count($modelId) > 0){$out['model'] = $this->model->getModel($modelId[0]['model']);}
     $media = $this->files->getMedia($id);
     if(count($media)>0){$out['media'] = $media;}
+
+    if($out['artifact']['timeline'] && $out['artifact']['timeline'] !== null){
+      $timeline = $this->simple("select definition from time_series where id = ".$out['artifact']['timeline'].";")[0];
+      $out['crono']['timeline'] = $timeline['definition'];
+      if (!empty($out['artifact']['start'])){
+        $out['crono']['start'] = $this->getChrono($out['artifact']['timeline'],$out['artifact']['start']);
+      }
+      if (!empty($out['artifact']['end'])){
+        $out['crono']['end'] = $this->getChrono($out['artifact']['timeline'],$out['artifact']['end']);
+      }
+    }
     return $out;
+  }
+
+  private function getChrono(int $timeline, int $year){
+    return $this->simple("select m.definition as macro, g.definition as generic, s.definition as spec from time_series_macro m inner join time_series_generic g on g.macro = m.id inner join time_series_specific s on s.generic = g.id where m.serie = ".$timeline." and (".$year." between s.start and s.end)")[0];
   }
 
   private function getModelId($artifact){
@@ -117,11 +130,6 @@ class Artifact extends Conn{
   }
 
   private function getArtifactMaterial(int $id){ return $this->simple("select item.material material_id, material.value material, item.technique from artifact_material_technique item inner join list_material_specs material on item.material = material.id where item.artifact = ".$id.";");}
-
-  private function getChronology(int $year){
-    $sql = "select * from nordic_generic_period where ".$year." between start and end order by id";
-    return $this->simple($sql);
-  }
 
   private function getArtifactMeasure(int $id){ return $this->simple("select * from artifact_measure where artifact = ".$id.";"); }
 

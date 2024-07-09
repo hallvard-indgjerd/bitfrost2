@@ -19,6 +19,7 @@ ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 $.ajax(ajaxSettings).done(function(data) {
   let artifact = data.artifact;
+  console.log(data);
   classid = artifact.category_class_id;
   classtype = data.artifact.category_class;
   $("h2#title").text(artifact.name)
@@ -29,8 +30,8 @@ $.ajax(ajaxSettings).done(function(data) {
       $("#status").addClass(statusClass).text(artifact.status);
       if(key == 'notes' || key == 'description'){ artifact[key] = nl2br(artifact[key])}
       if(key == 'status'){ artifact[key] = 'The item status is: '+artifact[key] }
-      if(key == 'from'){ $("#start_period").text(artifact.from.definition)}
-      if("to" in artifact){ $("#end_period").text(artifact.to.definition)}else{$("#end_period").parent().remove()}
+      // if(key == 'from'){ $("#start_period").text(artifact.from.definition)}
+      // if("to" in artifact){ $("#end_period").text(artifact.to.definition)}else{$("#end_period").parent().remove()}
       $("#"+key).html(artifact[key])
     }else{
       if(!role){$("#"+key).parent('li').remove()}
@@ -42,6 +43,27 @@ $.ajax(ajaxSettings).done(function(data) {
       if(artifact.object_condition_id == 9){$("#object_condition").parent('li').remove()}
     }
   })
+
+  if(data.crono){
+    $("#timeline_serie").text("Reference timeline: "+data.crono.timeline)
+    if(data.crono.start){
+      $("#fromPeriodMacro").text(data.crono.start.macro)
+      $("#fromPeriodGeneric").text(data.crono.start.generic)
+      $("#fromPeriodSpecific").text(data.crono.start.spec)
+    }else{
+      $("#fromPeriod").remove()
+    }
+
+    if(data.crono.end){
+      $("#toPeriodMacro").text(data.crono.end.macro)
+      $("#toPeriodGeneric").text(data.crono.end.generic)
+      $("#toPeriodSpecific").text(data.crono.end.spec)
+    }else{
+      $("#toPeriod").remove()
+    }
+  }else{
+    $("#chronoSection").remove()
+  }
 
   let material = data.artifact_material_technique;
   material.forEach((item) => {
@@ -68,6 +90,8 @@ $.ajax(ajaxSettings).done(function(data) {
       if(findplace[key]){
         if(key == 'notes'){ artifact[key] = nl2br(artifact[key])}
         $("#findplace_"+key).html(findplace[key])
+      }else{
+        $("#findplace_"+key).parent().remove()
       }
     })
   }else{
@@ -91,7 +115,7 @@ $.ajax(ajaxSettings).done(function(data) {
   $("#artifact_license>a").attr("href",metadata.license.link).text(metadata.license.license+" ("+metadata.license.acronym+")")
 
   if(data.model){
-    console.log(data.model);
+    // console.log(data.model);
     $("[name=editModelBtn],#editModelBtn>a").attr('href','model_edit.php?item='+data.model.model.id);
     let model = data.model.model_object[0];
     if (model.object) {

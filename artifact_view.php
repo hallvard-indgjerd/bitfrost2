@@ -100,7 +100,7 @@
                 </div>
               </div>
             </div>
-            <div class="accordion-item">
+            <div class="accordion-item" id="chronoSection">
               <h2 class="accordion-header" id="chronology-data">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#chronologySection">Chronological definition</button>
               </h2>
@@ -110,9 +110,33 @@
                     <li class="list-group-item txt-adc-dark fw-bold">Specific chronology</li>
                     <li class="list-group-item"><span>start</span><span id="start"></span></li>
                     <li class="list-group-item"><span>end</span><span id="end"></span></li>
-                    <li class="list-group-item txt-adc-dark fw-bold">The specific chronology is related to following historical periods</li>
-                    <li class="list-group-item"><span>from</span><span id="start_period"></span></li>
-                    <li class="list-group-item"><span>to</span><span id="end_period"></span></li>
+                    <li class="list-group-item txt-adc-dark fw-bold" id="timeline_serie"></li>
+                    <li class="list-group-item">
+                      <table class="table table-sm table-responsive">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Macro</th>
+                            <th scope="col">Generic</th>
+                            <th scope="col">Specific</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr id="fromPeriod">
+                            <th scope="row">From</th>
+                            <td id="fromPeriodMacro"></td>
+                            <td id="fromPeriodGeneric"></td>
+                            <td id="fromPeriodSpecific"></td>
+                          </tr>
+                          <tr id="toPeriod">
+                            <th scope="row">To</th>
+                            <td id="toPeriodMacro"></td>
+                            <td id="toPeriodGeneric"></td>
+                            <td id="toPeriodSpecific"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </li>
                   </ul>
                 </div>
               </div>
