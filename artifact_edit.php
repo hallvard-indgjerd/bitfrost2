@@ -58,7 +58,6 @@
                   <div class="align-top">
                     <label for="category_class" class="fw-bold text-danger">Category class</label>
                     <select class="form-select" id="category_class" data-table="artifact" required>
-                      <!-- <option value="" selected disabled>-- select value --</option> -->
                     </select>
                   </div>
                   <div class="align-top">
@@ -95,7 +94,43 @@
               </div>
             </div>
           </fieldset>
-          <fieldset>
+          <fieldset id="timeline-map">
+            <legend>Chronological definition</legend>
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label for="timeline" class="fw-bold text-danger">select a timeline map</label>
+                <select name="timeline" id="timeline" class="form-select" data-table="artifact" required>
+                  <option value="" disabled selected>-select a timeline-</option>
+                  <option value="1">generic</option>
+                  <option value="2">sweden</option>
+                </select>
+                <div class="mt-3 text-secondary">Please select a timeline map from those available. Each time map will update the chronological filters of the lower and upper bounds by setting them to the specific local time span. </div>
+              </div>
+              <div class="col-md-5">
+                <div class="mb-3">
+                  <label for="dropdownMenuButtonLower">Lower bound</label>
+                  <div class="dropdown mb-3">
+                    <button id="dropdownMenuButtonLower" class="btn btn-light dropdown-toggle form-control text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>select a period</button>
+                    <ul class="dropdown-menu firstLevel w-100" aria-labelledby="dropdownMenuButton" id="dropdown-menu-lower"></ul>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="dropdownMenuButtonUpper">Upper bound</label>
+                  <div class="dropdown">
+                    <button id="dropdownMenuButtonUpper" class="btn btn-light dropdown-toggle form-control text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>select a period</button>
+                    <ul class="dropdown-menu firstLevel w-100" aria-labelledby="dropdownMenuButton" id="dropdown-menu-upper"></ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="start" class="fw-bold text-danger">From</label>
+                <input type="number" class="form-control w-auto mb-3" id="start" step="1" data-table="artifact" value="" min="" max="" required>
+                <label for="end" class="fw-bold text-danger">To</label>
+                <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="" max="" required>
+              </div>
+            </div>
+          </fieldset>
+          <!-- <fieldset>
             <legend>Chronological definition</legend>
             <div class="row">
               <div class="col">
@@ -137,7 +172,7 @@
                 <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="-3000000" max="<?php echo Date('Y'); ?>" required>
               </div>
             </div>
-          </fieldset>
+          </fieldset> -->
           <fieldset>
             <legend>Conservation info</legend>
             <div class="row mb-3">
@@ -251,7 +286,7 @@
     <script src="js/maps/geo_config.js" charset="utf-8"></script>
     <script src="js/maps/geo_function.js" charset="utf-8"></script>
     <script src="js/artifact_add.js" charset="utf-8"></script>
-    <script src="js/chronologyFunc.js" charset="utf-8"></script>
+    <!-- <script src="js/chronologyFunc.js" charset="utf-8"></script> -->
     <script src="js/artifact_edit.js" charset="utf-8"></script>
   </body>
 </html>

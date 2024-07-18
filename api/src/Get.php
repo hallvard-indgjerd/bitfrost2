@@ -61,7 +61,7 @@ class Get extends Conn{
   public function getFilterList(){
     $out['category'] = $this->simple("select l.id, l.value from list_category_class l inner join artifact a on a.category_class = l.id group by l.id order by 2 asc;");
     $out['material'] = $this->simple("select l.id, l.value from list_material_specs l inner join artifact_material_technique a on a.material = l.id group by l.id order by 2 asc;");
-    $out['chronology'] = $this->simple("select c.definition as period, c.start, c.end from artifact a, nordic_generic_period c where a.start between c.start and c.end and a.start is not null group by c.definition, c.start, c.end order by c.id asc;");
+    // $out['chronology'] = $this->simple("select c.definition as period, c.start, c.end from artifact a, nordic_generic_period c where a.start between c.start and c.end and a.start is not null group by c.definition, c.start, c.end order by c.id asc;");
     $out['institution'] = $this->simple("select i.id, i.name value from institution i inner join artifact a on a.storage_place = i.id group by i.id order by 2 asc;");
     return $out;
   }
@@ -77,6 +77,27 @@ class Get extends Conn{
   public function checkName(array $data){
     $sql = "select id from ".$data['element']." where name = '".$data['name']."';";
     return $this->simple($sql);
+  }
+
+  function getTimeSeries(array $filters){
+    $where = "where ".join(" and ", $filters);
+    $sql = "SELECT macro.id AS macro_id, macro.definition AS macro_definition, MIN(spec.start) AS macro_min_start, MAX(spec.end) AS macro_max_end, generic.id AS generic_id, generic.definition AS generic_definition, MIN(spec.start) AS generic_min_start, MAX(spec.end) AS generic_max_end, spec.id AS specific_id, spec.definition AS specific_definition, spec.start AS specific_start, spec.end AS specific_end FROM time_series_macro macro JOIN time_series_generic generic ON generic.macro = macro.id JOIN time_series_specific spec ON spec.generic = generic.id ".$where." GROUP BY macro.id, generic.id, spec.id ORDER BY macro.id, generic.id, spec.id;";
+    return $this->simple($sql);
+  }
+
+  public function chronoFilter(){
+    $out = [];
+    $macroQuery = "select macro.id as id, macro.definition as definition, MIN(spec.start) AS start, MAX(spec.end) AS end from time_series_macro macro JOIN time_series_generic generic ON generic.macro = macro.id JOIN time_series_specific spec ON spec.generic = generic.id where macro.serie = 2 GROUP BY macro.id order by macro.id asc;";
+    $out['macro'] = $this->simple($macroQuery);
+    foreach ($out['macro'] as $key => $value) {
+      $genericQuery = "select generic.id as id, generic.definition as definition, MIN(spec.start) AS start, MAX(spec.end) AS end from time_series_generic generic JOIN time_series_specific spec ON spec.generic = generic.id where generic.macro = ".$value['id']." GROUP BY generic.id order by generic.id asc;";
+      $out['macro'][$key]['generic'] = $this->simple($genericQuery);
+      foreach ($out['macro'][$key]['generic'] as $key2 => $value2) {
+        $specificQuery = "select id, generic, definition, start, end from time_series_specific where generic = ".$value2['id']." order by id asc;";
+        $out['macro'][$key]['generic'][$key2]['specific'] = $this->simple($specificQuery);
+      }
+    }
+    return $out;
   }
 }
 ?>

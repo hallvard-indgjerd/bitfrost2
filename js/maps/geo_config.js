@@ -17,7 +17,7 @@ let geoNamesReverse = 'http://api.geonames.org/addressJSON?username=darklab&'
 //append to api -> lat=x.xx&lng=x.xx
 //json variables to use -> address.street, address.houseNumber
 
-let baseLayers, osm, gStreets, gSat, gTerrain;
+let baseLayers, osm, gStreets, gSat, gTerrain, layerControl;
 let overlayMaps = {}
 let mapClick = false;
 

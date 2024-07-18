@@ -1,11 +1,13 @@
 const usrId = $("[name=usrId]").val()
 const usrCls = $("[name=usrCls]").val()
+let issues = 0;
 mapInit()
 getArtifacts()
 getModels()
 getInstitutions()
 getUsers()
 getPersons()
+artifactIssues()
 
 $("#modelDashboardGallery").css("height",$(".listDashBoard").height())
 
@@ -89,10 +91,8 @@ function getModels(){
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data = dati
   $.ajax(ajaxSettings).done(function(data){
-    console.log(data);
     $('#modelList .badge').text(data.length)
     data.forEach((item, i) => {
-      console.log(data[0].description.length);
       let card = $("<div/>",{class:' card modelCardSmall'}).appendTo(cardWrap);
       $("<div/>", {class:'thumbDiv card-header'}).css("background-image", "url(archive/thumb/"+item.thumbnail+")").appendTo(card)
       let divDati = $("<div/>",{class:'card-body'}).appendTo(card)
@@ -170,7 +170,7 @@ function getUsers(){
     data.forEach((item, i) => {
       let css = item.is_active == 1 ? 'text-success' : 'text-danger';
       let li = $("<a/>", {class: 'list-group-item list-group-item-action ' +
-    css}).attr("href","person_view.php?person="+item.id).appendTo('#userList .listWrap');
+    css}).attr("href","person_view.php?person="+item.person_id).appendTo('#userList .listWrap');
       $('<span/>').text(item.name).appendTo(li)
       $('<span/>').text(item.role).appendTo(li)
       $('<span/>').text(item.is_active == 1 ? 'true' : 'false').appendTo(li)
@@ -212,4 +212,98 @@ function deleteInstitution(inst){
       if(data.res = 1){ getInstitutions() }
     })
   }
+}
+
+function artifactIssues(){
+  ajaxSettings.url=API+"artifact.php";
+  ajaxSettings.data = {trigger:'artifactIssues'}
+  $.ajax(ajaxSettings).done(function(data){
+    if(data.missingModel.length > 0){
+      issues = issues + data.missingModel.length
+      let div = $("<div/>",{id:'missingModel',class:'bg-white border rounded shadow p-3'}).appendTo("#issuesBody");
+      let title = $("<h6/>").appendTo(div)
+      $("<span/>").text('Missing 3d file').appendTo(title)
+      $("<span/>",{class:'badge text-bg-dark float-end'}).text(data.missingModel.length).appendTo(title)
+      let wrapTable = $("<div/>",{class:'wrapIssuesTable'}).appendTo(div)
+      let table = $("<table/>",{class:'table table-sm'}).appendTo(wrapTable)
+      let head = $("<thead/>",{class:'table-light sticky-top'}).appendTo(table)
+      $('<tr/>').html('<th scope="col">name</th><th scope="col">#</th>').appendTo(head);
+      let body = $("<tbody/>").appendTo(table)
+      data.missingModel.forEach(row => {
+        let tr = $("<tr/>").appendTo(body)
+        $("<td/>").html("artifact: "+row.name+"<br/>expected file: "+row.object).appendTo(tr)
+        $("<td/>").html('<a href="artifact_view.php?item='+row.artifact+'" class="text-dark"><span class="mdi mdi-arrow-right-bold"></span></a>').appendTo(tr)
+      })
+      $("<div/>",{class:'tableIssuesFoot mt-3'}).html("<span class='mdi mdi-lightbulb-on text-warning'></span> <span class='text-secondary'>Check in the model folder on the file system if the file name is the same as in the database</span>").appendTo(div)
+    }
+    if(data.chronoNotInRange.length > 0){
+      issues = issues + data.chronoNotInRange.length
+      let div = $("<div/>",{id:'chronoNotInRange',class:'bg-white border rounded shadow p-3'}).appendTo("#issuesBody");
+      let title = $("<h6/>").appendTo(div)
+      $("<span/>").text('Chronology not in timeline').appendTo(title)
+      $("<span/>",{class:'badge text-bg-dark float-end'}).text(data.chronoNotInRange.length).appendTo(title)
+
+      let wrapTable = $("<div/>",{class:'wrapIssuesTable'}).appendTo(div)
+      let table = $("<table/>",{class:'table table-sm'}).appendTo(wrapTable)
+      let head = $("<thead/>",{class:'table-light sticky-top'}).appendTo(table)
+      $('<tr/>').html('<th scope="col">name</th><th scope="col">start</th><th scope="col">end</th><th scope="col">#</th>').appendTo(head);
+      let body = $("<tbody/>").appendTo(table)
+      data.chronoNotInRange.forEach(row => {
+        let tr = $("<tr/>").appendTo(body)
+        $("<td/>").text(row.name).appendTo(tr)
+        $("<td/>").text(row.start).appendTo(tr)
+        $("<td/>").text(row.end).appendTo(tr)
+        $("<td/>").html('<a href="artifact_view.php?item='+row.id+'" class="text-dark"><span class="mdi mdi-arrow-right-bold"></span></a>').appendTo(tr)
+      })
+      $("<div/>",{class:'tableIssuesFoot mt-3'}).html("<span class='mdi mdi-lightbulb-on text-warning'></span> <span class='text-secondary'>Check if the date was mistyped or if a new value should be added to the timeline</span>").appendTo(div)
+    }
+    if(data.chronoNullValue.length > 0){
+      issues = issues + data.chronoNullValue.length
+      let div = $("<div/>",{id:'chronoNullValue',class:'bg-white border rounded shadow p-3'}).appendTo("#issuesBody");
+      let title = $("<h6/>").appendTo(div)
+      $("<span/>").text('Chronology with null value').appendTo(title)
+      $("<span/>",{class:'badge text-bg-dark float-end'}).text(data.chronoNullValue.length).appendTo(title)
+
+      let wrapTable = $("<div/>",{class:'wrapIssuesTable'}).appendTo(div)
+      let table = $("<table/>",{class:'table table-sm'}).appendTo(wrapTable)
+      let head = $("<thead/>",{class:'table-light sticky-top'}).appendTo(table)
+      $('<tr/>').html('<th scope="col">name</th><th scope="col">start</th><th scope="col">end</th><th scope="col">#</th>').appendTo(head);
+      let body = $("<tbody/>").appendTo(table)
+      data.chronoNullValue.forEach(row => {
+        let tr = $("<tr/>").appendTo(body)
+        $("<td/>").text(row.name).appendTo(tr)
+        $("<td/>").text(row.start).appendTo(tr)
+        $("<td/>").text(row.end).appendTo(tr)
+        $("<td/>").html('<a href="artifact_view.php?item='+row.id+'" class="text-dark"><span class="mdi mdi-arrow-right-bold"></span></a>').appendTo(tr)
+      })
+      $("<div/>",{class:'tableIssuesFoot mt-3'}).html("<span class='mdi mdi-lightbulb-on text-warning'></span> <span class='text-secondary'>If you don't know a specific date you can also just enter the start date of the macro period</span>").appendTo(div)
+    }
+    if(data.noDescription.length > 0){
+      issues = issues + data.noDescription.length;
+      let div = $("<div/>",{id:'noDescription',class:'bg-white border rounded shadow p-3'}).appendTo("#issuesBody");
+      let title = $("<h6/>").appendTo(div)
+      $("<span/>").text('No artifact description').appendTo(title)
+      $("<span/>",{class:'badge text-bg-dark float-end'}).text(data.noDescription.length).appendTo(title)
+
+      let wrapTable = $("<div/>",{class:'wrapIssuesTable'}).appendTo(div)
+      let table = $("<table/>",{class:'table table-sm'}).appendTo(wrapTable)
+      let head = $("<thead/>",{class:'table-light sticky-top'}).appendTo(table)
+      $('<tr/>').html('<th scope="col">name</th><th scope="col">#</th>').appendTo(head);
+      let body = $("<tbody/>").appendTo(table)
+      data.noDescription.forEach(row => {
+        let tr = $("<tr/>").appendTo(body)
+        $("<td/>").text(row.name).appendTo(tr)
+        $("<td/>").html('<a href="artifact_view.php?item='+row.id+'" class="text-dark"><span class="mdi mdi-arrow-right-bold"></span></a>').appendTo(tr)
+      })
+      $("<div/>",{class:'tableIssuesFoot mt-3'}).html("<span class='mdi mdi-lightbulb-on text-warning'></span> <span class='text-secondary'>Add a brief description to help the user better understand the artifact</span>").appendTo(div)
+    }
+    
+    if(issues > 0){
+      $("#issuesSection").addClass('alert-danger');
+      $("#issuesTitle").text('The following issues were detected!');
+    }else{
+      $("#issuesSection").addClass('alert-success text-center')
+      $("#issuesTitle").text('No issues detected!');
+    }
+  })
 }

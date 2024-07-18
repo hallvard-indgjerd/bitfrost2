@@ -53,7 +53,7 @@ class Person extends Conn{
   }
 
   public function getUsrFromPerson(int $person){
-    $sql = "select u.id, u.created, u.is_active, l.value role from user u inner join list_user_role l on u.role = l.id where u.person = ".$person.";";
+    $sql = "select u.id, u.created, u.is_active, l.id role_id, l.value role from user u inner join list_user_role l on u.role = l.id where u.person = ".$person.";";
     return $this->simple($sql);
   }
 

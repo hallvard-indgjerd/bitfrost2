@@ -4,13 +4,16 @@ session_start();
 
 use \Adc\Model;
 use \Adc\File;
+use \Adc\Institution;
 
 class Artifact extends Conn{
   public $model;
   public $files;
+  public $institution;
   function __construct(){
     $this->model = new Model();
     $this->files = new File();
+    $this->institution = new Institution();
   }
   public function addArtifact(array $dati){
     try {
@@ -35,7 +38,6 @@ class Artifact extends Conn{
       $this->pdo()->rollBack();
       return ["res"=>0, "output"=>$e->getMessage()];
     }
-
   }
 
   public function editArtifact(array $dati){
@@ -90,7 +92,7 @@ class Artifact extends Conn{
     if(count($filter) > 0 ){ $filter = "where ".join(" and ", $filter);}
     $sql = "select id, name, description, cast(last_update as date) as last_update from artifact_view ".$filter. " order by last_update desc";
     return $this->simple($sql);
-   }
+  }
 
   public function getArtifact(int $id){
     $artifact = "select * from artifact_view where id = ".$id.";";
@@ -98,7 +100,7 @@ class Artifact extends Conn{
     $out['artifact_material_technique'] = $this->getArtifactMaterial($id);
     if (!empty($out['artifact']['start'])) { $out['artifact']['from'] = $this->getChronology($out['artifact']['start'])[0]; }
     if (!empty($out['artifact']['end'])) { $out['artifact']['to'] = $this->getChronology($out['artifact']['end'])[0]; }
-    $out['storage_place'] = $this->getInstitution($out['artifact']['storage_place'])[0];
+    $out['storage_place'] = $this->institution->getInstitution($out['artifact']['storage_place']);
     if(count($this->getArtifactMeasure($id))>0){$out['artifact_measure'] = $this->getArtifactMeasure($id);}
     $out['artifact_metadata'] = $this->getArtifactMetadata($id);
     $out['artifact_findplace'] = $this->getArtifactFindplace($id);
@@ -121,11 +123,6 @@ class Artifact extends Conn{
     return $this->simple($sql);
   }
 
-
-  private function getInstitution(int $id){
-    $sql = "select i.name, i.abbreviation, cat.value category, city.name city, i.address, i.lat, i.lon, i.url link, i.logo from institution i inner join list_institution_category cat on i.category = cat.id inner join city on i.city = city.id where i.id = ".$id.";";
-    return $this->simple($sql);
-  }
   private function getArtifactMeasure(int $id){ return $this->simple("select * from artifact_measure where artifact = ".$id.";"); }
 
   private function getArtifactMetadata(int $id){
@@ -146,6 +143,32 @@ class Artifact extends Conn{
 
   public function getArtifactName(int $id){
     return $this->simple("select name from artifact where id = ".$id.";")[0];
+  }
+
+  public function artifactIssues(){
+    $chronoNotInRange = "SELECT a.id, a.name, a.start, coalesce(a.end, '-') end FROM artifact a LEFT JOIN time_series_specific time ON a.start BETWEEN time.start AND time.end OR a.end BETWEEN time.start AND time.end OR (a.start <= time.start AND a.end >= time.end) WHERE time.start IS NULL and a.start is not null order by a.id asc;";
+    $chronoNullValue = "SELECT a.id, a.name, coalesce(a.start, '-') start, coalesce(a.end, '-') end FROM artifact a where a.start is null and a.end is null order by a.id asc";
+    $sqlNoDescription = "SELECT a.id, a.name FROM artifact a where a.description is null order by a.id asc";
+    $out['chronoNotInRange'] = $this->simple($chronoNotInRange);
+    $out['chronoNullValue'] = $this->simple($chronoNullValue);
+    $out['noDescription'] = $this->simple($sqlNoDescription);
+
+    $db_files = [];
+    $files = $this->simple("select object from model_object;");
+    foreach ($files as $file) {$db_files[]=$file['object'];}
+    if (strpos(__DIR__, 'prototype_dev') !== false) {
+      $rootFolder = $_SERVER['DOCUMENT_ROOT'].'/prototype_dev/archive/models/';
+    } else {
+      $rootFolder = $_SERVER['DOCUMENT_ROOT'].'/prototype/archive/models/';
+    }
+    $folder_files = array_diff(scandir($rootFolder), array('..', '.'));
+    $missingModel = array_diff($db_files,$folder_files);
+    $missingModelList = implode("','", array_map('addslashes', $missingModel));
+    $missingModelList = "'".$missingModelList."'";
+    $sqlMissingModel = "select a.id artifact, m.model, a.name, m.object from artifact a inner join artifact_model am on am.artifact = a.id inner join model_object m on am.model = m.model where m.object in (".$missingModelList.") order by a.id asc;";
+    $out['missingModel'] = $this->simple($sqlMissingModel);
+
+    return $out;
   }
 }
 ?>

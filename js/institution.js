@@ -1,4 +1,3 @@
-if($("[name=institution]").length > 0){ getInstitution($("[name=institution]").val()) }
 const trigger = $("[name=trigger]").val() 
 const form = $("[name=newInstitutionForm]")[0];
 const fd = new FormData();
@@ -26,7 +25,28 @@ let jsonCity = {
 }
 listArray.push(listCategory)
 listArray.forEach((item, i) => {getList(item.settings,item.htmlEl,item.label)});
+
+
 mapInit()
+let institutionGroup = L.markerClusterGroup({title: "markerGroup"}).addTo(map);
+getInstitutions()
+if($("[name=institution]").length > 0){ getInstitution($("[name=institution]").val()) }
+
+
+$("#colorPicker").hide()
+$("#is_storage_place").on('click', function(){
+  $(this).is(':checked') ? $("#colorPicker").show() : $("#colorPicker").hide() 
+})
+$('[name=color]').minicolors({
+  defaultValue : randomColor(),
+  opacity: false,
+  theme: 'bootstrap'
+}
+);
+
+$("#randomColor").on('click',function(){
+  $('[name=color]').minicolors('value', randomColor());
+})
 
 $("[name=city]").on({
   keyup: function(){
@@ -111,10 +131,15 @@ function addInstitution(el){
     el.preventDefault();
     fd.append('trigger', trigger)
     if($("[name=institution]").length > 0){fd.append('id', $("[name=institution]").val()) }
+    let is_storage_place = $("#is_storage_place").is(":checked") ? 1 : 0;
+    fd.append('is_storage_place', is_storage_place)
+    // if(is_storage_place==1){}
+    let color = is_storage_place == 1 ? $("#color").val() : null
+    fd.append('color', color)
     fd.append('category', $("#category").val())
     fd.append('name', $("#name").val())
     fd.append('abbreviation', $("#abbreviation").val())
-    fd.append('city', $("#city").data('cityid'))
+    fd.append('city', $("#city").val())
     fd.append('address', $("#address").val())
     fd.append('lon', $("#longitude").val())
     fd.append('lat', $("#latitude").val())
@@ -153,7 +178,11 @@ function getInstitution(id){
   ajaxSettings.url=API+"institution.php";
   ajaxSettings.data = {trigger:'getInstitution', id:id}
   $.ajax(ajaxSettings).done(function(data){
-    console.log(data);
+    if(data.is_storage_place == 1){
+      $("#is_storage_place").prop('checked', true);
+      $("#colorPicker").show();
+      $('[name=color]').minicolors('value', data.color);
+    }
     $("#category").find("option[value="+data.catid+"]").attr('selected', true)
     $("#name").val(data.name)
     $("#abbreviation").val(data.abbreviation)
@@ -165,13 +194,41 @@ function getInstitution(id){
 
     if (marker != undefined) { map.removeLayer(marker)};
     marker = L.marker([data.lat, data.lon]).addTo(map);
-    map.flyTo([data.lat, data.lon], 17, {animate: true, duration: 2})
-
+    map.setView([data.lat, data.lon], 17)
     if (data.logo) {
-      $("#logoPreview").attr({"src":'img/logo/'+data.logo, "width":300})
+      $("#logoPreview").attr({"src":'img/logo/'+data.logo, "height":'100%'})
       $("#imgPlaceholder").show()
     }else{
 
     }
   })
+}
+
+function getInstitutions(){
+  layerControl.addOverlay(institutionGroup, "Existing Institution");
+  let dati={}
+  dati.trigger='getInstitutions';
+  ajaxSettings.url=API+"institution.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings).done(function(data){
+    let inst = 0;
+    if($("[name=institution]").length > 0){
+      inst = $("[name=institution]").val()
+    }
+    data.forEach((item, i) => {
+      if(parseInt(item.id) !== parseInt(inst) ){
+        L.marker([parseFloat(item.lat), parseFloat(item.lon)],{icon:storagePlaceIco})
+        .bindPopup("<div class='text-center'><h6 class='p-0 m-0'>"+item.name+"</h6><p class='p-0 m-0'>Artifacts stored: <strong>"+item.artifact+"</strong></p></div>")
+        .addTo(institutionGroup);
+      }
+    });
+    if(inst == 0){map.fitBounds(institutionGroup.getBounds())}
+  });
+}
+
+function randomColor(){
+  let letters = "0123456789ABCDEF"; 
+  let color = '#'; 
+  for (let i = 0; i < 6; i++){color += letters[(Math.floor(Math.random() * 16))];} 
+  return color;
 }

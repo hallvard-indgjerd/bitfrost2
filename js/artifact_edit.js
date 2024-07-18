@@ -10,6 +10,7 @@ function getArtifact(){
   $.ajax(ajaxSettings)
   .done(function(data) {
     console.log(data);
+    getTimeline(data.artifact.timeline,setIndex)
     $("#pageTitle").text(data.artifact.name)
     $("#name").val(data.artifact.name)
     $("#status").val(data.artifact.status_id)
@@ -20,6 +21,7 @@ function getArtifact(){
       if(data.artifact.category_specs_id){$("#category_specs").val(data.artifact.category_specs_id)}
     })
     $("#type").val(data.artifact.type)
+    $("#timeline").val(data.artifact.timeline)
 
     data.artifact_material_technique.forEach(function(v){
       let t = v.technique ? v.technique : null;
@@ -80,7 +82,6 @@ function getArtifact(){
 
 function updateMeta(btn){
   checkMaterialArray()
-  // materialTechniqueArray.forEach(function(v,i){ materialTechniqueArray[i]['artifact']=artifact })
   if (form[0].checkValidity()) {
     btn.preventDefault()
     dati.trigger = 'editArtifact';
@@ -103,7 +104,6 @@ function updateMeta(btn){
     ajaxSettings.data = dati
     $.ajax(ajaxSettings)
     .done(function(data) {
-      // console.log(data);
       if (data.res==0) {
         $("#toastDivError .errorOutput").text(data.output);
         $("#toastDivError").removeClass("d-none");

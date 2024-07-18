@@ -24,6 +24,9 @@ class Model extends Conn{
         'name'=>$data['name'],
         'description'=>$data['description'], 
         'thumbnail'=>$this->uuid.".".$thumbExt,
+        'doi' => $data['doi'],
+        'doi_svg' => $data['doi_svg'],
+        'citation' => $data['citation'],
         'created_by' => $data['author'],
         'updated_by' => $data['author']
       );
@@ -161,14 +164,61 @@ class Model extends Conn{
     //prima di scalare l'immagine devo caricarla sul server
   }
 
-  public function buildGallery(string $sortBy, $filterArr= array()){
-    $filter = empty($filterArr) ? "" : " where ". join(" and ", $filterArr);
-    $sql = "select artifact.id, artifact.name, coalesce(artifact.description, 'no description available','') description, class.id as category_id, class.value as category, material.id as material_id, coalesce(material.value, null, 'not defined') as material, artifact.start, artifact.end, obj.object, obj.thumbnail from artifact inner join list_category_class class on artifact.category_class = class.id inner join artifact_material_technique amt on amt.artifact = artifact.id inner join artifact_model am on artifact.id = am.artifact inner join model_object obj on obj.model = am.model left join list_material_specs material on amt.material = material.id ".$filter." order by ".$sortBy.";";
+  public function buildGallery(string $sortBy, $filterArr = []){
+    $filterMaterial="";
+    $filterArtifact=["artifact.id IN (SELECT artifact_id FROM ArtifactsWithMaterial)"];
+    if(!empty($filterArr)){
+      foreach ($filterArr as $index => $filter) {
+        if (array_key_exists('material.id', $filter)) {
+          $filterMaterial = "WHERE material.id ".$filter['material.id'];
+          unset($filterArr[$index]['material.id']);
+        }
+        if (array_key_exists('description', $filter)) {
+          array_push($filterArtifact,$filter['description']);
+          unset($filterArr[$index]['description']);
+        }
+      }
+      foreach ($filterArr as $index => $filter) {
+        foreach ($filter as $key => $value) {
+          $filterArtifact[] = $key . $value;
+        }
+      }
+    }
+    $sql = "
+      WITH ArtifactsWithMaterial AS (
+        SELECT artifact.id AS artifact_id
+        FROM artifact
+        INNER JOIN artifact_material_technique amt ON amt.artifact = artifact.id
+        LEFT JOIN list_material_specs material ON amt.material = material.id
+        ".$filterMaterial."
+        GROUP BY artifact.id
+      )
+      SELECT 
+        artifact.id,
+        artifact.name,
+        COALESCE(artifact.description, 'no description available') AS description,
+        class.id AS category_id,
+        class.value AS category,
+        JSON_OBJECTAGG(material.id, material.value) AS material,
+        artifact.start,
+        artifact.end,
+        obj.object,
+        obj.thumbnail 
+      FROM artifact 
+      INNER JOIN list_category_class class ON artifact.category_class = class.id 
+      INNER JOIN artifact_material_technique amt ON amt.artifact = artifact.id 
+      INNER JOIN artifact_model am ON artifact.id = am.artifact 
+      INNER JOIN model_object obj ON obj.model = am.model 
+      LEFT JOIN list_material_specs material ON amt.material = material.id
+      WHERE ". join(" and ", $filterArtifact)."
+      GROUP BY artifact.id, artifact.name, class.id, class.value, artifact.start, artifact.end, obj.object, obj.thumbnail
+      ORDER BY ".$sortBy.";
+    ";
     return $this->simple($sql);
   }
 
   public function getModel(int $id){
-    $out['model'] = $this->simple("select m.id, m.name, m.note, m.uuid, NULLIF(m.description, 'no description available') description, m.thumbnail, status.id status_id, status.value status, m.create_at, m.updated_at, concat(p.last_name,' ',p.first_name) created_by from model m inner join list_item_status status ON m.status = status.id inner join user on m.created_by = user.id inner join person p on user.person = p.id where m.id =  ".$id.";")[0];
+    $out['model'] = $this->simple("select m.id, m.name, m.note, m.uuid, NULLIF(m.description, 'no description available') description, m.thumbnail, status.id status_id, status.value status, m.create_at, m.updated_at, concat(p.last_name,' ',p.first_name) created_by, m.doi, m.doi_svg, m.citation from model m inner join list_item_status status ON m.status = status.id inner join user on m.created_by = user.id inner join person p on user.person = p.id where m.id =  ".$id.";")[0];
     //check if it's connected to an artifact
     $artifact_model = $this->simple("select artifact from artifact_model where model = ".$id.";");
     if(count($artifact_model) > 0){$out['artifact'] = $artifact_model[0]['artifact'];}

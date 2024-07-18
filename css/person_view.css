@@ -1,11 +1,7 @@
 .list-group-item > span{display: inline-block;}
 .list-group-item > span:first-child{width: 100px;}
 
-.myCard{
-  position:relative;
-  border:1px solid #875e299d;
-  height:100px;
-}
+.myCard{position:relative; border:1px solid #875e299d; height:100px;}
 .myArtifacts > .myCardBg {background-image: url('../img/ico/axe.png');}
 .myModels > .myCardBg {background-image: url('../img/ico/cube-outline.png');}
 .myCardBg{
@@ -44,18 +40,18 @@
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-  main{width:50%; margin-left:auto; margin-right:auto;}
-  #usrFromPersonForm{width:300px;}
+  /* main{width:50%; margin-left:auto; margin-right:auto;} */
+  /* #usrFromPersonForm{width:300px;} */
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  main{width:50%; margin-left:auto; margin-right:auto;}
-  #usrFromPersonForm{width:300px;}
+  /* main{width:50%; margin-left:auto; margin-right:auto;}
+  #usrFromPersonForm{width:300px;} */
 }
 
 /* XX-Large devices (larger desktops, 1400px and up) */
 @media (min-width: 1400px) {
-  main{width:50%; margin-left:auto; margin-right:auto;}
-  #usrFromPersonForm{width:300px;}
+  /* main{width:50%; margin-left:auto; margin-right:auto;}
+  #usrFromPersonForm{width:300px;} */
 }

@@ -7,7 +7,6 @@
   <head>
     <?php require("assets/meta.php"); ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/css/bootstrap5-toggle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/artifacts_add.css">
   </head>
   <body>
@@ -85,46 +84,39 @@
               </div>
             </div>
           </fieldset>
-          <fieldset>
+          <fieldset id="timeline-map">
             <legend>Chronological definition</legend>
-            <div class="row">
-              <div class="col">
-                <legend>Lower bound</legend>
-              </div>
-            </div>
             <div class="row mb-3">
-              <div class="col-md-4">
-                <label for="startGenericList">Filter start year by generic cultural period definition</label>
-                <select class="form-select" id="startGenericList">
-                  <option value="">-- no filter --</option>
+              <div class="col-md-3">
+                <label for="timeline" class="fw-bold text-danger">select a timeline map</label>
+                <select name="timeline" id="timeline" class="form-select" data-table="artifact" required>
+                  <option value="" disabled selected>-select a timeline-</option>
+                  <option value="1">generic</option>
+                  <option value="2">sweden</option>
                 </select>
+                <div class="mt-3 text-secondary">Please select a timeline map from those available. Each time map will update the chronological filters of the lower and upper bounds by setting them to the specific local time span. </div>
               </div>
-              <div class="col-md-4">
-                <label for="startSpecificList">Filter start year by specific cultural period definition</label>
-                <select class="form-select" id="startSpecificList" disabled></select>
+              <div class="col-md-5">
+                <div class="mb-3">
+                  <label for="dropdownMenuButtonLower">Lower bound</label>
+                  <div class="dropdown mb-3">
+                    <button id="dropdownMenuButtonLower" class="btn btn-light dropdown-toggle form-control text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>select a period</button>
+                    <ul class="dropdown-menu firstLevel w-100" aria-labelledby="dropdownMenuButton" id="dropdown-menu-lower"></ul>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="dropdownMenuButtonUpper">Upper bound</label>
+                  <div class="dropdown">
+                    <button id="dropdownMenuButtonUpper" class="btn btn-light dropdown-toggle form-control text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>select a period</button>
+                    <ul class="dropdown-menu firstLevel w-100" aria-labelledby="dropdownMenuButton" id="dropdown-menu-upper"></ul>
+                  </div>
+                </div>
               </div>
-              <div class="col-md-4">
-                <label for="start" class="fw-bold text-danger">Start year</label>
-                <input type="number" class="form-control w-auto" id="start" step="1" data-table="artifact" value="" min="-3000000" max="<?php echo Date('Y'); ?>" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <legend>Upper bound</legend>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-4">
-                <label for="endGenericList">Filter end year by generic cultural period definition</label>
-                <select class="form-select" id="endGenericList" disabled></select>
-              </div>
-              <div class="col-md-4">
-                <label for="endSpecificList">Filter end year by specific cultural period definition</label>
-                <select class="form-select" id="endSpecificList" disabled></select>
-              </div>
-              <div class="col-md-4">
-                <label for="end" class="fw-bold text-danger">End year</label>
-                <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="-3000000" max="<?php echo Date('Y'); ?>" required>
+              <div class="col-md-3">
+                <label for="start" class="fw-bold text-danger">From</label>
+                <input type="number" class="form-control w-auto mb-3" id="start" step="1" data-table="artifact" value="" min="" max="" required>
+                <label for="end" class="fw-bold text-danger">To</label>
+                <input type="number" class="form-control w-auto" id="end" step="1" data-table="artifact" value="" min="" max="" required>
               </div>
             </div>
           </fieldset>
@@ -240,9 +232,9 @@
       require("assets/js.html");
     ?>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/js/bootstrap5-toggle.ecmas.min.js"></script>
     <script src="js/maps/geo_config.js" charset="utf-8"></script>
+    <script src="js/maps/geo_function.js" charset="utf-8"></script>
     <script src="js/artifact_add.js" charset="utf-8"></script>
-    <script src="js/chronologyFunc.js" charset="utf-8"></script>
+    <!-- <script src="js/chronologyFunc.js" charset="utf-8"></script> -->
   </body>
 </html>

@@ -1,43 +1,73 @@
 function osmSearch(city){
   let api = nominatim+city
   $.getJSON( api, function( data ) {
-    console.log(data);
-    // let addr = data.address.road;
-    // if(data.address.house_number && data.address.house_number !== 'undefined'){
-    //   addr = addr+" "+data.address.house_number;
-    // }
-    // $("#address").val(addr)
+    console.log(data.features);
+    citySuggested.html('')
+    if (data.features.length > 0) {
+      data.features.forEach((item,i) => {
+        let geom = item.geometry.coordinates;
+        let prop = item.properties.geocoding;
+        $("<button/>", {class:'list-group-item list-group-item-action', type:'button'})
+          .text(prop.country+", "+prop.name)
+          .appendTo(citySuggested)
+          .on('click', function(){
+            $("[name=city]").val(prop.name)
+            map.setView([geom[1],geom[0]],13)
+            citySuggested.fadeOut('fast').html('');
+            autocompleted = true;
+          })
+      })
+    }else{
+      $("<button/>", {class:'list-group-item list-group-item-action', type:'button'})
+        .text('No cities found')
+        .appendTo(citySuggested)
+        .on('click', function(){ citySuggested.fadeOut('fast').html(''); })
+    }
+    citySuggested.fadeIn('fast')
   });
 }
 function osmReverseSearch(ll){
   let api = nominatimReverse+'lat='+ll.lat+'&lon='+ll.lng;
   $.getJSON( api, function( data ) {
     console.log(data);
-    // let addr = data.address.road;
-    // if(data.address.house_number && data.address.house_number !== 'undefined'){
-    //   addr = addr+" "+data.address.house_number;
-    // }
-    // $("#address").val(addr)
+    if (marker != undefined) { map.removeLayer(marker)};
+    marker = L.marker(ll).addTo(map);
+    let city; 
+    if(data.address.city && data.address.city !== 'undefined'){
+      city = data.address.city;
+    }
+    else if(data.address.town && data.address.town !== 'undefined'){
+      city = data.address.town;
+    }else{
+      city = data.address.village;
+    }
+    $("[name=city]").val(city)
+
+    let addr = data.address.road;
+    if(data.address.house_number && data.address.house_number !== 'undefined'){addr = addr+" "+data.address.house_number;}
+    $("#address").val(addr)
+
+    $("#latitude").val(ll.lat.toFixed(4))
+    $("#longitude").val(ll.lng.toFixed(4))
   });
 }
 
 function mapInit(){
-  // map = L.map('map',{maxBounds:mapExt}).fitBounds(mapExt)
   map = L.map('map').fitWorld().setZoom(2)
-  // map.setMinZoom(2);
-  osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
-  gStreets = L.tileLayer(gStreetTile,{maxZoom: 18, subdomains:gSubDomains });
-  gSat = L.tileLayer(gSatTile,{maxZoom: 18, subdomains:gSubDomains});
-  gTerrain = L.tileLayer(gTerrainTile,{maxZoom: 18, subdomains:gSubDomains});
+  osm = L.tileLayer(osmTile, { maxZoom: 20, attribution: osmAttrib}).addTo(map);
+  gStreets = L.tileLayer(gStreetTile,{maxZoom: 20, subdomains:gSubDomains });
+  gSat = L.tileLayer(gSatTile,{maxZoom: 20, subdomains:gSubDomains});
+  gTerrain = L.tileLayer(gTerrainTile,{maxZoom: 20, subdomains:gSubDomains});
   baseLayers = {
     "OpenStreetMap": osm,
     "Google Terrain":gTerrain,
     "Google Satellite": gSat,
     "Google Street": gStreets
   };
-  L.control.layers(baseLayers, null).addTo(map);
+  layerControl = L.control.layers(baseLayers, null,{collapsed:false}).addTo(map);
   countyGroup = L.featureGroup().addTo(map);
   cityGroup = L.featureGroup().addTo(map);
+    
   map.on({
     zoomend: handleAlert,
     click:function(e){
@@ -107,7 +137,7 @@ function artifactMap(){
     "Google Street": gStreets
   };
 
-  var layerControl = L.control.layers(baseLayers, overlayMaps).addTo(map);
+  layerControl = L.control.layers(baseLayers, overlayMaps).addTo(map);
   
   let markerGroup = L.featureGroup().addTo(map);
 
@@ -165,7 +195,7 @@ function artifactMap(){
     options: { position: 'topleft'},
     onAdd: function (map) {
       let container = L.DomUtil.create('div', 'extentControl leaflet-bar leaflet-control leaflet-touch');
-      let btnHome = $("<a/>",{href:'#', title:'max zoom', id:'maxZoomBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
+      btnHome = $("<a/>",{href:'#', title:'max zoom', id:'maxZoomBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
       $("<i/>",{class:'mdi mdi-home'}).appendTo(btnHome)
       let btnFullscreen = $("<a/>",{href:'#', title:'toggle fullscreen mode', id:'toggleFullscreenBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
       $("<i/>",{class:'mdi mdi-fullscreen'}).appendTo(btnFullscreen)
@@ -211,7 +241,7 @@ function mapStat(countyData){
     options: { position: 'topleft'},
     onAdd: function (map) {
       let container = L.DomUtil.create('div', 'extentControl leaflet-bar leaflet-control leaflet-touch');
-      let btnHome = $("<a/>",{href:'#', title:'max zoom', id:'maxZoomBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
+      btnHome = $("<a/>",{href:'#', title:'max zoom', id:'maxZoomBtn'}).attr({"data-bs-toggle":"tooltip","data-bs-placement":"right"}).appendTo(container)
       $("<i/>",{class:'mdi mdi-home'}).appendTo(btnHome)
       
       btnHome.on('click', function (e) {
@@ -304,4 +334,31 @@ function mapInfo(props){
   $("#mapInfoTitle").text(props ? '' : 'Map info')
   $("#nameProp").text(props ? props.name : '')
   $("#totProp").text(props ? 'Number of artifacts: '+props.tot : '')
+}
+
+function layername(){
+// Ottieni tutti i layer aggiunti alla mappa
+var mapLayers = map._layers;
+
+// Crea un array per memorizzare i nomi dei layers
+var layerNames = [];
+
+// Itera su tutti i layer presenti nella mappa
+for (var layerId in mapLayers) {
+    var layer = mapLayers[layerId];
+    
+    // Verifica se il layer è un Layer di Leaflet e ha un nome
+    if (layer.options && layer.options.name) {
+      var layerName = layer.options.name;
+      
+      // Assicurati che il nome del layer non sia duplicato
+      if (!layerNames.includes(layerName)) {
+        layerNames.push(layerName);
+      }
+    }
+  }
+  
+  // Ora puoi utilizzare l'array layerNames che contiene i nomi dei layers presenti nella mappa
+  console.log(layerNames);
+
 }

@@ -1,28 +1,19 @@
 create or replace view user_artifact_view as 
-WITH
-  artifact AS (
-    select 
-      u.id, 
-      concat(p.first_name,' ', p.last_name) name, 
-      u.role role_id, 
-      role.value role, 
-      u.is_active, 
-      count(artifact.id) tot 
-    from user u
-    inner join person p on u.person = p.id
-    inner join list_user_role role on u.role = role.id 
-    left join artifact on artifact.author = u.id 
-    group by u.id, p.first_name, p.last_name
+with 
+  user as (
+    select p.id person_id, u.id user_id, concat(p.first_name,' ',p.last_name) name, role.value role, u.is_active
+    from person p
+    inner join user u on u.person = p.id
+    INNER JOIN list_user_role role on u.role = role.id
   ),
-  model AS (
-    select 
-      u.id, 
-      count(model.id) tot 
-      from user u 
-      inner join person p on u.person = p.id
-      left join model_object model on model.author = u.id 
-      group by u.id, p.first_name, p.last_name
-    )
-SELECT artifact.id, artifact.name, artifact.role, artifact.is_active, artifact.tot artifact, model.tot model FROM artifact JOIN model
-WHERE artifact.id = model.id
-ORDER BY artifact.name asc;
+  artifact as (
+    select user.user_id author, coalesce(count(artifact.id),0) tot from user left join artifact on artifact.author = user.user_id group by user.user_id
+  ),
+  model as (
+    select user.user_id author, coalesce(count(model.id),0) tot from user left join model_object model on model.author = user.user_id group by user.user_id
+  )
+select user.*, artifact.tot artifact, model.tot model
+from user
+inner join model on model.author = user.user_id
+inner join artifact on artifact.author = user.user_id
+order by user.name asc;

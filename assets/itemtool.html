@@ -35,9 +35,13 @@
       </select>
     </div>
     <div class="d-block mb-1 me-xl-2">
-      <select class="form-select form-select-sm buildGallery" id="byChronology">
+      <!-- <select class="form-select form-select-sm buildGallery" id="byChronology">
         <option selected value="" disabled>chronology</option>
-      </select>
+      </select> -->
+      <div class="dropdown" id="chronoDropDownList">
+        <button class="btn btn-sm btn-light dropdown-toggle w-100 text-start" type="button" id="chronoDropDownBtn" data-bs-toggle="dropdown" aria-expanded="false">chronology</button>
+        <ul id="macroList" class="dropdown-menu"></ul>
+      </div>
     </div>
     <div class="d-block mb-1 me-xl-2">
       <select class="form-select form-select-sm buildGallery" id="byInstitution">

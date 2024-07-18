@@ -1,7 +1,10 @@
 const sessionActive = $("[name=sessionActive").val();
-
-getPerson($("[name=person").val())
-getUsrFromPerson($("[name=person").val())
+const role = sessionActive == 1 ? $("[name=role").val() : 0;
+const usrDiv = $("#usrDiv");
+const person = $("[name=person").val();
+$(".invisible").hide()
+getPerson()
+getUsrFromPerson()
 getList(listRole.settings,listRole.htmlEl,listRole.label)
 
 $("#usrFromPersonBtn").on('click', function(el){ createUsrFromPerson(el) })
@@ -10,14 +13,14 @@ function createUsrFromPerson(btn){
   btn.preventDefault();
   ajaxSettings.url=API+"person.php";
   ajaxSettings.data={trigger:'createUsrFromPerson'}
-  ajaxSettings.data.person = $("[name=person").val();
+  ajaxSettings.data.person = person;
   console.log(ajaxSettings.data);
 }
 
-function getPerson(person) {
+function getPerson() {
   ajaxSettings.url=API+"person.php";
   ajaxSettings.data={trigger:'getPerson', id:person}
-  $.ajax(ajaxSettings)
+  $.ajax(ajaxSettings)  
   .done(function(data) {
     $(".titleSection").text(data.first_name+" "+data.last_name)
     $("#email").text(data.email)
@@ -29,17 +32,21 @@ function getPerson(person) {
   });
 }
 
-function getUsrFromPerson(person){
+function getUsrFromPerson(){
   ajaxSettings.url=API+"person.php";
   ajaxSettings.data={trigger:'getUsrFromPerson', id:person}
   $.ajax(ajaxSettings)
   .done(function(data) {
-    if(data.length == 1 && sessionActive == 1) { usrDiv(data[0]) }
+    console.log(data);
+    if(data.length == 0){
+      $(".invisible").remove();
+      return false;
+    }
+    $(".invisible").removeClass('invisible').show()
   });
 }
 
-function usrDiv(data){
-  const usrDiv = $("#usrDiv");
+function createUsrDiv(data){
   usrDiv.html('')
   let active = data.is_active == 1 ? 'true' : 'false';
   let class_active = data.is_active == 1 ? 'alert-success' : 'alert-danger';

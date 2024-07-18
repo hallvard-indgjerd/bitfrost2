@@ -13,5 +13,6 @@ function getCityFromLonLat($obj){return json_encode($obj->getCityFromLonLat($_PO
 function getSelectOptions($obj){return json_encode($obj->getSelectOptions($_POST['list'], $_POST['filter'], $_POST['orderBy']));}
 function getFilterList($obj){return json_encode($obj->getFilterList());}
 function checkName($obj){return json_encode($obj->checkName($_POST));}
-
+function getTimeSeries($obj){return json_encode($obj->getTimeSeries($_POST['filters']));}
+function chronoFilter($obj){return json_encode($obj->chronoFilter());}
 ?>

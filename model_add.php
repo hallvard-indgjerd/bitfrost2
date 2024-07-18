@@ -48,6 +48,22 @@
                 <textarea class="form-control" name="note" id="note" data-table="model" rows="6"></textarea>
               </div>
             </div>
+            <div class="row mb-3">
+              <div class="col col-md-6">
+                <div class="mb-3">
+                  <label for="doi">Target URL on Zenodo</label>
+                  <input type="text" class="form-control" placeholder="example: https://doi.org/10.5281/zenodo.11207959" data-table="model" id="doi">
+                </div>
+                <div class="mb-3">
+                  <label for="doi_svg">Image URL on Zenodo</label>
+                  <input type="text" class="form-control" placeholder="example: https://zenodo.org/badge/DOI/10.5281/zenodo.11207959.svg" data-table="model" id="doi_svg">
+                </div>
+                <div>
+                  <label for="citation">Citation</label>
+                  <textarea class="form-control" name="citation" id="citation" data-table="model" rows="3"></textarea>
+                </div>
+              </div>
+            </div>
           </fieldset>
           <fieldset>
             <div id="tip2" class="alert alert-light border">

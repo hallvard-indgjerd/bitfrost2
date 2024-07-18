@@ -10,11 +10,19 @@
     <link rel="stylesheet" href="css/dashboard.css">
   </head>
   <body>
-    <?php require("assets/header.php"); ?>
+    <?php 
+      require("assets/header.php");
+      require("assets/loadingDiv.html");  
+    ?>
+    
     <main class="animated mainSection">
       <input type="hidden" name="usrId" value="<?php echo $_SESSION['id']; ?>">
       <input type="hidden" name="usrCls" value="<?php echo $_SESSION['role']; ?>">
       <div id="dashboardWrap" class="dashboardFlex">
+        <div id="issuesSection" class="alert d-none d-lg-block">
+          <h4 id="issuesTitle"></h4>
+          <div id="issuesBody"></div>
+        </div>
         <div id="artifactList" class="border rounded shadow p-3 mb-5">
           <h3>Artifact <span id="artifactStatusTitle"></span><span class="badge text-bg-dark float-end"></span></h3>
           <div class="toolbarDiv border-bottom">

@@ -22,6 +22,20 @@
   border-top: 1px solid #cacaca;
 }
 
+#chronoDropDownBtn::after{
+  position: absolute;
+  top: 0%;
+  right: 11px;
+  content: "keyboard_arrow_down";
+  font-family: 'Material Icons';
+  font-size: 20px;
+  border:none !important;
+}
+
+.dropdown-menu li {position: relative;}
+.dropdown-menu .dropdown-submenu {display: none;position: absolute;left: 100%;top: -7px; width:200px;}
+.dropdown-menu > li:hover > .dropdown-submenu {display: block;}
+
 #itemsCount{position:relative; width:100%; margin:0 !important; padding:0 !important; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;}
 #itemsCount > div{
   width:calc(50% - 8px); 
@@ -31,6 +45,7 @@
   flex-direction:column; 
   justify-content:center; 
   align-items:center;
+  color: var(--bs-secondary);
 }
 #itemsCount h5{ font-size: calc(12px + (26 - 12) * ((100vw - 300px) / (1600 - 300)));}
 #itemsCount > div::before{
@@ -44,10 +59,10 @@
   background-position: center;
   background-size: contain;
 }
-#artifactTot::before{top:0px; left:0px; background-image: url('../img/ico/axe.png');}
+/* #artifactTot::before{top:0px; left:0px; background-image: url('../img/ico/axe.png');}
 #modelTot::before{top:0px; right:0px; background-image: url('../img/ico/cube-outline.png');}
 #institutionTot::before{bottom:0px; left:0px; background-image: url('../img/ico/bank.png');}
-#filesTot::before{bottom:0px; right:0px; background-image: url('../img/ico/multimedia.png');}
+#filesTot::before{bottom:0px; right:0px; background-image: url('../img/ico/multimedia.png');} */
 
 #crono_chart{position:relative; width:100%; height:120px; margin-top: 10px;}
 main{margin-top: 480px !important;}

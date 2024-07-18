@@ -29,6 +29,21 @@
                   <label for="description" class="form-label fw-bold text-danger">Description</label>
                   <textarea class="form-control" name="description" id="description" data-table="model" rows="6" required></textarea>
                 </div>
+
+                <div class="mb-3">
+                  <label for="doi">Target URL on Zenodo</label>
+                  <input type="text" class="form-control" placeholder="example: https://doi.org/10.5281/zenodo.11207959" data-table="model" id="doi">
+                </div>
+                <div class="mb-3">
+                  <label for="doi_svg">Image URL on Zenodo</label>
+                  <input type="text" class="form-control" placeholder="example: https://zenodo.org/badge/DOI/10.5281/zenodo.11207959.svg" data-table="model" id="doi_svg">
+                </div>
+                <div>
+                  <label for="citation">Citation</label>
+                  <textarea class="form-control" name="citation" id="citation" data-table="model" rows="3"></textarea>
+                </div>
+
+
                 <div class="mb-3">
                   <label for="note" class="form-label">Note</label>
                   <textarea class="form-control" name="note" id="note" data-table="model" rows="6"></textarea>

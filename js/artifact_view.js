@@ -11,7 +11,6 @@ ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 
 $.ajax(ajaxSettings).done(function(data) {
-  $("#loadingDiv").remove()
   let artifact = data.artifact;
   classid = artifact.category_class_id;
   classtype = data.artifact.category_class;
@@ -47,7 +46,7 @@ $.ajax(ajaxSettings).done(function(data) {
   $("#institutionLogo>img").attr("src", "img/logo/"+institution.logo)
   $("#storage_name").text(institution.name)
   $("#gMapLink").attr("href",gMapLink)
-  $("#storage_address").text(institution.address)
+  $("#storage_address").text(institution.city+", "+institution.address)
   $("#storage_link").attr("href",institution.link).text(institution.link)
   markerArr.storage = [parseFloat(institution.lat), parseFloat(institution.lon)]
 
@@ -85,7 +84,8 @@ $.ajax(ajaxSettings).done(function(data) {
   $("#artifact_license>a").attr("href",metadata.license.link).text(metadata.license.license+" ("+metadata.license.acronym+")")
 
   if(data.model){
-    $("#editModelBtn > a").attr('href','model_view.php?item='+data.model.model.id);
+    console.log(data.model);
+    $("[name=editModelBtn]").attr('href','model_edit.php?item='+data.model.model.id);
     let model = data.model.model_object[0];
     if (model.object) {
       if((role && role < 5) || (activeUser && model.author_id === activeUser)){
