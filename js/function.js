@@ -286,7 +286,7 @@ function gallery(data){
       removeFromCollection(item.id)
     })
   });
-  updateCollection(); // MC: I moved outside of the loop to avoid upfdating the collection for each item
+  updateCollection(); // MC: I moved outside of the loop to avoid updating the collection for each item
 }
 
 
