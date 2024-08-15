@@ -219,12 +219,12 @@ let county;
 function mapStat(countyData){
   map2 = L.map('mapChart',{maxBounds:mapExt}).fitBounds(mapExt)
   map2.setMinZoom(3);
-  // L.maptilerLayer({apiKey: mapTilerKey, style: "dataviz-light"}).addTo(map2)
+  L.maptilerLayer({apiKey: mapTilerKey, style: "dataviz-light"}).addTo(map2)
   // L.tileLayer(osmTile, { maxZoom: 20, attribution: osmAttrib}).addTo(map2);
-  L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png', {
-    maxZoom: 20,
-    attribution: '&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>', 
-  }).addTo(map2);
+  // L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png', {
+  //   maxZoom: 20,
+  //   attribution: '&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>', 
+  // }).addTo(map2);
   let countyGroup = L.featureGroup().addTo(map2);
   let countyJson = {"type":"FeatureCollection", "features": []}
   countyData.forEach(el => {
