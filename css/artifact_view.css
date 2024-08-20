@@ -19,12 +19,15 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
 
 #imgDiv, #videoPane{
   width:100%;
-  display: flex;
-  align-items: start;
-  flex-direction: row;
-  justify-content: start;
+  column-count: 3;
+  column-gap: 10px;
 }
-.imgCard{ width:250px; height:auto;}
+.imgCard{ 
+  width: 100%;
+  height: auto;
+  break-inside: avoid;
+  position: relative;
+}
 .imgCard:nth-child(even), #videoPane .embed-responsive:nth-child(even){margin-left: 5px; margin-right: 5px;}
 
 #videoPane .embed-responsive{width:49%;}

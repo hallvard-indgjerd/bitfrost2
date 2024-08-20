@@ -19,7 +19,7 @@ ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 $.ajax(ajaxSettings).done(function(data) {
   let artifact = data.artifact;
-  console.log(data);
+  // console.log(data);
   classid = artifact.category_class_id;
   classtype = data.artifact.category_class;
   $("h2#title").text(artifact.name)
@@ -149,21 +149,28 @@ $.ajax(ajaxSettings).done(function(data) {
     let navPanes =$("<div/>",{class:"tab-content", id:"mediaContent"}).appendTo("#media")
     const type = groupBy(['type']);
     let group = type(data.media);
+    
     Object.entries(group).forEach(function(element,idx) {
       let active = idx == 0 ? 'active' : '';
       let show = idx == 0 ? 'show' : '';
       let elTab = $("<li/>", {class:'nav-item', role:'presentation'}).appendTo(navTabs)
       $("<button/>",{class:'nav-link '+active, id: element[0]+'Tab', type:'button', role:'tab'}).attr({"data-bs-toggle":'tab', "data-bs-target":'#'+element[0]+'Pane'}).text(element[0]).appendTo(elTab)
 
-      let panes = $("<div/>", {class:'pt-2 tab-pane fade '+show+' '+active, id: element[0]+'Pane', role:'tabpanel'}).appendTo(navPanes)
+      let panes = $("<div/>", {class:'bg-light p-3 tab-pane fade '+show+' '+active, id: element[0]+'Pane', role:'tabpanel'}).appendTo(navPanes)
 
       if(element[0] == 'image'){
         let imgDiv = $("<div/>",{id:'imgDiv'}).appendTo('#imagePane')
         element[1].forEach(img => {
-        let imgWrap = $("<div/>",{class:'imgCard mb-3'}).appendTo(imgDiv)
-        let figure = $("<figure/>",{class:'figure rounded border p-2'}).appendTo(imgWrap)
-        $("<img/>",{class:'figure-img img-fluid rounded', src:"./archive/image/"+img.path}).appendTo(figure);
-        $("<figcaption/>",{class:'figure-caption', text:img.text}).appendTo(figure)
+          let imgWrap = $("<div/>",{class:'imgCard bg-white rounded border p-2 mb-3'}).appendTo(imgDiv)
+          let figure = $("<figure/>",{class:'figure m-0'}).appendTo(imgWrap)
+          $("<img/>",{class:'figure-img img-fluid rounded', src:"./archive/image/"+img.path}).appendTo(figure);
+          $("<figcaption/>",{class:'figure-caption', text:img.text}).appendTo(figure)
+          let toolImage = $("<div/>", {class:'btn-group btn-group-sm mt-3 text-end', role:'group'}).appendTo(imgWrap);
+          $("<button/>",{type:'button', class:'btn btn-adc-blue', title:'expand image'}).html('<span class="mdi mdi-magnify-expand"></span>').appendTo(toolImage).tooltip({placement:'top',fallbackPlacements: []})
+          if (activeUser) {
+            $("<button/>",{type:'button', class:'btn btn-adc-blue'}).html('<span class="mdi mdi-file-document-edit"></span>').appendTo(toolImage)
+            $("<button/>",{type:'button', class:'btn btn-danger'}).html('<span class="mdi mdi-delete-forever"></span>').appendTo(toolImage)
+          }
         });
       }
 
