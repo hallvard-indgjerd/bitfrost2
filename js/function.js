@@ -184,6 +184,7 @@ function buildGallery(callback){
   checkActiveFilter()
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data={trigger:'buildGallery', filter:filter2, sort:sort};
+  console.log([filter,filter2]);
   $.ajax(ajaxSettings).done(callback)
 }
 
