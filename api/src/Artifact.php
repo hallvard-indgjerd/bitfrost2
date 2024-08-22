@@ -69,11 +69,12 @@ class Artifact extends Conn{
 
   public function getArtifacts(array $search){
     $filter = [];
-    if($search['status'] > 0){
-      array_push($filter, "status_id = ".$search['status']);
-    }else {
-      array_push($filter, "status_id > ".$search['status']);
-    }
+    array_push($filter, "status_id = ".$search['status']);
+    // if($search['status'] > 0){
+    //   array_push($filter, "status_id = ".$search['status']);
+    // }else {
+    //   array_push($filter, "status_id > ".$search['status']);
+    // }
 
     if(isset($search['description'])){
       $string = trim($search['description']);
@@ -81,7 +82,7 @@ class Artifact extends Conn{
       $searchArray = [];
       foreach ($arrString as $value) {
         if(strlen($value)>3){
-          array_push($searchArray, " description like '%".$value."%' ");
+          array_push($searchArray, " (description like '%".$value."%' or name like '%".$value."%') ");
         }
       }
       $searchString = "(".join(" and ", $searchArray).")";
@@ -167,7 +168,7 @@ class Artifact extends Conn{
     if (strpos(__DIR__, 'prototype_dev') !== false) {
       $rootFolder = $_SERVER['DOCUMENT_ROOT'].'/prototype_dev/archive/models/';
     } else {
-      $rootFolder = $_SERVER['DOCUMENT_ROOT'].'/prototype/archive/models/';
+      $rootFolder = $_SERVER['DOCUMENT_ROOT'].'/plus/archive/models/';
     }
     $folder_files = array_diff(scandir($rootFolder), array('..', '.'));
     $missingModel = array_diff($db_files,$folder_files);

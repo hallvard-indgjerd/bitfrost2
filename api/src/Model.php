@@ -204,7 +204,8 @@ class Model extends Conn{
     INNER JOIN artifact_model am ON artifact.id = am.artifact 
     INNER JOIN model_object obj ON obj.model = am.model 
     LEFT JOIN list_material_specs material ON amt.material = material.id
-    WHERE artifact.id IN (
+    WHERE artifact.status = 2
+      AND artifact.id IN (
       SELECT artifact.id
       FROM artifact
       INNER JOIN artifact_material_technique amt ON amt.artifact = artifact.id
@@ -232,11 +233,12 @@ class Model extends Conn{
 
   public function getModels(array $search){
     $filter = [];
-    if($search['status'] > 0){
-      array_push($filter, "m.status = ".$search['status']);
-    }else {
-      array_push($filter, "m.status > ".$search['status']);
-    }
+    array_push($filter, "m.status = ".$search['status']);
+    // if($search['status'] > 0){
+    //   array_push($filter, "m.status = ".$search['status']);
+    // }else {
+    //   array_push($filter, "m.status > ".$search['status']);
+    // }
     // if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
     if(isset($search['to_connect'])){
       array_push($filter,"m.id not in (select model from artifact_model)");
@@ -330,5 +332,4 @@ class Model extends Conn{
     }
   }
 }
-
 ?>
