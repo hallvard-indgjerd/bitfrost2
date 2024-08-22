@@ -105,8 +105,8 @@
         <div class="col">
           <h4 class='txt-adc-dark fw-bold border-bottom'>Copyright and License Information</h4>
           <p>Online System: Copyright (C) 2020-<?php echo date("Y"); ?> - Lund University, ISTI-CNR. All rights reserved.</p>
-          <p>The source code of the Dynamic Collections platform (legacy) is available for download and free use from January 2024. You can access it using this link:</p>
-          <a href="https://github.com/LundDarkLab/adc"><span class="mdi mdi-github"></span> https://github.com/LundDarkLab/adc</a>
+          <!-- <p>The source code of the Dynamic Collections platform (legacy) is available for download and free use from January 2024. You can access it using this link:</p>
+          <a href="https://github.com/LundDarkLab/adc"><span class="mdi mdi-github"></span> https://github.com/LundDarkLab/adc</a> -->
           <p>All copyright information can be found on the artifact page of each object.<br>If the object is available for download, follow the instructions provided on the repository where the model and relative metadata are stored.<br>Models made available for download are typically under CreativeCommons licenses. Note that different models may follow different versions of the CC BY license, so always check the specific license assigned to the dataset.</p>
           <h4 class='txt-adc-dark fw-bold border-bottom'>License schema</h4>
           <table class="table text-center">
