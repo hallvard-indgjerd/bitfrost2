@@ -111,10 +111,10 @@ class Artifact extends Conn{
     if($out['artifact']['timeline'] && $out['artifact']['timeline'] !== null){
       $timeline = $this->simple("select definition from time_series where id = ".$out['artifact']['timeline'].";")[0];
       $out['crono']['timeline'] = $timeline['definition'];
-      if (!empty($out['artifact']['start'])){
+      if (isset($out['artifact']['start']) && $out['artifact']['start'] !== null){
         $out['crono']['start'] = $this->getChrono($out['artifact']['timeline'],$out['artifact']['start']);
       }
-      if (!empty($out['artifact']['end'])){
+      if (isset($out['artifact']['end']) && $out['artifact']['end'] !== null){
         $out['crono']['end'] = $this->getChrono($out['artifact']['timeline'],$out['artifact']['end']);
       }
     }

@@ -512,16 +512,6 @@ function chronoFilter(){
   })
 }
 
-function handleChronoChange(){
-  let y = parseInt($("#start").val());
-  if (y < -3000000 || y > getDate()['y']) {
-    alert('Value not allowed. You can fill the field with values beetween -3000000 and '+getDate()['y'])
-    resetChronology();
-    return false;
-  }
-  $("#end").attr({"min":y});
-}
-
 function handleMaterialTechnique(){
   let m = parseInt($("#material").val())
   let matTxt = $("#material option:selected").text()

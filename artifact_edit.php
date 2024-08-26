@@ -285,8 +285,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/js/bootstrap5-toggle.ecmas.min.js"></script>
     <script src="js/maps/geo_config.js" charset="utf-8"></script>
     <script src="js/maps/geo_function.js" charset="utf-8"></script>
+    <script src="js/chronologyFunc.js" charset="utf-8"></script>
     <script src="js/artifact_add.js" charset="utf-8"></script>
-    <!-- <script src="js/chronologyFunc.js" charset="utf-8"></script> -->
     <script src="js/artifact_edit.js" charset="utf-8"></script>
   </body>
 </html>
