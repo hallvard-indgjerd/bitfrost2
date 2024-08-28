@@ -28,9 +28,9 @@
           <div class="toolbarDiv border-bottom">
             <div>
               <div class="btn-group btn-group-sm" role="group">
-                <input type="radio" class="btn-check" name="artifactStatus" id="statusAll" value="0" autocomplete="off" checked>
-                <label class="btn btn-outline-secondary" for="statusAll">All</label>
-                <input type="radio" class="btn-check" name="artifactStatus" id="statusComplete" value="2" autocomplete="off">
+                <!-- <input type="radio" class="btn-check" name="artifactStatus" id="statusAll" value="0" autocomplete="off" checked>
+                <label class="btn btn-outline-secondary" for="statusAll">All</label> -->
+                <input type="radio" class="btn-check" name="artifactStatus" id="statusComplete" value="2" autocomplete="off" checked>
                 <label class="btn btn-outline-secondary" for="statusComplete">Complete</label>
                 <input type="radio" class="btn-check" name="artifactStatus" id="statusIncomplete" value="1" autocomplete="off">
                 <label class="btn btn-outline-secondary" for="statusIncomplete">Under processing</label>
@@ -54,9 +54,9 @@
           <div class="toolbarDiv border-bottom">
             <div>
               <div class="btn-group btn-group-sm" role="group">
-                <input type="radio" class="btn-check" name="modelStatus" id="modelStatusAll" value="0" autocomplete="off" checked>
-                <label class="btn btn-outline-secondary" for="modelStatusAll">All</label>
-                <input type="radio" class="btn-check" name="modelStatus" id="modelStatusComplete" value="2" autocomplete="off">
+                <!-- <input type="radio" class="btn-check" name="modelStatus" id="modelStatusAll" value="0" autocomplete="off" checked>
+                <label class="btn btn-outline-secondary" for="modelStatusAll">All</label> -->
+                <input type="radio" class="btn-check" name="modelStatus" id="modelStatusComplete" value="2" autocomplete="off" checked>
                 <label class="btn btn-outline-secondary" for="modelStatusComplete">Complete</label>
                 <input type="radio" class="btn-check" name="modelStatus" id="modelStatusIncomplete" value="1" autocomplete="off">
                 <label class="btn btn-outline-secondary" for="modelStatusIncomplete">Under processing</label>

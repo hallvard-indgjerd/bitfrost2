@@ -24,14 +24,12 @@ $.ajax(ajaxSettings).done(function(data) {
   classtype = data.artifact.category_class;
   $("h2#title").text(artifact.name)
   Object.keys(artifact).forEach(function(key) {
-    if(artifact[key]){
+    if(artifact[key] !== null && artifact[key] !== undefined) {
       artifact['is_museum_copy'] = artifact['is_museum_copy'] == 0 ? false : true;
       let statusClass = artifact['status_id'] == 1 ? 'alert-danger' : 'alert-success';
       $("#status").addClass(statusClass).text(artifact.status);
       if(key == 'notes' || key == 'description'){ artifact[key] = nl2br(artifact[key])}
       if(key == 'status'){ artifact[key] = 'The item status is: '+artifact[key] }
-      // if(key == 'from'){ $("#start_period").text(artifact.from.definition)}
-      // if("to" in artifact){ $("#end_period").text(artifact.to.definition)}else{$("#end_period").parent().remove()}
       $("#"+key).html(artifact[key])
     }else{
       if(!role){$("#"+key).parent('li').remove()}
