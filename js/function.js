@@ -184,13 +184,11 @@ function buildGallery(callback){
   checkActiveFilter()
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data={trigger:'buildGallery', filter:filter2, sort:sort};
-  console.log([filter,filter2]);
   $.ajax(ajaxSettings).done(callback)
 }
 
 function checkDevice(){
   let device;
-
   if(
     screen.width >= 1024 &&
     screen.orientation.type.split('-')[0] == 'landscape' &&

@@ -1,11 +1,15 @@
-DROP TABLE if exists files;
-create table files(
-  `id` SMALLINT AUTO_INCREMENT,
-  `artifact` INT NOT NULL,
-  `type` ENUM('image','document','video','audio') NOT NULL,
-  `path` varchar(256),
-  `url` varchar(256),
-  `text` text,
-  PRIMARY KEY(id),
-  CONSTRAINT FOREIGN KEY (`artifact`) REFERENCES `artifact` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- DROP TABLE if exists files;
+-- create table files(
+--   `id` SMALLINT AUTO_INCREMENT,
+--   `artifact` INT NOT NULL,
+--   `type` ENUM('image','document','video','audio') NOT NULL,
+--   `path` varchar(256),
+--   `url` varchar(256),
+--   `text` text,
+--   PRIMARY KEY(id),
+--   CONSTRAINT FOREIGN KEY (`artifact`) REFERENCES `artifact` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- alter table files add column license bigint unsigned;
+-- alter table files add column downloadable boolean not null default 1;
+-- alter table files add constraint files_license_fk foreign key (license) references license(id);

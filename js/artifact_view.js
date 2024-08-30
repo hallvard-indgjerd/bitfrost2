@@ -19,7 +19,7 @@ ajaxSettings.url=API+"artifact.php";
 ajaxSettings.data={trigger:'getArtifact', id:artifactId};
 $.ajax(ajaxSettings).done(function(data) {
   let artifact = data.artifact;
-  // console.log(data);
+  console.log(data);
   classid = artifact.category_class_id;
   classtype = data.artifact.category_class;
   $("h2#title").text(artifact.name)
@@ -164,10 +164,16 @@ $.ajax(ajaxSettings).done(function(data) {
           $("<img/>",{class:'figure-img img-fluid rounded', src:"./archive/image/"+img.path}).appendTo(figure);
           $("<figcaption/>",{class:'figure-caption', text:img.text}).appendTo(figure)
           let toolImage = $("<div/>", {class:'btn-group btn-group-sm mt-3 text-end', role:'group'}).appendTo(imgWrap);
-          $("<button/>",{type:'button', class:'btn btn-adc-blue', title:'expand image'}).html('<span class="mdi mdi-magnify-expand"></span>').appendTo(toolImage).tooltip({placement:'top',fallbackPlacements: []})
+          $("<button/>",{type:'button', class:'btn btn-sm btn-adc-blue', title:'expand image'}).html('<span class="mdi mdi-magnify-expand"></span>').appendTo(toolImage).tooltip({placement:'top',fallbackPlacements: []}).on('click', function(){fullImage(img)})
           if (activeUser) {
-            $("<button/>",{type:'button', class:'btn btn-adc-blue'}).html('<span class="mdi mdi-file-document-edit"></span>').appendTo(toolImage)
-            $("<button/>",{type:'button', class:'btn btn-danger'}).html('<span class="mdi mdi-delete-forever"></span>').appendTo(toolImage)
+            $("<button/>",{type:'button', class:'btn btn-sm btn-adc-blue'}).html('<span class="mdi mdi-file-document-edit"></span>').appendTo(toolImage).on('click', function(){ imageMetadataEdit(img) })
+            $("<button/>",{type:'button', class:'btn btn-sm btn-danger'}).html('<span class="mdi mdi-delete-forever"></span>').appendTo(toolImage).on('click',function(){
+              let deleteImgAlert = 'Are you sure you want to delete the image? If you confirm the image will be permanently deleted from the server and it will not be possible to restore it'
+              if (confirm(deleteImgAlert)) {
+                deleteImage(img.file,img.path)
+                return false;
+              }
+            })
           }
         });
       }
@@ -192,9 +198,9 @@ $.ajax(ajaxSettings).done(function(data) {
       }
 
       if(element[0] == 'video'){
+        let videoDiv = $("<div/>",{id:'videoDiv'}).appendTo('#videoPane')
         element[1].forEach(video => {
-
-          let divVideo = $("<div/>",{class:'mb-3 embed-responsive embed-responsive-16by9'}).appendTo("#videoPane")
+          let divVideo = $("<div/>",{class:'mb-3 embed-responsive embed-responsive-16by9'}).appendTo(videoDiv)
           $("<iframe/>",{class:'embed-responsive-item', src:video.url.replace('watch?v=','embed/')}).prop('allowfullscreen', true).appendTo(divVideo)
           $("<small/>",{class:'text-secondary',text:video.text}).appendTo(divVideo)
         })
@@ -208,6 +214,97 @@ $.ajax(ajaxSettings).done(function(data) {
   columnChart(classid,classtype)
   mapChart(classid,classtype)
 });
+
+function imageMetadataEdit(img){
+  $("#text").val(img.text);
+  $("#downloadable").prop("checked", img.downloadable);
+  let settings =  {trigger:'getSelectOptions', list:'license', orderBy:'name'}
+  getList(settings,'license','name')
+  let interval = setInterval(function() {
+    if ($('#license option').length > 0) {
+      clearInterval(interval); // Ferma il controllo periodico
+      $('#license').val(img.license_id); // Imposta il valore selezionato
+    }
+  }, 100); 
+  $("#imageMetadataModal").modal('show')
+  $("#updateImage").on('click', function(e){
+    const form = $("#editImage")[0];
+    if (form.checkValidity()) {
+      e.preventDefault();
+      let dati = {trigger:'editImage', id:img.file}
+      dati.text = $("#text").val()
+      dati.license = $("#license").val()
+      dati.downloadable = $('#downloadable').is(':checked') ? 1 : 0;
+      ajaxSettings.url=API+"file.php";
+      ajaxSettings.data = dati
+      $.ajax(ajaxSettings)
+      .done(function(data) {
+        if (data.res==0) {
+          $("#toastDivError .errorOutput").text(data.output);
+          $("#toastDivError").removeClass("d-none");
+        }else {
+          $(".toastTitle").text(data.output)
+          $("#toastDivSuccess").removeClass("d-none")
+          setTimeout(function(){location.reload(); }, 3000);
+        }
+        $("#toastDivContent").removeClass('d-none')
+      }).fail((jqXHR, errorMsg) => {console.log(jqXHR.responseText, errorMsg)});
+    }
+  })
+}
+
+function deleteImage(id,img){
+  let dati={trigger:'deleteImg', id:id, img:img}
+  ajaxSettings.url=API+"file.php";
+  ajaxSettings.data = dati
+  $.ajax(ajaxSettings)
+    .done(function(data) {
+      if (data.error==1) {
+        $("#toastDivError .errorOutput").text(data.output);
+        $("#toastDivError").removeClass("d-none");
+      }else {
+        $(".toastTitle").text(data.output)
+        $("#toastDivSuccess").removeClass("d-none")
+        setTimeout(function(){ location.reload(); }, 3000);
+      }
+      $("#toastDivContent").removeClass('d-none')
+    }).fail((jqXHR, errorMsg) => {console.log(jqXHR.responseText, errorMsg)});
+}
+
+function fullImage(img){
+  let imgPath = "./archive/image/"+img.path;
+  let licensePath = "./assets/license/"+img.deed;
+  $("#downloadImg").css("display",img.downloadable ? 'block' : 'none');
+  $("#fullScreenImg").fadeIn('fast', function(){
+    $("#modalImg").attr("src",imgPath)
+    $("#licenseLink").text(img.license+" ("+img.acronym+")").attr("href",img.link)
+    $("#downloadImg").on('click', function(){downloadZip(imgPath,licensePath)})
+    $("#closeFullScreenImage").on('click', function(){ 
+      $("#fullScreenImg").fadeOut('fast', function(){
+        $("#modalImg").attr("src","")
+        $("#licenseLink").text('').attr("href",'')
+      }); 
+    })
+  }).css("display","flex")
+}
+
+function downloadZip(imagePath, licensePath) {
+  var zip = new JSZip();
+  fetch(imagePath)
+    .then(response => response.blob())
+    .then(imageBlob => {
+      zip.file("image.jpg", imageBlob);
+      return fetch(licensePath);
+    })
+    .then(response => response.text())
+    .then(licenseText => {
+      zip.file("license.txt", licenseText);
+      return zip.generateAsync({ type: "blob" });
+    })
+    .then(blob => { saveAs(blob, "download.zip"); })
+    .catch(error => { console.error("Errore nella creazione dello zip:", error); });
+}
+
 
 function mapChart(id,type){
   $("#mapChartTitle").text(type)

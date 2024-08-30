@@ -30,7 +30,7 @@
               <div class="col">
                 <label for="path" class="form-label">upload a file</label>
                 <input type="file" name="path" id="path" class="form-control w-auto" accept="<?php echo $fileType; ?>">
-                <img src="" id="imgPreview" class="img-fluid w-50" alt="">
+                <img src="" id="imgPreview" class="img-fluid w-50 my-3" alt="">
               </div>
             </div>
           <?php } ?>
@@ -48,6 +48,25 @@
               <textarea name="text" id="text" rows="10" class="form-control w-75" required></textarea>
             </div>
           </div>
+          <?php if ($_GET['t'] === 'image') {?>
+          <div class="row mb-3">
+            <div class="col">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" name="downloadable" id="downloadable" checked>
+                <label class="form-check-label" for="downloadable">Can the file be downloaded?</label>
+              </div>
+              <div class="form-text">Check if you want to make the file downloadable, uncheck if you do not</div>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col">
+              <label for="license">Select a license</label>
+              <select class="form-select w-auto" id="license" name="license">
+                <option value="" selected disabled>--license--</option>
+              </select>
+            </div>
+          </div>
+          <?php } ?>
           <div class="row">
             <div class="col">
               <button type="submit" class="btn btn-adc-dark w-auto d-inline-block me-2">save <?php echo $_GET['t']; ?></button>

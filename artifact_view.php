@@ -272,8 +272,64 @@
           </div>
         </div>
       </div>
-
     </main>
+
+    <div id="fullScreenImg">
+      <div id="fullScreenContent">
+        <div id="fullScreenHeader"><button type="button" id="closeFullScreenImage" class="btn-close" aria-label="Close"></button></div>
+        <div id="fullScreenBody">
+          <img src="" alt="" class="img-fluid" id="modalImg">
+        </div>
+        <div id="fullScreenFooter">
+          <div class="btn-group me-5" role="group">
+            <button type="button" class="btn btn-sm btn-secondary" disabled>Image licensed under:</button>
+            <a href="" class="btn btn-sm btn-adc-blue" id="licenseLink" title="view license properties [new tab]" target="_blank"></a>
+          </div>
+          <button type="button" class="btn btn-sm btn-adc-blue" id="downloadImg"><span class="mdi mdi-download"></span> download</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+<div class="modal fade" id="imageMetadataModal" tabindex="-1" aria-labelledby="imageMetadataModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit image metadata</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editImage">
+          <div class="row mb-3">
+            <div class="col">
+              <label for="text" class="form-label">insert a brief descritpion</label>
+              <textarea name="text" id="text" rows="5" class="form-control" required></textarea>
+            </div>
+          </div>
+          <div class="row mb-3">
+              <div class="col">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" name="downloadable" id="downloadable">
+                  <label class="form-check-label" for="downloadable">Can the file be downloaded?</label>
+                </div>
+                <div class="form-text">Check if you want to make the file downloadable, uncheck if you do not</div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <label for="license">Select a license</label>
+                <select class="form-select w-auto" id="license" name="license"></select>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="updateImage">Save changes</button>
+        </div>
+        </form>
+    </div>
+  </div>
+</div>
     <?php 
       require("assets/menu.php");
       require("assets/toastDiv.html"); 
@@ -290,6 +346,9 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
     <script src="https://cdn.maptiler.com/maptiler-sdk-js/v1.2.0/maptiler-sdk.umd.js"></script>
     <script src="https://cdn.maptiler.com/leaflet-maptilersdk/v2.0.0/leaflet-maptilersdk.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="js/3dhop_function.js"></script>
     <script src="js/maps/geo_config.js" charset="utf-8"></script>

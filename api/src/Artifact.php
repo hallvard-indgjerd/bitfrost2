@@ -70,11 +70,6 @@ class Artifact extends Conn{
   public function getArtifacts(array $search){
     $filter = [];
     array_push($filter, "status_id = ".$search['status']);
-    // if($search['status'] > 0){
-    //   array_push($filter, "status_id = ".$search['status']);
-    // }else {
-    //   array_push($filter, "status_id > ".$search['status']);
-    // }
 
     if(isset($search['description'])){
       $string = trim($search['description']);

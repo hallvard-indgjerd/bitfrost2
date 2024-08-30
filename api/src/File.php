@@ -51,13 +51,22 @@ class File extends Conn{
       $this->prepared($sql, $data);
       return ["res"=> 1, "output"=>'Ok, the media has been added successfully'];
     } catch (\Exception $e) {
-      // if(count($file)>0){$this->deleteFile($folder.$name);}
       return ["res"=>0, "output"=>$e->getMessage()];
     }
   }
 
+  public function editImage(array $data){
+    try {
+      $sql = $this->buildUpdate("files", ['id'=>$data['id']], $data);
+      $this->prepared($sql, $data);
+      return ["error"=> 0, "output"=>'Ok, the media has been added successfully'];
+    } catch (\Exception $e) {
+      return ["error"=>1, "output"=>$e->getMessage()];
+    }
+  }
+
   public function getMedia(int $id){
-    return $this->simple("select * from files where artifact = ".$id.";");
+    return $this->simple("select f.id file, f.type, f.path, f.url, f.text, f.downloadable, l.id license_id, l.license, l.acronym, l.link, l.file deed from files f left join license l on f.license = l.id where f.artifact = ".$id.";");
   }
 
   public function upload($file, $folder, $name, $type){
@@ -105,9 +114,17 @@ class File extends Conn{
     return true;
   }
 
-  public function deleteFile(string $fileName){
-    if(!unlink($fileName)){ throw new \Exception("Error: file has not been deleted", 1); }
-    return true;
+  public function deleteImg(array $dati){
+    try {
+      $file = $this->imageDir.$dati['img'];
+      if(!unlink($file)){ throw new \Exception("Error: file has not been deleted", 1); }
+      $sql = "delete from files where id = :id;";
+      $this->prepared($sql,["id"=>$dati['id']]);
+      return ["error"=> 0, "output"=>'Ok, the image has been successfully removed.'];
+    } catch (\Throwable $th) {
+      $this->pdo()->rollBack();
+      return ["error"=>1, "output"=>$th->getMessage()];
+    }
   }
 }
 
