@@ -60,7 +60,7 @@ function getArtifacts(){
   dati.trigger='getArtifacts';
   dati.search = search;
   ajaxSettings.url=API+"artifact.php";
-  ajaxSettings.data = dati
+  ajaxSettings.data = dati 
   $.ajax(ajaxSettings).done(function(data){
     $('#artifactList .badge').text(data.length)
     data.forEach((item, i) => {
@@ -91,6 +91,7 @@ function getModels(){
   ajaxSettings.url=API+"model.php";
   ajaxSettings.data = dati
   $.ajax(ajaxSettings).done(function(data){
+    console.log(data);
     $('#modelList .badge').text(data.length)
     data.forEach((item, i) => {
       let card = $("<div/>",{class:' card modelCardSmall'}).appendTo(cardWrap);

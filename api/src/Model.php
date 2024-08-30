@@ -240,7 +240,8 @@ class Model extends Conn{
 
   public function getModels(array $search){
     $filter = [];
-    // array_push($filter, "m.status = ".$search['status']);
+    $status = $search['status'] ==  0 ? 'm.status > 0' : 'm.status = '.$search['status'];
+    array_push($filter, $status);
     if(isset($search['to_connect'])){
       array_push($filter,"m.id not in (select model from artifact_model)");
     }
