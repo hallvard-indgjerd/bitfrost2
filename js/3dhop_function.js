@@ -1737,7 +1737,7 @@ function buildModelParamArray(){
     grid: $("#gridListValue").find('.active').val(),
     ortho: $("[name=ortho]").is(':checked') ? 1 : 0,
     xyz: $("[name=xyzAxes]").is(':checked') ? 1 : 0,
-    lightDir: lightDir.join(','),
+    lightDir: DEFAULT_VIEWER_STATE.lightDir.join(','),
     texture: $("[name=texture]").is(':checked') ? 1 : 0,
     solid: $("[name=solid]").is(':checked') ? 1 : 0,
     lighting: $("[name=lighting]").is(':checked') ? 1 : 0,

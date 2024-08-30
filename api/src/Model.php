@@ -10,9 +10,15 @@ class Model extends Conn{
   public $thumbDir;
   function __construct(){
     $this->uuid = Uuid::uuid4();
-    $this->modelDir = $_SERVER['DOCUMENT_ROOT']."/prototype/archive/models/";
-    $this->modelPreview = $_SERVER['DOCUMENT_ROOT']."/prototype/archive/models/preview/";
-    $this->thumbDir = $_SERVER['DOCUMENT_ROOT']."/prototype/archive/thumb/";
+    $currentDir = __DIR__;
+    if (strpos($currentDir, 'prototype_dev') !== false) {
+      $rootFolder = 'prototype_dev';
+    } else {
+      $rootFolder = 'plus';
+    }
+    $this->modelDir = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/models/";
+    $this->modelPreview = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/models/preview/";
+    $this->thumbDir = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/thumb/";
   }
 
   public function saveModel($data, $files){
@@ -59,6 +65,7 @@ class Model extends Conn{
 
       return ["res"=> 1, "output"=>'Ok, the model has been successfully created.', "id"=>$data['model']]; 
     } catch (\Exception $e) {
+      $this->pdo()->rollback();
       return ["res"=>0, "output"=>$e->getMessage()];
     }
   }
@@ -233,13 +240,7 @@ class Model extends Conn{
 
   public function getModels(array $search){
     $filter = [];
-    array_push($filter, "m.status = ".$search['status']);
-    // if($search['status'] > 0){
-    //   array_push($filter, "m.status = ".$search['status']);
-    // }else {
-    //   array_push($filter, "m.status > ".$search['status']);
-    // }
-    // if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
+    // array_push($filter, "m.status = ".$search['status']);
     if(isset($search['to_connect'])){
       array_push($filter,"m.id not in (select model from artifact_model)");
     }

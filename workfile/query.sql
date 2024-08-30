@@ -1,9 +1,15 @@
-start transaction;
-
-update time_series_specific set `end` = -1701 where id = 8;
-update time_series_specific set `start` = -1700, `end` = -1501 where id = 9;
-update time_series_specific set `end` = -901 where id = 12;
-update time_series_specific set `start` = -900, `end` = -701 where id = 13;
-update time_series_specific set `start` = -700 where id = 14;
-
-commit;
+select 
+m.id, m.name
+, m.create_at
+, m.description
+, m.status
+, m.thumbnail
+, concat(person.last_name, ' ', person.first_name) author
+, count(o.id) object 
+from model m 
+inner join model_object o on o.model = m.id 
+inner join user on m.created_by = user.id 
+inner join person on user.person = person.id 
+where m.id not in (select model from artifact_model)
+group by m.id, m.name, m.create_at, m.description, m.status, m.thumbnail 
+order by m.create_at desc;
