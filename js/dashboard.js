@@ -262,7 +262,7 @@ function artifactIssues(){
       issues = issues + data.chronoNullValue.length
       let div = $("<div/>",{id:'chronoNullValue',class:'bg-white border rounded shadow p-3'}).appendTo("#issuesBody");
       let title = $("<h6/>").appendTo(div)
-      $("<span/>").text('Chronology with null value').appendTo(title)
+      $("<span/>").text('No chronology value').appendTo(title)
       $("<span/>",{class:'badge text-bg-dark float-end'}).text(data.chronoNullValue.length).appendTo(title)
 
       let wrapTable = $("<div/>",{class:'wrapIssuesTable'}).appendTo(div)

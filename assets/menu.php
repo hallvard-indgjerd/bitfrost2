@@ -24,11 +24,11 @@
         <span class="mdi mdi-book-account"></span>
         person
       </a>
-      <span class="titleSection">admin</span>
       <a href='persons_add.php?user=true' class='animated'>
         <span class="mdi mdi-account-group"></span>
         user
       </a>
+      <span class="titleSection">admin</span>
       <a href='#' class='animated'>
         <span class="mdi mdi-format-list-bulleted-square"></span>
         vocabulary
