@@ -126,6 +126,15 @@ class File extends Conn{
       return ["error"=>1, "output"=>$th->getMessage()];
     }
   }
+
+  public function deleteFile(string $path){
+    try {
+      if(!unlink($path)){ throw new \Exception("Error: file has not been deleted", 1); }
+      return ["error"=> 0, "output"=>'Ok, the image has been successfully removed.'];
+    } catch (\Throwable $th) {
+      return ["error"=>1, "output"=>$th->getMessage()];
+    }
+  }
 }
 
 ?>

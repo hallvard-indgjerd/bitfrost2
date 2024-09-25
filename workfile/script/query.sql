@@ -1,1 +1,5 @@
-select m.id, m.name, m.create_at, m.description, m.status, m.thumbnail, concat(person.last_name, ' ', person.first_name) author, count(o.id) object from model m inner join model_object o on o.model = m.id inner join user on m.created_by = user.id inner join person on user.person = person.id where m.status = 2 group by m.id, m.name, m.create_at, m.description, m.status, m.thumbnail order by m.create_at desc;
+SELECT i.id, i.name, i.abbreviation, cat.id as category_id, cat.value AS category, i.city, i.address, i.lat, i.lon, i.url, i.logo, COALESCE(b.tot, 0) AS artifact_count
+     FROM institution i
+     INNER JOIN list_institution_category cat ON i.category = cat.id
+     LEFT JOIN (SELECT owner, COUNT(*) AS tot FROM artifact GROUP BY owner) b ON b.owner = i.id
+    ORDER BY i.id ASC;

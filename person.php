@@ -11,7 +11,7 @@
   </head>
   <body>
     <?php require("assets/header.php"); ?>
-    <main class="<?php echo $mainClass; ?>">
+    <main class="animated mainSection>">
       <div class="container">
         <form name="newPersonForm">
           <input type="hidden" name="user" value="<?php echo $_GET['user']; ?>">

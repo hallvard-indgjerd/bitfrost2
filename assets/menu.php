@@ -20,13 +20,9 @@
         <span class="mdi mdi-bank"></span>
         institution
       </a>
-      <a href='persons_add.php?user=false' class='animated'>
+      <a href='person.php' class='animated'>
         <span class="mdi mdi-book-account"></span>
         person
-      </a>
-      <a href='persons_add.php?user=true' class='animated'>
-        <span class="mdi mdi-account-group"></span>
-        user
       </a>
       <span class="titleSection">admin</span>
       <a href='#' class='animated'>

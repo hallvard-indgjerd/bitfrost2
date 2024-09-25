@@ -75,7 +75,7 @@ class User extends Conn{
   }
 
   protected function checkEmail(string $email){
-    $sql = "select u.id, p.id person, p.email, u.role, u.password_hash from person p inner join user u on u.person = p.id where p.email = '".$email."' and u.is_active = 1;";
+    $sql = "select u.id, p.id person, p.email, p.institution, u.role, u.password_hash from person p inner join user u on u.person = p.id where p.email = '".$email."' and u.is_active = 1;";
     $out = $this->simple($sql);
     $x = count($out);
     if ($x == 0) { throw new \Exception("The email is not in the database or your account is disabled. Please try again, if the problem persists please contact the project manager", 1); }
@@ -183,6 +183,7 @@ class User extends Conn{
     $_SESSION['person'] = $dati['person'];
     $_SESSION['role'] = $dati['role'];
     $_SESSION['email'] = $dati['email'];
+    $_SESSION['institution'] = $dati['institution'];
     return true;
   }
 

@@ -20,24 +20,42 @@ class Person extends Conn{
     return $out;
   }
 
-  public function getPersons(array $search=NULL){
-    if(isset($search['filter'])){
-      $string = trim($search['filter']);
+  public function getPersons(array $search){
+    $filters = [];
+    $search['cat'] = (int) $search['cat'];
+    switch (true) {
+      case $search['cat'] == 0:
+        array_push($filters,'(u.is_active is null or u.is_active > 0)');
+        break;
+      case $search['cat'] == 1:
+      case $search['cat'] == 2:
+        array_push($filters,'u.is_active = '.$search['cat']);
+        break;
+      case $search['cat'] == 3:
+        array_push($filters,'u.is_active is null');
+        break;
+    }
+    if(isset($search['name'])){
+      $searchByName = [];
+      $string = trim($search['name']);
       $arrString = explode(" ",$string);
-      $searchArray = [];
       foreach ($arrString as $value) {
         if(strlen($value)>3){ 
-          array_push($searchArray, " first_name like '%".$value."%' "); 
-          array_push($searchArray, " last_name like '%".$value."%' "); 
-          array_push($searchArray, " i.name like '%".$value."%' "); 
-          array_push($searchArray, " list.value like '%".$value."%' "); 
+          array_push($searchByName, "first_name like '%".$value."%'"); 
+          array_push($searchByName, "last_name like '%".$value."%'"); 
+          array_push($searchByName, "i.name like '%".$value."%'"); 
+          array_push($searchByName, "list.value like '%".$value."%'"); 
+          array_push($searchByName, "p.email like '%".$value."%'"); 
+          array_push($searchByName, "u.role like '%".$value."%'"); 
         }
       }
-      $searchString = join(" or ", $searchArray);
+      array_push($filters, "(".join(" or ", $searchByName).")");
     }
-    $where = isset($search['filter']) ? "where ".$searchString : '';
-    $sql = "select p.id, concat(p.first_name,' ',p.last_name) name, p.email, i.name institution, list.value position from person p left join institution i on p.institution = i.id left join list_person_position list on p.position = list.id ".$where." order by 2 asc;";
+    $joinFilters = join(" and ", $filters);
+    $where = "where ".$joinFilters; 
+    $sql = "select p.id, concat(p.first_name,' ',p.last_name) name, p.email, i.id inst_id, i.name institution, list.value position, u.role, u.is_active, u.artifact, u.model from person p left join institution i on p.institution = i.id left join list_person_position list on p.position = list.id left join user_artifact_view u on u.person_id = p.id ".$where." order by 2 asc;";
     return $this->simple($sql);
+    // return $sql;
   }
 
   public function updatePerson(array $data){
