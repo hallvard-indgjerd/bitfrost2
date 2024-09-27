@@ -38,7 +38,7 @@ class User extends Conn{
       $datiMail = array(
         "email"=>$dati['email'], 
         "name"=>$dati['first_name']." ".$dati['first_name'], 
-        "link"=>"https://dyncolldev.ht.lu.se/prototype/reset_password.php?key=".$token,
+        "link"=>"https://dyncolldev.ht.lu.se/plus/reset_password.php?key=".$token,
         "mailBody"=>1
       );
       $this->sendMail($datiMail);
@@ -146,7 +146,7 @@ class User extends Conn{
       $datiMail=array(
         "email"=>$email, 
         "name"=>$usr['name'], 
-        "link"=>"https://dyncolldev.ht.lu.se/prototype/reset_password.php?key=".$token, 
+        "link"=>"https://dyncolldev.ht.lu.se/plus/reset_password.php?key=".$token, 
         "mailBody"=>2
       );
       $this->sendMail($datiMail);
@@ -188,7 +188,7 @@ class User extends Conn{
   }
 
 
-  protected function sendMail(array $dati){
+  public function sendMail(array $dati){
     switch ($dati['mailBody']) {
       case 1:
         $titolo = "New account";

@@ -1,7 +1,6 @@
 <?php
   require 'init.php';
   if (!isset($_SESSION['id'])) { header('Location: 403.php');}
-  $title = $_GET['user']=='false' ? 'Person' : 'User';
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -13,10 +12,9 @@
     <?php require("assets/header.php"); ?>
     <main class="animated mainSection>">
       <div class="container">
-        <form name="newPersonForm">
-          <input type="hidden" name="user" value="<?php echo $_GET['user']; ?>">
+        <form name="personForm">
           <div class="row mb-3">
-            <h3 class="border-bottom">New <?php echo $title; ?></h3>
+            <h3 class="border-bottom" id="title"></h3>
             <div class="form-text">* mandatory field</div>
           </div>
           <div class="row mb-3">
@@ -38,27 +36,6 @@
               <input type="email" class="form-control form-control-sm" id="email" name="email" required>
             </div>
           </div>
-          <?php if($_GET['user'] == 'true'){ ?>
-          <div class="row mb-3 userField">
-            <label for="role" class="col-sm-2 col-form-label">* Role</label>
-            <div class="col-sm-10">
-              <select class="form-select form-select-sm" id="role" name="role">
-                <option selected disabled>-- select a value --</option>
-              </select>
-            </div>
-          </div>
-          <div class="row mb-3 userField">
-            <div class="col-3">
-              <div class="form-check form-switch form-check-reverse text-start">
-                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
-                <label class="form-check-label" for="is_active">
-                  * Is active
-                  <span class="mdi mdi-information-slab-circle" data-bs-toggle="tooltip" title="Leave checked if you want to allow the user to log in.<br />Uncheck if you don't want grant login permission to user.<br />You can modify this value later"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-        <?php } ?>
           <div class="row mb-3">
             <h5 class="bg-light p-2 border rounded">Affiliation and job position</h5>
             <label for="institution" class="col-sm-2 col-form-label">* Institution</label>
@@ -95,7 +72,47 @@
               <input type="text" class="form-control form-control-sm" id="phone" name="phone">
             </div>
           </div>
-          <button type="submit" name="newPerson" class="btn btn-warning">save item</button>
+
+          <!-- user section -->
+          <div id="usrFieldAlert" class="alert alert-info">
+            if you also want to create a system id account for the new profile, please check "yes" and fill in the following fields
+            <div>Do you want create an account?</div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="createAccount">
+              <label class="form-check-label" for="createAccount">yes</label>
+            </div>
+          </div>
+          <div id="userField">
+            <div class="row mb-3">
+              <h5 class="bg-light p-2 border rounded">Account informations</h5>
+              <label for="role" class="col-sm-2 col-form-label">* Role</label>
+              <div class="col-sm-10">
+                <select class="form-select form-select-sm userInput" id="role" name="role" disabled>
+                  <option selected disabled value="">-- select a value --</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-3">
+                <div class="form-check form-switch form-check-reverse text-start">
+                  <input class="form-check-input userInput" type="checkbox" id="is_active" name="is_active" disabled>
+                  <label class="form-check-label" for="is_active">
+                    * Is active
+                  </label>
+                  <span class="mdi mdi-information-slab-circle" data-bs-toggle="tooltip" title="Leave checked if you want to allow the user to log in.<br />Uncheck if you don't want grant login permission to user.<br />You can modify this value later"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end user section -->
+           <div class="row mb-3">
+            <div class="col">
+              <div id="outputMsg" class="text-danger"></div>
+            </div>
+           </div>
+          <button type="submit" name="person" class="btn btn-warning">save item</button>
+          <button type="button" name="delPerson" class="btn btn-danger d-none">delete profile</button>
+          <a href="dashboard.php" class="btn btn-secondary">back to dashboard</a>
         </form>
       </div>
     </main>

@@ -431,7 +431,7 @@ function getDate(){
   return {d:d, m:m, y:y}
 }
 
-function getList(settings,selName,label){
+function getList(settings,selName,label, callback = null){
   ajaxSettings.url=API+"get.php";
   ajaxSettings.data=settings;
   $.ajax(ajaxSettings)
@@ -452,6 +452,8 @@ function getList(settings,selName,label){
       }
     });
   })
+  // Quando la lista è stata popolata, chiama la callback se esiste
+  if (typeof callback === 'function') {callback();}
 }
 
 function getPwdStrength(){
