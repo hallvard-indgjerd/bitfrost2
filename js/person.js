@@ -2,72 +2,89 @@ const sessionActive = $("[name=sessionActive").val();
 const role = sessionActive == 1 ? $("[name=role").val() : 0;
 const usrDiv = $("#usrDiv");
 const person = $("[name=person").val();
-$(".invisible").hide()
-getPerson()
-getUsrFromPerson()
-getList(listRole.settings,listRole.htmlEl,listRole.label)
 
-$("#usrFromPersonBtn").on('click', function(el){ createUsrFromPerson(el) })
-
-function createUsrFromPerson(btn){
-  btn.preventDefault();
-  ajaxSettings.url=API+"person.php";
-  ajaxSettings.data={trigger:'createUsrFromPerson'}
-  ajaxSettings.data.person = person;
-  console.log(ajaxSettings.data);
+if(sessionActive == 0){
+  $("#itemTool").addClass('large');
+}else{
+  $("#itemTool").addClass(checkDevice()=='pc' ? 'small' :'large');
 }
+
+
+getPerson()
 
 function getPerson() {
   ajaxSettings.url=API+"person.php";
   ajaxSettings.data={trigger:'getPerson', id:person}
   $.ajax(ajaxSettings)  
   .done(function(data) {
-    $(".titleSection").text(data.first_name+" "+data.last_name)
-    $("#email").text(data.email)
-    $("#institution").text(data.institution)
-    $("#position").text(data.position)
-    $("#city").text(data.city)
-    $("#address").text(data.address)
-    $("#phone").text(data.phone)
+    console.log(data);
+    
+    const person = data.person;
+    $(".titleSection").text(person.first_name+" "+person.last_name)
+    $("#email").text(person.email)
+    $("#institution").text(person.institution)
+    $("#position").text(person.position)
+    $("#city").text(person.city)
+    $("#address").text(person.address)
+    $("#phone").text(person.phone)
+
+    if(data.user){
+      $("#userInfoList").removeClass('d-none')
+      $("#noUsrDiv").remove()
+      $("#is_active").text(data.user.is_active == 1 ? 'true':'false')
+      $("#role").text(data.user.role)
+      $("#created_at").text(data.user.created)
+
+      getUsrObjects(data.user.id)
+    }else{
+      $("#noUsrDiv").removeClass('d-none')
+      $("#userInfoList").remove()
+      $("#profileName").text(person.first_name+" "+person.last_name)
+    }
   });
 }
 
-function getUsrFromPerson(){
+function getUsrObjects(author){
   ajaxSettings.url=API+"person.php";
-  ajaxSettings.data={trigger:'getUsrFromPerson', id:person}
-  $.ajax(ajaxSettings)
+  ajaxSettings.data={trigger:'getUsrObjects', author:author}
+  $.ajax(ajaxSettings)  
   .done(function(data) {
     console.log(data);
-    if(data.length == 0){
-      $(".invisible").remove();
-      return false;
+    $("#artNum").text(data.artifacts.length)
+    $("#modNum").text(data.models.length)
+
+    if(data.artifacts.length == 0){
+      $("#noArtifacts").removeClass('d-none')
+      $("#artifactsWrap").remove()
+    }else{
+      $("#artifactsWrap").removeClass('d-none')
+      $("#noArtifacts").remove()
+      data.artifacts.forEach(rows => {
+        let row = $("<tr/>").appendTo('#artifactRows');
+        $("<td/>").text(rows.id).appendTo(row)
+        $("<td/>").text(rows.name).appendTo(row)
+        $("<td/>").text(rows.status == 1 ? 'In process' : 'data complete').appendTo(row)
+        $("<td/>").text(rows.description).appendTo(row)
+        $("<td/>").html("<a href='artifact_view.php?item="+rows.id+"'>view</a>").appendTo(row)
+      });
     }
-    $(".invisible").removeClass('invisible').show()
-  });
-}
-
-function createUsrDiv(data){
-  usrDiv.html('')
-  let active = data.is_active == 1 ? 'true' : 'false';
-  let class_active = data.is_active == 1 ? 'alert-success' : 'alert-danger';
-  let card = $("<div/>", {class:'card'}).appendTo(usrDiv);
-  $("<div/>",{class:'card-header'}).html("<h6>User data</h6>").appendTo(card);
-  let ul = $("<ul/>", {class:'list-group list-group-flush'}).appendTo(card);
-  let footer = $("<div/>",{class:'card-footer'}).appendTo(card);
-  $("<li/>",{class:'list-group-item'}).html('<span class="fw-bold">is active: </span><span class="alert '+class_active+' p-2 m-0">'+active+'</span>').appendTo(ul)
-  $("<li/>",{class:'list-group-item'}).html('<span class="fw-bold">role: </span><span>'+data.role+'</span>').appendTo(ul)
-  $("<li/>",{class:'list-group-item'}).html('<span class="fw-bold">created at: </span><span>'+data.created+'</span>').appendTo(ul)
-  $("<a/>", {class:'btn btn-sm btn-adc-dark', href:'user_edit.php?u='+data.id}).text('edit user').appendTo(footer);
-
-  getUsrObjects(data.id)
-}
-
-function getUsrObjects(id){
-  ajaxSettings.url=API+"person.php";
-  ajaxSettings.data={trigger:'getUsrObjects', author:id}
-  $.ajax(ajaxSettings)
-  .done(function(data) {
-    $(".myArtifacts .myCardStat>h2").text(data.artifacts.tot)
-    $(".myModels .myCardStat>h2").text(data.models.tot)
-  });
+    if(data.models.length == 0){
+      $("#noModels").removeClass('d-none')
+      $("#modelsWrap").remove()
+    }else{
+      $("#modelsWrap").removeClass('d-none').html('')
+      $("#noModels").remove()
+      data.models.forEach(cards => {
+        let card = $("<div/>",{class:'card modelCardSmall'}).appendTo("#modelsWrap");
+        $("<div/>", {class:'thumbDiv card-header'}).css("background-image", "url(archive/thumb/"+cards.thumbnail+")").appendTo(card)
+        let cardBody = $("<ul/>",{class:'list-group list-group-flush'}).appendTo(card)
+        $("<li/>",{class:'list-group-item'}).text(cards.name).appendTo(cardBody)
+        $("<li/>",{class:'list-group-item'}).text(cards.description).appendTo(cardBody)
+        $("<li/>",{class:'list-group-item'}).text(cards.status == 1 ? 'In process' : 'data complete').appendTo(cardBody)
+        $("<li/>",{class:'list-group-item'}).text(cards.create_at.split(" ")[0]).appendTo(cardBody)
+        let cardFooter = $("<div/>",{class:'card-footer'}).appendTo(card)
+        $("<a/>",{class:'text-dark', title:'open artifact page'}).text('view model').attr({"href":"model_view.php?item="+cards.id}).appendTo(cardFooter);
+      })
+    }
+  })
 }

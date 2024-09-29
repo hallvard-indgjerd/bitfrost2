@@ -180,10 +180,12 @@ class Person extends Conn{
 
   public function getUsrObjects(int $usr){
     $out=[];
-    $artifactStatSql = "select count(*) tot from artifact inner join user on artifact.author = user.id where artifact.author = ".$usr.";";
-    $modelStatSql = "select count(*) tot from model_object inner join user on model_object.author = user.id where model_object.author = ".$usr.";";
-    $out['artifacts'] = $this->simple($artifactStatSql)[0];
-    $out['models'] = $this->simple($modelStatSql)[0];
+    // $artifactStatSql = "select count(*) tot from artifact inner join user on artifact.author = user.id where artifact.author = ".$usr.";";
+    $artifactStatSql = "select id, name, status, description from artifact where author = ".$usr.";";
+    // $modelStatSql = "select count(*) tot from model_object inner join user on model_object.author = user.id where model_object.author = ".$usr.";";
+    $modelStatSql = "SELECT m.id, m.name, m.description, m.status, o.thumbnail, o.create_at FROM model m LEFT JOIN (SELECT o1.* FROM model_object o1 INNER JOIN ( SELECT model, MIN(id) AS obj_id FROM model_object GROUP BY model ) o2 ON o1.id = o2.obj_id ) o ON m.id = o.model where o.author = ".$usr.";";
+    $out['artifacts'] = $this->simple($artifactStatSql);
+    $out['models'] = $this->simple($modelStatSql);
     return $out;
   }
 

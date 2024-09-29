@@ -215,6 +215,8 @@ function getPersons(filterCat){
   ajaxSettings.url=API+"person.php";
   ajaxSettings.data = dati
   $.ajax(ajaxSettings).done(function(data){
+    console.log(data);
+    
     $('#personList .badge').text(data.length)
     data.forEach((item, i) => {
       let institute = item.institution !== null ? item.institution : 'not present';
@@ -234,6 +236,7 @@ function getPersons(filterCat){
         $('<span/>').html("Inserted models: <strong>" +item.model+"</strong>").appendTo(li)
       }
       let btnDiv = $("<div/>", {class:'mt-3'}).appendTo(li)
+      $("<a/>",{href:'person_view.php?item='+item.id, class:'btn btn-sm btn-outline-secondary me-2'}).html('<span class="mdi mdi-account d-inline-block"></span> view profile').appendTo(btnDiv)
       if(usrCls == 1 || (usrCls == 2 && usrInst == item.inst_id) || usrId == item.id ){
         $("<a/>",{href:'person.php?item='+item.id, class:'btn btn-sm btn-outline-secondary'}).html('<span class="mdi mdi-pencil d-inline-block"></span> edit').appendTo(btnDiv)
       }

@@ -24,8 +24,6 @@ function getPerson(item){
   ajaxSettings.url=API+"person.php";
   ajaxSettings.data={trigger:'getPerson', id:item}
   $.ajax(ajaxSettings).done(function(data) {
-    console.log(data);
-    
     const person = data.person;
     $("<input/>", {type:'hidden', id:'personId', value:person.id}).prependTo(form)
     $("#title").text("Edit "+person.first_name+" "+person.last_name+" profile");
@@ -98,13 +96,6 @@ function person(el){
     if($("#city").val()){dati.person.city= $("#city").val();}
     if($("#address").val()){dati.person.address= $("#address").val();}
     if($("#phone").val()){dati.person.phone= $("#phone").val();}
-
-    // if (item == 0) { trigger = 'addPerson';} 
-    // else if (item > 0) {
-    //   if ($("#userId").length > 0) { trigger = 'updatePerson';} 
-    //   else if (!$("#createAccount").is(":checked")) {trigger = 'updatePerson';} 
-    //   else {trigger = 'addUser';}
-    // }
 
     trigger = item == 0 ? 'addPerson' : 'updatePerson';
 

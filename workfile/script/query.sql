@@ -1,5 +1,12 @@
-SELECT i.id, i.name, i.abbreviation, cat.id as category_id, cat.value AS category, i.city, i.address, i.lat, i.lon, i.url, i.logo, COALESCE(b.tot, 0) AS artifact_count
-     FROM institution i
-     INNER JOIN list_institution_category cat ON i.category = cat.id
-     LEFT JOIN (SELECT owner, COUNT(*) AS tot FROM artifact GROUP BY owner) b ON b.owner = i.id
-    ORDER BY i.id ASC;
+SELECT m.id, m.name, m.description, m.status, o.thumbnail, o.create_at
+FROM model m
+inner JOIN (
+    SELECT o1.*
+    FROM model_object o1
+    INNER JOIN (
+        SELECT model, MIN(id) AS obj_id
+        FROM model_object
+        GROUP BY model
+    ) o2 ON o1.id = o2.obj_id
+) o ON m.id = o.model
+where o.author = 21;
