@@ -1,17 +1,61 @@
-id int (chiave primaria)             
-name varchar (nome dell'oggeto)    
-inventory varchar (numero di inventario)     
-conservation_state varchar (stato di conservazione dell'oggetto: buono, mediocre ecc)     
-object_condition varchar (indica se l'oggetto è da restaurare o no)     
-is_museum_copy tinyint (campo booleano che indica se l'oggetto è originale o è una copia)      
-category_class varchar (indica genericamente cos'è l'oggetto archeologico: ascia, vaso, monile ecc.)     
-category_specs varchar (indica una specifica tipologia della classe del campo precedente)     
-type text (campo libero che descrive brevemente particolari della categoria specifica)            
-start int (indica l'anno in cui l'oggetto compare per la prima volta)             
-end int (indica l'anno in cui orientativamente l'oggetto non è stato più utilizzato)            
-description text (descrizione dell'oggetto)            
-notes text (note sull'oggetto)            
-author text (l'utente che ha creato il record)              
-owner text (chi detiene i diritti di proprietà dell'oggetto) 
-license text (tipo di licenza utilizzato) 
-created_at timestamp (data di creazione)
+link (link alla pagina del record),
+doi (digital object identifier),
+name (nome dell'oggeto),
+class (indica genericamente cos'è l'oggetto archeologico: ascia, vaso, monile ecc.) ,
+specific_class (indica una specifica tipologia della classe del campo precedente),
+typology (campo libero che descrive brevemente particolari della categoria specifica),
+start_chronology (indica l'anno in cui l'oggetto compare per la prima volta nella storia),
+end_chronology (indica l'anno in cui orientativamente l'oggetto non è stato più utilizzato),
+conservation_state (stato di conservazione dell'oggetto: buono, mediocre ecc) ,
+object_condition (indica se l'oggetto è da restaurare o no),
+is_museum_copy (campo booleano che indica se l'oggetto è originale o è una copia),
+description (descrizione dell'oggetto),
+notes (note sull'oggetto),
+author (l'utente che ha creato il record),
+owner (chi detiene i diritti di proprietà dell'oggetto),
+inventory (numero di inventario assegnato dal museo),
+license (tipo di licenza creative commons utilizzata),
+created_at (data di creazione),
+last_update (data ultima modifica)
+
+
+  {
+  "@context": {
+    "@vocab": "http://www.cidoc-crm.org/cidoc-crm/",
+    "ex": "http://example.com/archeology#",
+    "link": "ex:link",
+    "doi": "ex:doi",
+    "name": "ex:name",
+    "class": "ex:class",
+    "specific_class": "ex:specificClass",
+    "typology": "ex:typology",
+    "start_chronology": {
+      "@id": "ex:startChronology",
+      "@type": "xsd:gYear"
+    },
+    "end_chronology": {
+      "@id": "ex:endChronology",
+      "@type": "xsd:gYear"
+    },
+    "conservation_state": "ex:conservationState",
+    "object_condition": "ex:objectCondition",
+    "is_museum_copy": {
+      "@id": "ex:isMuseumCopy",
+      "@type": "xsd:boolean"
+    },
+    "description": "ex:description",
+    "notes": "ex:notes",
+    "author": "ex:author",
+    "owner": "ex:owner",
+    "inventory": "ex:inventory",
+    "license": "ex:license",
+    "created_at": {
+      "@id": "ex:createdAt",
+      "@type": "xsd:dateTime"
+    },
+    "last_update": {
+      "@id": "ex:lastUpdate",
+      "@type": "xsd:dateTime"
+    }
+  }
+}
