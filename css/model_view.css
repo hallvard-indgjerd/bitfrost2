@@ -1,9 +1,9 @@
 main{
-  margin:80px auto 0 !important; 
+  margin:70px 0 0 !important; 
   min-height:auto !important; 
-  height:calc(100vh - 80px);
+  height:calc(100vh - 72px);
 }
-.tdhop{height:calc(100vh - 80px) !important;}
+.tdhop{height:calc(100vh - 72px) !important;}
 
 @media (min-width: 992px) {}
 

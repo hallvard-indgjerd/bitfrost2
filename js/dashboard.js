@@ -1,16 +1,17 @@
 const usrId = $("[name=usrId]").val()
 const usrCls = $("[name=usrCls]").val()
+const usrInst = $("[name=usrInst]").val()
 let issues = 0;
+
+catList()
 mapInit()
 getArtifacts()
 getModels()
-getInstitutions()
-getUsers()
-getPersons()
+getInstitutions(0)
+getPersons(0)
 artifactIssues()
 
 $("#modelDashboardGallery").css("height",$(".listDashBoard").height())
-
 $("[name=artifactStatus]").on('change', getArtifacts)
 $("[name=modelStatus]").on('change', getModels)
 
@@ -29,20 +30,60 @@ $("[name=resetDescriptionBtn]").on('click', function(e){
   $(this).addClass('d-none')
 })
 
+$(document).on('click', '#listInstitutionCategory > li > button', function(){
+  $("#dropdownInstitutionCategory").text($(this).text())
+  $('#listInstitutionCategory > li > button').removeClass('active')
+  $(this).addClass('active')
+  getInstitutions($(this).val())
+})
+$("[name=searchByInstitutionNameBtn]").on('click', function(){
+  let q = $("[name=searchByInstitutionName]").val()
+  if(q.length < 3){
+    alert('You have to enter 3 characters at least')
+    return false;
+  }
+  getInstitutions($('#listInstitutionCategory > li > button.active').val())
+  $("[name=resetInstitutionNameBtn]").removeClass('d-none');
+})
+$("[name=resetInstitutionNameBtn]").on('click', function(e){
+  $("[name=searchByInstitutionName]").val('');
+  getInstitutions($('#listInstitutionCategory > li > button.active').val())
+  $(this).addClass('d-none')
+})
+
+$(document).on('click', '#listPersonCategory > li > button', function(){
+  $("#dropdownPersons").text($(this).text())
+  $('#listPersonCategory > li > button').removeClass('active')
+  $(this).addClass('active')
+  getPersons($(this).val())
+})
+
 $("[name=searchByPersonNameBtn]").on('click', function(){
   let q = $("[name=searchByPersonName]").val()
   if(q.length < 3){
     alert('You have to enter 3 characters at least')
     return false;
   }
-  getPersons()
+  getPersons($('#listPersonCategory > li > button.active').val())
   $("[name=resetPersonNameBtn]").removeClass('d-none');
 })
 $("[name=resetPersonNameBtn]").on('click', function(e){
   $("[name=searchByPersonName]").val('');
-  getPersons()
+  getPersons($('#listPersonCategory > li > button.active').val())
   $(this).addClass('d-none')
 })
+
+function catList(){
+  ajaxSettings.url=API+"institution.php";
+  ajaxSettings.data = {trigger:'catlist'};
+  $.ajax(ajaxSettings).done(function(data){
+    $("#listInstitutionCategory").html('<li><button type="button" class="dropdown-item active" value="0">all categories</button></li>')
+    data.forEach((c)=>{
+      let li = $("<li/>").appendTo("#listInstitutionCategory");
+      $("<button/>",{type:'button', class:'dropdown-item',value:c.id,text:c.value}).appendTo(li)
+    })
+  })
+}
 
 function getArtifacts(){
   let search={}
@@ -60,7 +101,7 @@ function getArtifacts(){
   dati.trigger='getArtifacts';
   dati.search = search;
   ajaxSettings.url=API+"artifact.php";
-  ajaxSettings.data = dati
+  ajaxSettings.data = dati 
   $.ajax(ajaxSettings).done(function(data){
     $('#artifactList .badge').text(data.length)
     data.forEach((item, i) => {
@@ -103,8 +144,8 @@ function getModels(){
       if(usrCls < 4){
         $("<p/>", {class:'my-1'}).html("<span class='fw-bold me-2'>Author</span><span>"+item.author+"</span>").appendTo(divDati)
       }
-      let alertClass = item.status_id == 0 ? 'alert-success' : 'alert-danger';
-      $("<div/>", {class:'p-1 m-0 alert '+alertClass, role:'alert'}).text(item.status == 1 ? 'under processing' : 'complete').appendTo(divDati)
+      // let alertClass = item.status == 2 ? 'alert-success' : 'alert-danger';
+      // $("<div/>", {class:'p-1 m-0 alert '+alertClass, role:'alert'}).text(item.status == 1 ? 'under processing' : 'complete').appendTo(divDati)
 
       let footer = $("<div/>",{class:'card-footer bg-white border-0'}).appendTo(card);
       $("<a/>",{class:'btn btn-sm btn-adc-dark d-block', href:'model_view.php?item='+item.id}).text('view model').appendTo(footer)
@@ -112,15 +153,18 @@ function getModels(){
   });
 }
 
-function getInstitutions(){
+function getInstitutions(filterCat){
+  let dati={search:{}}
+  dati.trigger='getInstitutions';
+  dati.search.cat = parseInt(filterCat);
+  let q = $("[name=searchByInstitutionName]").val();
+  if(q){ dati.search.name = q }
   let institutionGroup = L.featureGroup().addTo(map);
-  let dati={}
   let cardWrap = $("#institutionDasboardList");
   cardWrap.html('')
-  dati.trigger='getInstitutions';
   ajaxSettings.url=API+"institution.php";
   ajaxSettings.data = dati
-  $.ajax(ajaxSettings).done(function(data){
+  $.ajax(ajaxSettings).done(function(data){    
     $('#institutionList .badge').text(data.length)
     data.forEach((item, i) => {
       let logo = item.logo ? item.logo : 'default.jpg';
@@ -135,11 +179,15 @@ function getInstitutions(){
       if(item.url){
         $("<a/>",{href:item.url, title:'Official Webpage', target:'_blank', class:'card-link d-block m-0'}).html('<i class="mdi mdi-link-variant"></i> '+item.url).appendTo(body)
       }
-      $("<p/>",{class:'card-text m-0'}).text("Number of artifacts stored by Institute: "+item.artifact).appendTo(body)
+      $("<p/>",{class:'card-text m-0'}).text("Number of artifacts stored by Institute: "+item.artifact_count).appendTo(body)
 
       let btnDiv = $("<div/>", {class:'mt-3'}).appendTo(body)
 
-      $("<a/>",{href:'institution_edit.php?item='+item.id, class:'btn btn-sm btn-outline-secondary'}).html('<span class="mdi mdi-pencil"></span> edit').appendTo(btnDiv)
+      if(usrCls == 1 || (usrCls == 2 && usrInst == item.id) ){
+        $("<a/>",{href:'institution_edit.php?item='+item.id, class:'btn btn-sm btn-outline-secondary'}).html('<span class="mdi mdi-pencil"></span> edit').appendTo(btnDiv)
+      }
+
+
       if(item.artifact == 0){
         $("<button/>",{class:'btn btn-sm btn-outline-danger ms-3'}).html('<span class="mdi mdi-delete-forever"></span> delete').appendTo(btnDiv).on('click',function(){deleteInstitution(item.id)})
       }
@@ -157,48 +205,41 @@ function getInstitutions(){
   });
 }
 
-function getUsers(){
-  let search={}
-  let dati={}
-  $('#userList .listWrap').html('')
-  dati.trigger='getUsers';
-  dati.search = search;
-  ajaxSettings.url=API+"user.php";
-  ajaxSettings.data = dati
-  $.ajax(ajaxSettings).done(function(data){
-    $('#userList .badge').text(data.length)
-    data.forEach((item, i) => {
-      let css = item.is_active == 1 ? 'text-success' : 'text-danger';
-      let li = $("<a/>", {class: 'list-group-item list-group-item-action ' +
-    css}).attr("href","person_view.php?person="+item.person_id).appendTo('#userList .listWrap');
-      $('<span/>').text(item.name).appendTo(li)
-      $('<span/>').text(item.role).appendTo(li)
-      $('<span/>').text(item.is_active == 1 ? 'true' : 'false').appendTo(li)
-      $('<span/>').text(item.artifact).appendTo(li)
-      $('<span/>').text(item.model).appendTo(li)
-    });
-  });
-}
-function getPersons(){
-  let search={}
-  let dati={}
-  let q = $("[name=searchByPersonName]").val();
-  if(q){search.filter = q}
+function getPersons(filterCat){
   $('#personList .listWrap').html('')
+  let dati={search:{}}
   dati.trigger='getPersons';
-  dati.search = search;
+  dati.search.cat = parseInt(filterCat);
+  let q = $("[name=searchByPersonName]").val();
+  if(q){dati.search.name = q}
   ajaxSettings.url=API+"person.php";
   ajaxSettings.data = dati
   $.ajax(ajaxSettings).done(function(data){
+    console.log(data);
+    
     $('#personList .badge').text(data.length)
     data.forEach((item, i) => {
       let institute = item.institution !== null ? item.institution : 'not present';
       let position = item.position !== null ? item.position : 'not present';
+      let isActive = item.is_active == 1 ? 'true' : 'false';
       let li = $("<li/>", {class: 'list-group-item list-group-item-action '}).appendTo('#personList .listWrap');
       $('<a/>', {class:'alert alert-warning p-2 m-0 fs-6 d-block'}).text(item.name).attr("href","person_view.php?person="+item.id).appendTo(li)
       $('<span/>').html("Institution: <strong>"+institute+"</strong>").appendTo(li)
       $('<span/>').html('Position: <strong>'+position+"</strong>").appendTo(li)
       $('<span/>').html("Email: <strong>" +item.email+"</strong>").appendTo(li)
+      if(item.role === null){
+        $('<span/>', {class:'alert alert-danger p-1 my-2'}).text("the person has no system account").appendTo(li)
+      }else{
+        $('<span/>').html("Role: <strong>" +item.role+"</strong>").appendTo(li)
+        $('<span/>').html("Is active: <strong>"+isActive+"</strong>").appendTo(li)
+        $('<span/>').html("Inserted artifacts: <strong>" +item.artifact+"</strong>").appendTo(li)
+        $('<span/>').html("Inserted models: <strong>" +item.model+"</strong>").appendTo(li)
+      }
+      let btnDiv = $("<div/>", {class:'mt-3'}).appendTo(li)
+      $("<a/>",{href:'person_view.php?item='+item.id, class:'btn btn-sm btn-outline-secondary me-2'}).html('<span class="mdi mdi-account d-inline-block"></span> view profile').appendTo(btnDiv)
+      if(usrCls == 1 || (usrCls == 2 && usrInst == item.inst_id) || usrId == item.id ){
+        $("<a/>",{href:'person.php?item='+item.id, class:'btn btn-sm btn-outline-secondary'}).html('<span class="mdi mdi-pencil d-inline-block"></span> edit').appendTo(btnDiv)
+      }
     });
   });
 }
@@ -209,7 +250,7 @@ function deleteInstitution(inst){
     ajaxSettings.data = {trigger:'deleteInstitution', id:inst}
     $.ajax(ajaxSettings).done(function(data){
       alert(data.output)
-      if(data.res = 1){ getInstitutions() }
+      if(data.res = 1){ getInstitutions(0) }
     })
   }
 }
@@ -261,7 +302,7 @@ function artifactIssues(){
       issues = issues + data.chronoNullValue.length
       let div = $("<div/>",{id:'chronoNullValue',class:'bg-white border rounded shadow p-3'}).appendTo("#issuesBody");
       let title = $("<h6/>").appendTo(div)
-      $("<span/>").text('Chronology with null value').appendTo(title)
+      $("<span/>").text('No chronology value').appendTo(title)
       $("<span/>",{class:'badge text-bg-dark float-end'}).text(data.chronoNullValue.length).appendTo(title)
 
       let wrapTable = $("<div/>",{class:'wrapIssuesTable'}).appendTo(div)

@@ -29,7 +29,9 @@ div.listDashBoard span{display:inline-block; vertical-align: top; padding:2px;}
 .modelCardSmall{ position:relative; width:24%; margin:2px; height:50%;}
 .thumbDiv{ position:relative; width:100%; height:100px; background-position: center; background-repeat: no-repeat; background-size: contain;}
 
-#institutionList, #userList{width:35%; margin-right:1%}
+/* #institutionList, #userList{width:35%; margin-right:1%} */
+#institutionList{width:59%; margin-right:1%}
+
 #institutionDasboardList a, #institutionDasboardList p{font-size:16px;}
 #institutionDasboardList .cardLogo{
   background-position: center;
@@ -41,7 +43,8 @@ div.listDashBoard span{display:inline-block; vertical-align: top; padding:2px;}
 #userList a span{ width: 18%; }
 #userList a span:nth-child(1){width: 28%; }
 
-#personList{width:calc(100% - 72%);}
+/* #personList{width:calc(100% - 72%);} */
+#personList{width:40%;}
 #personList li span{display:block; }
 
 #mapWrap{width:100%;}
@@ -62,8 +65,8 @@ div.listDashBoard span{display:inline-block; vertical-align: top; padding:2px;}
   #artifactList, #modelList{width:calc(99% / 2);}
   .toolbarDiv>div:nth-child(1){width:49%;}
   .toolbarDiv>div:nth-child(2){width:49%;}
-  #personList .toolbarDiv>div:nth-child(1){width:25%;}
-  #personList .toolbarDiv>div:nth-child(2){width:73%;}
+  /* #personList .toolbarDiv>div:nth-child(1){width:25%;}
+  #personList .toolbarDiv>div:nth-child(2){width:73%;} */
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
@@ -73,8 +76,8 @@ div.listDashBoard span{display:inline-block; vertical-align: top; padding:2px;}
   #artifactList, #modelList{width:calc(99% / 2);}
   .toolbarDiv>div:nth-child(1){width:49%;}
   .toolbarDiv>div:nth-child(2){width:49%;}
-  #personList .toolbarDiv>div:nth-child(1){width:25%;}
-  #personList .toolbarDiv>div:nth-child(2){width:73%;}
+  /* #personList .toolbarDiv>div:nth-child(1){width:25%;}
+  #personList .toolbarDiv>div:nth-child(2){width:73%;} */
 }
 
 /* XX-Large devices (larger desktops, 1400px and up) */
@@ -84,6 +87,6 @@ div.listDashBoard span{display:inline-block; vertical-align: top; padding:2px;}
   #artifactList, #modelList{width:calc(99% / 2);}
   .toolbarDiv>div:nth-child(1){width:49%;}
   .toolbarDiv>div:nth-child(2){width:49%;}
-  #personList .toolbarDiv>div:nth-child(1){width:25%;}
-  #personList .toolbarDiv>div:nth-child(2){width:73%;}
+  /* #personList .toolbarDiv>div:nth-child(1){width:25%;}
+  #personList .toolbarDiv>div:nth-child(2){width:73%;} */
 }

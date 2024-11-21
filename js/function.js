@@ -3,9 +3,121 @@ let ajaxCallsCompleted = true;
 let pageLoaded = false;
 let domContentLoaded = false;
 
+/////////////// COLLECTION DATA STRUCTURE ///////////////
+var DEFAULTCOLLECTION = {
+  type: "DC_COLL",
+  version: "2.0",
+  id: self.crypto.randomUUID(),
+  user: $("[name=activeUsr]").val() || "unregistered", //active user id
+  time: new Date().toISOString(),
+  email: 'john.doe@nowhere.nw',
+  author: 'John Doe',
+  title: 'My Collection',
+  description: 'Brief description of the collection content and motivation...',
+  items: [],
+};
+
+var COLLECTIONDATA = {};
+
+function resetCollection(){
+  COLLECTIONDATA = structuredClone(DEFAULTCOLLECTION);
+  storeCollectionData();
+}
+
+// store and retrieve from LocalStorage
+function retrieveCollectionData(){
+  return JSON.parse(localStorage.getItem('DYNCOLLECTION')) || undefined;
+}
+function storeCollectionData(){
+  COLLECTIONDATA.time = new Date().toISOString(); // update time to current time
+  localStorage.setItem('DYNCOLLECTION', JSON.stringify(COLLECTIONDATA));
+}
+
+function validateCollection(collection){
+  if (collection.type !== "DC_COLL") return false;
+  return true;
+}
+
+/////////////////////////////////////////////////////////
+//handlers for export / import / delete collection
+$("#btExportCollection").on('click', function(){
+  exportCollection();
+});
+$("#btImportCollection").on('click', function(){
+  importCollection();
+});
+$("#ifileJSON").on('change', function(){
+  getJSON(this.files);
+});
+$("#btResetCollection").on('click', function(){
+  if(COLLECTIONDATA.items.length == 0)return;
+  if(confirm('Delete the current Collection?')){
+    resetCollection();
+    updateCollection();
+  }
+});
+
+//export / import collection
+function exportCollection(){
+  storeCollectionData();
+  if(!COLLECTIONDATA.items.length){
+    alert('Cannot export an empty collection!');
+    return;
+  }
+  var element = document.createElement('a');
+	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(COLLECTIONDATA, null, 2)));
+	element.setAttribute('download', "collection.json");
+	element.style.display = 'none';
+	document.body.appendChild(element);
+	element.click();
+	document.body.removeChild(element);
+}
+function importCollection(){
+  document.getElementById("ifileJSON").click();
+}
+function getJSON(files){
+	if((files)&&(files.length>0)){
+	    var reader = new FileReader();
+		reader.onload = importJSON;
+		reader.readAsText(files[0]);
+	}
+}
+function importJSON(event){
+  var newColl = JSON.parse(event.target.result);
+  if(!validateCollection(newColl)) return;  // check if the imported data is a valid collection
+  COLLECTIONDATA = newColl;
+  COLLECTIONDATA.user = $("[name=activeUsr]").val() || "unregistered"; //no matter who saved them, they are now of the current user
+  storeCollectionData();  
+  updateCollection();
+}
+
+/////////////////////////////////////////////////////////
+// handlers for collection metadata update/display
+
+$("#collDesc").on('change', function(){ storeCollectionMetadata(); });
+$("#collTitle").on('change', function(){ storeCollectionMetadata(); });
+
+// collection metadata store/display
+function storeCollectionMetadata(){
+	COLLECTIONDATA.email = document.getElementById("collEmail").value;
+	COLLECTIONDATA.author = document.getElementById("collAuthor").value;
+	COLLECTIONDATA.title = document.getElementById("collTitle").value;
+	COLLECTIONDATA.description = document.getElementById("collDesc").value;
+  storeCollectionData();
+}
+
+function displayCollectionMetadata(){
+  document.getElementById("collEmail").value = COLLECTIONDATA.email;
+  document.getElementById("collAuthor").value = COLLECTIONDATA.author;
+  document.getElementById("collTitle").value = COLLECTIONDATA.title;
+  document.getElementById("collDesc").value = COLLECTIONDATA.description;
+}
+
+/////////////////////////////////////////////////////////
+
+
 function checkAllCompleted() {
   if (ajaxCallsCompleted && pageLoaded && domContentLoaded && loader > 0) {
-    //Tutte le chiamate AJAX sono completate, la pagina è completamente caricata e il DOM è pronto
     $("#loadingDiv").fadeOut('fast')
   }else{
     $("#loadingDiv").show()
@@ -35,49 +147,10 @@ $(window).on('load', function() {
 
 
 let btnHome, btnFullscreen;
-let collected = [];
+let items = [];
 let filter = [];
 let filter2 = [];
 let sort = "rand()";
-
-function buildCollection(){
-  let wrap = $("#wrapCollection");
-  $("#viewCollection > span").text('('+collected.length+')')
-  wrap.html('')
-  if (collected.length === 0) {
-    $("#resetCollection").hide()
-    $("#fullCollection").hide()
-    $("#emptyCollection").show()
-    return false;
-  }
-  $("#resetCollection").show()
-  $("#fullCollection").show()
-  $("#emptyCollection").hide()
-  collected.forEach((item)=>{
-    let div = $("<div/>",{class:'card m-1 itemCard'}).attr("data-item",item.id).appendTo(wrap);
-    $("<div/>", {class:'card-header'})
-    .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
-    .appendTo(div);
-    let body = $("<div/>",{class:'card-body'}).appendTo(div);
-    $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
-    $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+item.material+"</span>").appendTo(body);
-    $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
-    $("<p/>",{class:'mb-2'}).html(cutString(item.description, 80)).appendTo(body);
-    let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
-    $("<a/>",{class:'btn btn-sm btn-adc-blue ms-3', href:'artifact_view.php?item='+item.id}).text('View').appendTo(footer);
-    let uncollectBtn = $("<button/>",{class:'btn btn-sm btn-danger ms-3'}).text('Remove').appendTo(footer);
-
-    uncollectBtn.on('click',function(){
-        let idx = collected.findIndex(i => i.id === item.id);
-        collected.splice(idx, 1);
-        div.remove()
-        $("#wrapGallery").find('#addItem'+item.id).show()
-        $("#wrapGallery").find('#removeItem'+item.id).hide()
-        buildCollection()
-        console.log(collected);
-    })
-  })
-}
 
 function buildData(){
   $("[data-table]").each(function(){
@@ -116,7 +189,6 @@ function buildGallery(callback){
 
 function checkDevice(){
   let device;
-
   if(
     screen.width >= 1024 &&
     screen.orientation.type.split('-')[0] == 'landscape' &&
@@ -174,16 +246,16 @@ function generateRandomPassword(){
 }
 
 function gallery(data){
-  console.log(data);
   wrapDiv = "#wrapGallery";
   $(wrapDiv).html('');
-  $("#viewGallery > span").text('('+data.length+')')
+  $("#viewGallery > span").text(data.length)
   data.forEach((item) => {
+    items.push(item)
     var materialObject = JSON.parse(item.material);
     var materialValues = [];
     for (var key in materialObject) {
       if (materialObject.hasOwnProperty(key)) {
-          materialValues.push(materialObject[key]);
+        materialValues.push(materialObject[key]);
       }
     }
     let div = $("<div/>",{class:'card m-1 itemCard'}).attr("data-item",item.id).appendTo(wrapDiv);
@@ -202,23 +274,88 @@ function gallery(data){
     let uncollectBtn = $("<button/>",{class:'btn btn-sm btn-danger ms-3 removeItemBtn', id: 'removeItem'+item.id}).text('Remove').appendTo(footer).hide();
 
     collectBtn.on('click',function(){
-      if(!collected.includes(item)){
-        collected.push(item);
-        $(this).hide();
-        uncollectBtn.show();
-        buildCollection();
-      }
+      $(this).hide();
+      uncollectBtn.show();
+      addToCollection(item.id)
     })
 
     uncollectBtn.on('click',function(){
-      let idx = collected.findIndex(i => i.id === item.id);
-      collected.splice(idx, 1);
       $(this).hide();
       collectBtn.show();
-      buildCollection();
+      removeFromCollection(item.id)
     })
-  })
+  });
+  updateCollection(); // MC: I moved outside of the loop to avoid updating the collection for each item
 }
+
+
+
+function updateCollection() {
+  const collectionDiv = $('#wrapCollection');
+  collectionDiv.html('');
+
+  // check if collection is present in localstorage, otherwise, store empty collection
+  const mycollection = retrieveCollectionData();
+  if (mycollection) {
+    COLLECTIONDATA = mycollection;
+  }
+  else {
+    resetCollection();
+  }
+
+  // set number of objects in tab header
+  $("#viewCollection > span").text(COLLECTIONDATA.items.length);
+  // empty collection banner
+  (COLLECTIONDATA.items.length == 0)? $("#emptyCollection").show() : $("#emptyCollection").hide();
+  // metadata
+  displayCollectionMetadata();
+  // add cards
+  COLLECTIONDATA.items.forEach(item => {
+    var materialObject = JSON.parse(item.material);
+    var materialValues = [];
+    for (var key in materialObject) {
+      if (materialObject.hasOwnProperty(key)) {
+        materialValues.push(materialObject[key]);
+      }
+    }
+    let div = $("<div/>",{class:'card m-1 itemCard'}).appendTo(collectionDiv);
+    $("<div/>", {class:'card-header'})
+      .css({"background-image":"url('archive/thumb/"+item.thumbnail+"')"})
+      .appendTo(div);
+    let body = $("<div/>",{class:'card-body'}).appendTo(div);
+    $("<h3/>",{class:'card-title txt-adc-dark fw-bold'}).text(item.category).appendTo(body);
+    $("<p/>",{class:'mb-1'}).html("material: <span class='fw-bold'>"+materialValues.join(', ')+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html("chronology: <span class='fw-bold'>"+item.start+" / "+item.end+"</span>").appendTo(body);
+    $("<p/>",{class:'mb-2'}).html(cutString(item.description, 80)).appendTo(body);
+    let footer = $("<div/>",{class:'card-footer'}).appendTo(div);
+    $("<a/>",{class:'btn btn-sm btn-adc-blue ms-3', href:'artifact_view.php?item='+item.id}).text('View').appendTo(footer);
+    let uncollectBtn = $("<button/>",{class:'btn btn-sm btn-danger ms-3'}).text('Remove').appendTo(footer);
+    uncollectBtn.on('click',function(){
+      div.remove()
+      $("#wrapGallery").find('#addItem'+item.id).show()
+      $("#wrapGallery").find('#removeItem'+item.id).hide()
+      removeFromCollection(item.id)
+    })
+  });
+}
+
+function addToCollection(id) {
+  COLLECTIONDATA = retrieveCollectionData();
+  const item = items.find(item => item.id === id);
+  if (item && !COLLECTIONDATA.items.some(colItem => colItem.id === id)) {
+    COLLECTIONDATA.items.push(item);
+    storeCollectionData();
+  }
+  updateCollection();
+}
+
+function removeFromCollection(id) {
+  COLLECTIONDATA = JSON.parse(localStorage.getItem('DYNCOLLECTION'));
+  COLLECTIONDATA.items = COLLECTIONDATA.items.filter(item => item.id !== id);
+  storeCollectionData();
+  updateCollection();
+}
+
 
 function getCity(query){
   let county='';
@@ -294,7 +431,7 @@ function getDate(){
   return {d:d, m:m, y:y}
 }
 
-function getList(settings,selName,label){
+function getList(settings,selName,label, callback = null){
   ajaxSettings.url=API+"get.php";
   ajaxSettings.data=settings;
   $.ajax(ajaxSettings)
@@ -315,6 +452,8 @@ function getList(settings,selName,label){
       }
     });
   })
+  // Quando la lista è stata popolata, chiama la callback se esiste
+  if (typeof callback === 'function') {callback();}
 }
 
 function getPwdStrength(){
@@ -371,16 +510,6 @@ function chronoFilter(){
       })
     });
   })
-}
-
-function handleChronoChange(){
-  let y = parseInt($("#start").val());
-  if (y < -3000000 || y > getDate()['y']) {
-    alert('Value not allowed. You can fill the field with values beetween -3000000 and '+getDate()['y'])
-    resetChronology();
-    return false;
-  }
-  $("#end").attr({"min":y});
 }
 
 function handleMaterialTechnique(){

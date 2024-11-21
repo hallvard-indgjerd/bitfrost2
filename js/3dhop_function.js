@@ -9,6 +9,10 @@ var presenter = null;
 var sceneBB = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE];
 var gStep, measure_unit;
 
+// COLLECTION DATA
+var COLLECTIONDATA = {};
+var COLLECTIONITEM = undefined;
+
 // VIEWER STATE
 var DEFAULT_VIEWER_STATE = {
   grid : 'gridBase', //'none' 'gridBase' 'gridBox' 'gridBB'
@@ -37,16 +41,15 @@ var DEFAULT_VIEWER_STATE = {
 };
 var VIEWER_STATE = {};
 var VIEWER_ANNOTATIONS = {
+  type: "DC_SO_ANN",
+  version: "2.0",
   object: artifactId,
   user: activeUser,
   time: new Date().toISOString(),
-  notes: {},
+  notes: {text:""},
   views: {},
   spots: {}
 };
-
-let viewList = {};
-let spotList = {};
 
 // MEASUREMENT STATE-----------------------------------------------
 let angleStage = 0;
@@ -79,20 +82,12 @@ $("#btHome").on('click', function(){
 });
 
 $("#btWidescreen").on('click', function(){
-  let div = ['artifact','geographic','model','media', 'stats']
-  div.forEach((v)=>{$("#"+v).toggleClass(v+'-primary ' + v +'-full')});
   resizeCanvas();
   $("#btWidescreen").toggleClass("btn-secondary").toggleClass("btn-adc-blue");
   $("#wrapAnnotations").toggleClass('invisible');
-  map.remove();
-  setTimeout(function(){
-    artifactMap()
-  },500)
 });
 
-$("#btScreenshot").on('click', function(){
-  screenshot();
-});
+$("#btScreenshot").on('click', function(){screenshot();});
 
 $("#paradata-modal").hide()
 $("#btParadata").on('click', function(){
@@ -381,10 +376,18 @@ function initModel(model){
     }
   });
 
+  // retrieve collectiond ata from LocalStorage
+  COLLECTIONDATA = JSON.parse(localStorage.getItem('DYNCOLLECTION')) || {};
+  COLLECTIONITEM = COLLECTIONDATA.items.find((item) => item.id == artifactId);
+  if(COLLECTIONITEM){
+    //retrieve annotations, if present
+    if(COLLECTIONITEM.annotations){
+      VIEWER_ANNOTATIONS = COLLECTIONITEM.annotations;
+      // but I cannot display them now, because the viewewr is not yet initialized. I'll schedule it at the end of the startupViewer function
+    }
+  }
   startupViewer(object);
 }
-
-
 
 function startupViewer(object){
   // init 3dhop environment
@@ -492,19 +495,30 @@ function startupViewer(object){
   }
   
   startupGrid(VIEWER_STATE.grid);
+  startupAnnotations(); // display annotations loaded from localstorage
+}
+
+function startupAnnotations(){ // display annotations loaded from localstorage
+  if(!presenter._isSceneReady()){
+    setTimeout(function(){startupAnnotations()},50);
+    return;
+  }
+  displayNotes();
+  displayViews();
+  displaySpots();
 }
 
 ////// VIEWERSTATE MANAGEMENT //////////////////////////////////////
 
 function defaultViewerState(){
   // copy default state to viewer state
-  VIEWER_STATE = JSON.parse(JSON.stringify(DEFAULT_VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+  VIEWER_STATE = structuredClone(DEFAULT_VIEWER_STATE);
 }
 
 // set viewer to a specific state, if none, resets to the default state
 function setViewerState(viewerState){
   if(viewerState)
-    VIEWER_STATE = JSON.parse(JSON.stringify(viewerState));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers  
+    VIEWER_STATE = structuredClone(viewerState);
   else
     defaultViewerState(); // if no state is passed, reset to default values
 
@@ -658,6 +672,12 @@ function setGrid(value){
 
 
 //////////////////////////////// ANNOTATIONS //////////////////////////////////////
+
+function validateAnnotations(annotations){
+  if (annotations.type !== "DC_SO_ANN") return false;
+  return true;
+}
+
 function exportAnnotations(){
   VIEWER_ANNOTATIONS.time = new Date().toISOString(); // update time to current time
 	var element = document.createElement('a');
@@ -680,8 +700,7 @@ function getJSON(files){
 }
 function importJSON(event){
   var newAnn = JSON.parse(event.target.result);
-	console.log(newAnn); //DEBUG DEBUG DEBUG
-
+	//console.log(newAnn); //DEBUG DEBUG DEBUG
   if(newAnn.object != VIEWER_ANNOTATIONS.object){
     alert('Object mismatch! cannot import annotations');
     return;
@@ -698,6 +717,7 @@ function importJSON(event){
 
 function updateNotes(){
 	VIEWER_ANNOTATIONS.notes.text = document.getElementById("annNotes").value;
+  storeAnnotations();
 }
 function displayNotes(){
   document.getElementById("annNotes").value = VIEWER_ANNOTATIONS.notes.text;
@@ -711,11 +731,12 @@ function storeView(){
 
   VIEWER_ANNOTATIONS.views[viewName] = {};
   VIEWER_ANNOTATIONS.views[viewName].view = null;
-  VIEWER_ANNOTATIONS.views[viewName].state = JSON.parse(JSON.stringify(VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+  VIEWER_ANNOTATIONS.views[viewName].state = structuredClone(VIEWER_STATE);
   VIEWER_ANNOTATIONS.views[viewName].text = "";
   VIEWER_ANNOTATIONS.views[viewName].url = "";
 
   displayViews(); // update views list
+  storeAnnotations();
 }
 function displayViews(){
   let listDiv = $("#viewsListDiv");
@@ -739,15 +760,18 @@ function applyView(viewName){
   setViewerState(VIEWER_ANNOTATIONS.views[viewName].state);
 }
 function updateViewState(viewName){
-  VIEWER_ANNOTATIONS.views[viewName].state = JSON.parse(JSON.stringify(VIEWER_STATE));  // ideally, it should use structuredClone(value), but it is still not fully supported in all browsers
+  VIEWER_ANNOTATIONS.views[viewName].state = structuredClone(VIEWER_STATE);
+  storeAnnotations();
 }
 function updateViewText(viewName, value){
   VIEWER_ANNOTATIONS.views[viewName].text = value;
+  storeAnnotations();
 }
 function deleteView(viewName){
   if(confirm('A view is being deleted, are you sure?')){
     delete VIEWER_ANNOTATIONS.views[viewName];
     displayViews(); // update views list
+    storeAnnotations();
   }
 }
 
@@ -770,6 +794,7 @@ function onSpotPick(point){
   VIEWER_ANNOTATIONS.spots[spotPickingName].url = "";
   spotPickEnd(); // stop spot picking mode
   displaySpots(); // update spots list
+  storeAnnotations();
 }
 function spotPickEnd(){
   $('#draw-canvas').css("cursor","default");
@@ -827,14 +852,29 @@ function displaySpots(){
 }
 function updateSpotText(spotName, value){
   VIEWER_ANNOTATIONS.spots[spotName].text = value;
+  storeAnnotations();
 }
 function deleteSpot(spotName){
   if(confirm('A spot is being deleted, are you sure?')){
     delete VIEWER_ANNOTATIONS.spots[spotName];
-    displaySpots();        
+    displaySpots();
+    storeAnnotations();      
   }
 } 
 //////////////////////////////// ANNOTATIONS END //////////////////////////////////////
+
+function storeAnnotations(){
+  if(COLLECTIONITEM){
+    VIEWER_ANNOTATIONS.time = new Date().toISOString(); // update time to current time
+    COLLECTIONITEM.annotations = VIEWER_ANNOTATIONS;
+    storeCollectionData();
+  }
+}
+
+function storeCollectionData(){
+  localStorage.setItem('DYNCOLLECTION', JSON.stringify(COLLECTIONDATA));
+}
+
 
 //--------------------------------------------------------------------------------------
 function screenshot() {
@@ -1697,7 +1737,7 @@ function buildModelParamArray(){
     grid: $("#gridListValue").find('.active').val(),
     ortho: $("[name=ortho]").is(':checked') ? 1 : 0,
     xyz: $("[name=xyzAxes]").is(':checked') ? 1 : 0,
-    lightDir: lightDir.join(','),
+    lightDir: DEFAULT_VIEWER_STATE.lightDir.join(','),
     texture: $("[name=texture]").is(':checked') ? 1 : 0,
     solid: $("[name=solid]").is(':checked') ? 1 : 0,
     lighting: $("[name=lighting]").is(':checked') ? 1 : 0,

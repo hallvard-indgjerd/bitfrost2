@@ -6,7 +6,7 @@
   <head>
     <?php require("assets/meta.php"); ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" media="screen"/>
-    <link href="https://cdn.maptiler.com/maptiler-sdk-js/v1.2.0/maptiler-sdk.css" rel="stylesheet" />
+    <link href="https://cdn.maptiler.com/maptiler-sdk-js/v1.2.0/maptiler-sdk.css" rel="preconnect" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="stylesheet" href="css/index.css">
@@ -71,28 +71,45 @@
           <div id="fullCollection" class="container">
             <div class="row">
               <div class="col">
-                <h3>Create your collection</h3>
+                <h3>Your Dynamic Collection</h3>
               </div>
             </div>
             <div class="row">
               <div class="col-6">
-                <p class="txt-adc-dark">In order to create a new collection we need your email to send you the direct link with which you can view the newly created collection.</p>
-                <p class="txt-adc-dark">If you prefer not share your email you can download a json file with your collection</p>
-                <button type="button" class="btn btn-adc-blue" name="jsonFile"><span class="mdi mdi-cloud-download"></span> download json</button>
+                <p class="txt-adc-dark">The Dynamic Collection you create resides in the LocalStorage area on your browser, and is not memorized in the server or shared with others.</p>
+                <p class="txt-adc-dark">You may download the Collection as a json file, and you can share it with colleagues and students ay you see fit.</p>
+
+                <p>
+                <button id="btExportCollection" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" title="Export collection as JSON">
+                  <span class="mdi mdi-download"></span> Export
+                </button>
+                <button id="btImportCollection" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" title="Import collection from JSON">
+                  <span class="mdi mdi-upload"></span> Import
+                </button>
+                <input type="file" id="ifileJSON" accept=".json,.JSON,.Json" style="display:none">
+                </p>
+                <p>
+                <button id="btResetCollection" type="button" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Delete collection">
+                  <span class="mdi mdi-delete"></span> Delete
+                </button>
+                </p>
               </div>
               <div class="col-6">
                 <div class="mb-3">
-                  <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control form-control-sm" id="email" required>
-                </div>
-                <p class="txt-adc-dark m-0">Please insert a title and a brief description for the collection</p>
-                <div class="mb-2">
-                  <label for="title" class="form-label">title</label>
-                  <input type="text" class="form-control form-control-sm" id="title" required>
+                  <label for="collEmail" class="form-label">Email</label>
+                  <input type="email" class="form-control form-control-sm" id="collEmail">
                 </div>
                 <div class="mb-3">
-                  <label for="description" class="form-label">Brief description</label>
-                  <textarea class="form-control form-control-sm" id="description" rows="5"></textarea>
+                  <label for="collAuthor" class="form-label">Author</label>
+                  <input type="text" class="form-control form-control-sm" id="collAuthor" required>
+                </div>                
+                <div class="mb-3">
+                  <label for="collTitle" class="form-label">Title</label>
+                  <input type="text" class="form-control form-control-sm" id="collTitle" required>
+                </div>
+                <div class="mb-3">
+                  <label for="collDesc" class="form-label">Description</label>
+                  <textarea class="form-control form-control-sm" id="collDesc" rows="5"></textarea>
                 </div>
               </div>
             </div>
@@ -109,7 +126,7 @@
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
   <script src="https://cdn.maptiler.com/maptiler-sdk-js/v1.2.0/maptiler-sdk.umd.js"></script>
   <script src="https://cdn.maptiler.com/leaflet-maptilersdk/v2.0.0/leaflet-maptilersdk.js"></script>
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="js/maps/geo_config.js" charset="utf-8"></script>
   <script src="js/maps/geo_function.js" charset="utf-8"></script>
   <script src="js/index.js" charset="utf-8"></script>

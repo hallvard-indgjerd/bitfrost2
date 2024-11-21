@@ -10,9 +10,15 @@ class Model extends Conn{
   public $thumbDir;
   function __construct(){
     $this->uuid = Uuid::uuid4();
-    $this->modelDir = $_SERVER['DOCUMENT_ROOT']."/prototype/archive/models/";
-    $this->modelPreview = $_SERVER['DOCUMENT_ROOT']."/prototype/archive/models/preview/";
-    $this->thumbDir = $_SERVER['DOCUMENT_ROOT']."/prototype/archive/thumb/";
+    $currentDir = __DIR__;
+    if (strpos($currentDir, 'prototype_dev') !== false) {
+      $rootFolder = 'prototype_dev';
+    } else {
+      $rootFolder = 'plus';
+    }
+    $this->modelDir = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/models/";
+    $this->modelPreview = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/models/preview/";
+    $this->thumbDir = $_SERVER['DOCUMENT_ROOT']."/".$rootFolder."/archive/thumb/";
   }
 
   public function saveModel($data, $files){
@@ -59,6 +65,7 @@ class Model extends Conn{
 
       return ["res"=> 1, "output"=>'Ok, the model has been successfully created.', "id"=>$data['model']]; 
     } catch (\Exception $e) {
+      $this->pdo()->rollback();
       return ["res"=>0, "output"=>$e->getMessage()];
     }
   }
@@ -166,7 +173,8 @@ class Model extends Conn{
 
   public function buildGallery(string $sortBy, $filterArr = []){
     $filterMaterial="";
-    $filterArtifact=["artifact.id IN (SELECT artifact_id FROM ArtifactsWithMaterial)"];
+    // $filterArtifact=["artifact.id IN (SELECT artifact_id FROM ArtifactsWithMaterial)"];
+    $filterArtifact=[];
     if(!empty($filterArr)){
       foreach ($filterArr as $index => $filter) {
         if (array_key_exists('material.id', $filter)) {
@@ -184,36 +192,37 @@ class Model extends Conn{
         }
       }
     }
-    $sql = "
-      WITH ArtifactsWithMaterial AS (
-        SELECT artifact.id AS artifact_id
-        FROM artifact
-        INNER JOIN artifact_material_technique amt ON amt.artifact = artifact.id
-        LEFT JOIN list_material_specs material ON amt.material = material.id
-        ".$filterMaterial."
-        GROUP BY artifact.id
-      )
-      SELECT 
-        artifact.id,
-        artifact.name,
-        COALESCE(artifact.description, 'no description available') AS description,
-        class.id AS category_id,
-        class.value AS category,
-        JSON_OBJECTAGG(material.id, material.value) AS material,
-        artifact.start,
-        artifact.end,
-        obj.object,
-        obj.thumbnail 
-      FROM artifact 
-      INNER JOIN list_category_class class ON artifact.category_class = class.id 
-      INNER JOIN artifact_material_technique amt ON amt.artifact = artifact.id 
-      INNER JOIN artifact_model am ON artifact.id = am.artifact 
-      INNER JOIN model_object obj ON obj.model = am.model 
+    $filter = !empty($filterArtifact) ? " AND " . join(" and ", $filterArtifact) : "";
+    $sql="
+    SELECT 
+      artifact.id,
+      artifact.name,
+      COALESCE(artifact.description, 'no description available') AS description,
+      class.id AS category_id,
+      class.value AS category,
+      JSON_OBJECTAGG(material.id, material.value) AS material,
+      artifact.start,
+      artifact.end,
+      obj.object,
+      obj.thumbnail 
+    FROM artifact 
+    INNER JOIN list_category_class class ON artifact.category_class = class.id 
+    INNER JOIN artifact_material_technique amt ON amt.artifact = artifact.id 
+    INNER JOIN artifact_model am ON artifact.id = am.artifact 
+    INNER JOIN model_object obj ON obj.model = am.model 
+    LEFT JOIN list_material_specs material ON amt.material = material.id
+    WHERE artifact.status = 2
+      AND artifact.id IN (
+      SELECT artifact.id
+      FROM artifact
+      INNER JOIN artifact_material_technique amt ON amt.artifact = artifact.id
       LEFT JOIN list_material_specs material ON amt.material = material.id
-      WHERE ". join(" and ", $filterArtifact)."
-      GROUP BY artifact.id, artifact.name, class.id, class.value, artifact.start, artifact.end, obj.object, obj.thumbnail
-      ORDER BY ".$sortBy.";
-    ";
+      ".$filterMaterial."
+      GROUP BY artifact.id
+    )
+    ".$filter."
+    GROUP BY artifact.id, artifact.name, class.id, class.value, artifact.start, artifact.end, obj.object, obj.thumbnail
+    ORDER BY ".$sortBy.";";
     return $this->simple($sql);
   }
 
@@ -231,12 +240,8 @@ class Model extends Conn{
 
   public function getModels(array $search){
     $filter = [];
-    if($search['status'] > 0){
-      array_push($filter, "m.status = ".$search['status']);
-    }else {
-      array_push($filter, "m.status > ".$search['status']);
-    }
-    // if($_SESSION['role'] > 4){array_push($filter, "author = ".$_SESSION['id']);}
+    $status = $search['status'] ==  0 ? 'm.status > 0' : 'm.status = '.$search['status'];
+    array_push($filter, $status);
     if(isset($search['to_connect'])){
       array_push($filter,"m.id not in (select model from artifact_model)");
     }
@@ -329,5 +334,4 @@ class Model extends Conn{
     }
   }
 }
-
 ?>

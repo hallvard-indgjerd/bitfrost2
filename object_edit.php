@@ -113,7 +113,7 @@
               </div>
             </div>
           </fieldset>
-          <!-- <fieldset>
+          <fieldset>
             <legend>Upload model</legend>
             <div class="row">
               <div class="col" id="nxzWrap">
@@ -152,7 +152,7 @@
                 <div id="thumbNotAllowed"></div>
               </div>
             </div>
-          </fieldset> -->
+          </fieldset>
           <fieldset>
             <div class="row">
               <div class="col">
@@ -180,6 +180,16 @@
     <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
     <script type="text/javascript" src="assets/3dhop/init.js"></script>
     <script src="js/3dhop_function.js"></script> -->
+    <script type="text/javascript" src="assets/3dhop/spidergl.js"></script>
+    <script type="text/javascript" src="assets/3dhop/presenter.js"></script>
+    <script type="text/javascript" src="assets/3dhop/nexus.js"></script>
+    <script type="text/javascript" src="assets/3dhop/ply.js"></script>
+    <script type="text/javascript" src="assets/3dhop/trackball_turntable.js"></script>
+    <script type="text/javascript" src="assets/3dhop/trackball_turntable_pan.js"></script>
+    <script type="text/javascript" src="assets/3dhop/trackball_pantilt.js"></script>
+    <script type="text/javascript" src="assets/3dhop/trackball_sphere.js"></script>
+    <script type="text/javascript" src="assets/3dhop/init.js"></script>
+    <script src="js/3dhop_function.js"></script>
     <script src="js/object_edit.js" charset="utf-8"></script>
   </body>
 </html>

@@ -4,6 +4,7 @@ ajaxSettings.url=API+"model.php";
 startModel()
 
 // $("#editModelBtn").on('click', editModel)
+$("#toggleMenu").on('click', resizeDOM)
 $("[name=editModelBtn]").attr("href","model_edit.php?item="+model)
 $("[name=deleteModel").on('click', ()=>{
   if(confirm('Deleting model you also delete all related objects and files. Are you sure you want to continue?')){
@@ -23,6 +24,8 @@ $("[name=checkNameBtn]").on('click', function(){
   }
   checkName({name:name,element:'model'})
 })
+
+function resizeDOM(){ setTimeout(function(){ resizeCanvas() }, 500); }
 
 function startModel(){
   ajaxSettings.data={trigger:'getModel', id:model};
