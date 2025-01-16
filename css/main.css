@@ -1,6 +1,6 @@
 html, body{position:relative; font-family: 'Titillium Web', sans-serif;padding:0; margin:0;}
 header{position: fixed; top: 0; left: 0; width: 100%; height:70px; padding:5px 0 5px 10px; color:#fff; background-color: #22458a; display: flex; flex-direction: row; justify-content: space-between; align-items: center;z-index:1000;}
-header > #headerLogo{width:300px; height:70px; background-image: url("../img/logo/lunds-unversitet.svg"); background-position: left; background-repeat: no-repeat; background-size: contain;}
+header > #headerLogo{width:300px; height:70px; background-image: url("../img/logo/uio-logo.svg"); background-position: left; background-repeat: no-repeat; background-size: contain;}
 header > #headerLink{text-align: center;}
 header > #headerLink > a{min-width:60px; width:auto; height:70px; padding:0 10px; color:#fff; display: inline-block; text-align: center; font-size:1.3rem; line-height: 3;}
 body > nav{position:fixed; top:70px; width:250px; height: calc(100vh - 70px); color:#fff; background: rgba(77,76,68,1); overflow-y: auto; z-index:900;}
