@@ -12,8 +12,8 @@ app.post('/pull', (req, res) => {
     console.log('');
     console.log('Attempting to pull the code changes...');
     console.log('');
-    //exec('cd /app/project_root && git pull && docker-compose down && docker-compose up -d --build', (error, stdout, stderr) => {
-    exec('cd /app/project_root && git pull', (error, stdout, stderr) => {
+    exec('cd /app/project_root && git pull && docker-compose down && docker-compose up -d --build', (error, stdout, stderr) => {
+    //exec('cd /app/project_root && git pull', (error, stdout, stderr) => {
         if (error) {
         console.error(`exec error: ${error}`);
         return res.status(500).send('Error');

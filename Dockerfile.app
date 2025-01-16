@@ -5,7 +5,7 @@ FROM composer:latest AS composer
 
 WORKDIR /app
 # Install deps for production only
-COPY ./api/composer.lock ./adc/api/composer.json ./
+COPY ./api/composer.lock ./api/composer.json ./
 #RUN composer install --no-ansi --no-dev --no-interaction --no-progress --no-scripts --optimize-autoloader #Without development tools
 
 RUN composer install --no-ansi --no-interaction --no-progress --no-scripts --optimize-autoloader
