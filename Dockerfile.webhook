@@ -1,0 +1,35 @@
+# Simple web server to listen to webhook events from GitHub
+# Created by HRI, 150125 - with the help og GPT 4o
+# Last updated: 150125
+# This Dockerfile is used to build the Docker image for the webhook service.
+#
+# Example of docker-compose setup:
+#
+# services:
+#   webhook:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile.webhook
+#     command: ["node", "webhook-handler.js"]
+#     restart: unless-stopped
+#     ports:
+#       - "3000:3000"
+#     volumes:
+#       - /path/to/your/repo:/app
+#
+
+FROM node:lts-alpine
+
+WORKDIR /app
+
+# Install make and git
+RUN apk add --no-cache git && mkdir project_root;
+
+COPY webhook/package*.json ./
+RUN npm install
+
+COPY webhook/webhook-handler.js ./
+
+EXPOSE 3000
+
+# CMD ["node", "webhook-handler.js"]
