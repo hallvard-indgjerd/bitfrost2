@@ -10,7 +10,7 @@ services:
         #      - ./:/var/www/html/
     ports:
       - ${APP_PORT_HTTP:-80}:80
-      - ${APP_PORT_HTTP:-443}:443
+      - ${APP_PORT_HTTPS:-443}:443
 # Database service
   db:
     container_name: bitfrost2-db
