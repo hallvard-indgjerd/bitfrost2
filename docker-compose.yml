@@ -1,0 +1,21 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+        #    volumes:
+        #      - ./adc:/var/www/html/
+    ports: 
+      - 8085:80
+      - 8444:443
+    restart: always
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: TestInstance
+      MYSQL_USER: webuser
+      MYSQL_PASSWORD: BItFROST
+      MYSQL_DATABASE: bitfrost
+    ports:
+    - 3306:3306 
