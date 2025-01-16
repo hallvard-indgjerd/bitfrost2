@@ -1,19 +1,26 @@
+name: bitfrost2
+  
+  
 services:
 # Web application service in PHP for the bitfrost 2.0 portal 
   app:
-    container_name: bitfrost2-app
+    container_name: app
     build:
       context: .
       dockerfile: Dockerfile.app
     restart: unless-stopped
         #    volumes:
         #      - ./:/var/www/html/
+    develop:
+      watch:
+        - action: rebuild
+          path: ./
     ports:
       - ${APP_PORT_HTTP:-80}:80
       - ${APP_PORT_HTTPS:-443}:443
 # Database service
   db:
-    container_name: bitfrost2-db
+    container_name: db
     image: mysql
     restart: unless-stopped
     environment:
@@ -25,13 +32,24 @@ services:
       - ${DB_PORT:-3306}:3306
 # Webhook service listening to the gitops webhook and pulling the changes
   gitops-webhook:
-    container_name: bitfrost2-gitops-webhook    
+    container_name: gitops-webhook    
     build:
       context: .
       dockerfile: Dockerfile.webhook
     command: ["node", "webhook-handler.js"]
     restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: ./webhook/webhook-handler.js
+          target: /app/webhook-handler.js
+        - action: rebuild
+          path: ./webhook/package.json
     volumes:
       - ./:/app/project_root/:Z
+        #      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - ${WEBHOOK_PORT:-3000}:3000
+        #    extra_hosts:
+        #        - "host.docker.internal:host-gateway"
+     
