@@ -38,7 +38,7 @@ class User extends Conn{
       $datiMail = array(
         "email"=>$dati['email'], 
         "name"=>$dati['first_name']." ".$dati['first_name'], 
-        "link"=>"https://dyncolldev.ht.lu.se/prototype/reset_password.php?key=".$token,
+        "link"=>"https://dyncolldev.ht.lu.se/plus/reset_password.php?key=".$token,
         "mailBody"=>1
       );
       $this->sendMail($datiMail);
@@ -75,7 +75,7 @@ class User extends Conn{
   }
 
   protected function checkEmail(string $email){
-    $sql = "select u.id, p.id person, p.email, u.role, u.password_hash from person p inner join user u on u.person = p.id where p.email = '".$email."' and u.is_active = 1;";
+    $sql = "select u.id, p.id person, p.email, p.institution, u.role, u.password_hash from person p inner join user u on u.person = p.id where p.email = '".$email."' and u.is_active = 1;";
     $out = $this->simple($sql);
     $x = count($out);
     if ($x == 0) { throw new \Exception("The email is not in the database or your account is disabled. Please try again, if the problem persists please contact the project manager", 1); }
@@ -146,7 +146,7 @@ class User extends Conn{
       $datiMail=array(
         "email"=>$email, 
         "name"=>$usr['name'], 
-        "link"=>"https://dyncolldev.ht.lu.se/prototype/reset_password.php?key=".$token, 
+        "link"=>"https://dyncolldev.ht.lu.se/plus/reset_password.php?key=".$token, 
         "mailBody"=>2
       );
       $this->sendMail($datiMail);
@@ -183,11 +183,12 @@ class User extends Conn{
     $_SESSION['person'] = $dati['person'];
     $_SESSION['role'] = $dati['role'];
     $_SESSION['email'] = $dati['email'];
+    $_SESSION['institution'] = $dati['institution'];
     return true;
   }
 
 
-  protected function sendMail(array $dati){
+  public function sendMail(array $dati){
     switch ($dati['mailBody']) {
       case 1:
         $titolo = "New account";

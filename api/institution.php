@@ -9,7 +9,8 @@ if(isset($funzione) && function_exists($funzione)) {
   echo $trigger;
 }
 
-function getInstitutions($obj){return json_encode($obj->getInstitutions());}
+function catList($obj){return json_encode($obj->catList());}
+function getInstitutions($obj){return json_encode($obj->getInstitutions($_POST['search']));}
 function getInstitution($obj){return json_encode($obj->getInstitution($_POST['id']));}
 function addInstitution($obj){return json_encode($obj->addInstitution($_POST, $_FILES));}
 function editInstitution($obj){return json_encode($obj->editInstitution($_POST, $_FILES));}

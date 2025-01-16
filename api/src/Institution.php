@@ -10,14 +10,33 @@ class Institution extends Conn{
     $this->logoFolder = $_SERVER['DOCUMENT_ROOT']."/prototype/img/logo/";
   }
 
-  public function getInstitutions(){
-    $sql = "with 
-    a as (select i.id, i.name, i.abbreviation, cat.value category, i.city, i.address, i.lat, i.lon, i.url, i.logo from institution i inner join list_institution_category cat on i.category = cat.id),
-    b as (select owner, count(*) tot from artifact group by owner)
-    select a.*, ifnull(b.tot,0) artifact
-    from a
-    left join b on b.owner = a.id 
-    order by a.id asc;";
+  public function catList(){
+    return $this->simple("select distinct c.id, c.value from list_institution_category c inner join institution i on i.category = c.id order by 2 asc;");
+  }
+
+  public function getInstitutions(array $search){
+    $filters = [];
+    $search['cat'] = (int) $search['cat'];
+    array_push($filters, $search['cat'] == 0 ? 'cat.id > 0' : 'cat.id = '.$search['cat']);
+    if(isset($search['name'])){
+      $searchByName = [];
+      $string = trim($search['name']);
+      $arrString = explode(" ",$string);
+      foreach ($arrString as $value) {
+        if(strlen($value)>3){ 
+          array_push($searchByName, "i.name like '%".$value."%'"); 
+          array_push($searchByName, "i.abbreviation like '%".$value."%'"); 
+        }
+      }
+      array_push($filters, "(".join(" or ", $searchByName).")");
+    }
+    $joinFilters = join(" and ", $filters);
+    $where = "where ".$joinFilters; 
+    $sql = "SELECT i.id, i.name, i.abbreviation, cat.id as category_id, cat.value AS category, i.city, i.address, i.lat, i.lon, i.url, i.logo, COALESCE(b.tot, 0) AS artifact_count
+     FROM institution i
+     INNER JOIN list_institution_category cat ON i.category = cat.id
+     LEFT JOIN (SELECT owner, COUNT(*) AS tot FROM artifact GROUP BY owner) b ON b.owner = i.id
+     ".$where." ORDER BY i.id ASC;";
     return $this->simple($sql);
   }
 

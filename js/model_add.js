@@ -146,8 +146,43 @@ function completeHandler(event){
   $("#alertBg").remove()
   $("#uploadTip").text("Before saving the model, take a screenshot of canvas and upload it as thumbnail preview for use in the gallery")
   $("#thumbWrap").show()
+
+  // check if it can be used
+  const instanceOpt = {
+    "nxz":{ 
+      mesh:"nxz", 
+      tags: ['Group'], 
+      color: [0.5, 0.5, 0.5], 
+      backfaceColor: [0.5, 0.5, 0.5, 3.0], 
+      specularColor: [0.0, 0.0, 0.0, 256.0]
+    }
+  }
+  const trackBallOpt = { 
+    type: TurntablePanTrackball, 
+    trackOptions: {
+      startPhi: 15.0, 
+      startTheta: 15.0, 
+      startDistance: 2.0, 
+      minMaxPhi: [-180, 180], 
+      minMaxTheta: [-90.0, 90.0], 
+      minMaxDist: [0.1, 3.0] 
+    }
+  }
+  const spaceOpt = {
+    centerMode: "scene", 
+    radiusMode: "scene", 
+    cameraNearFar: [0.01, 5.0]
+  }
+  const configOpt = {
+    pickedpointColor: [1.0, 0.0, 1.0], 
+    measurementColor: [0.5, 1.0, 0.5], 
+    showClippingPlanes: true, 
+    showClippingBorder: true, 
+    clippingBorderSize: 0.5, 
+    clippingBorderColor: [0.0, 1.0, 1.0]
+  }
   scene = {
-    meshes: {"nxz" : { url: 'archive/models/preview/'+nxz.files[0].name }},
+    meshes: {"nxz" : { url: './archive/models/preview/'+nxz.files[0].name }},
     modelInstances : instanceOpt,
     trackball: trackBallOpt,
     space: spaceOpt,

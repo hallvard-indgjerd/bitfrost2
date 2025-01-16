@@ -1,7 +1,6 @@
 function osmSearch(city){
   let api = nominatim+city
   $.getJSON( api, function( data ) {
-    console.log(data.features);
     citySuggested.html('')
     if (data.features.length > 0) {
       data.features.forEach((item,i) => {
@@ -29,7 +28,6 @@ function osmSearch(city){
 function osmReverseSearch(ll){
   let api = nominatimReverse+'lat='+ll.lat+'&lon='+ll.lng;
   $.getJSON( api, function( data ) {
-    console.log(data);
     if (marker != undefined) { map.removeLayer(marker)};
     marker = L.marker(ll).addTo(map);
     let city; 
@@ -124,6 +122,7 @@ function mapInit(){
 }
 
 function artifactMap(){
+  if (map !== undefined) { map.remove(); }
   map = L.map('map',{maxBounds:mapExt})
   map.setMinZoom(4);
   osm = L.tileLayer(osmTile, { maxZoom: 18, attribution: osmAttrib}).addTo(map);
@@ -221,6 +220,11 @@ function mapStat(countyData){
   map2 = L.map('mapChart',{maxBounds:mapExt}).fitBounds(mapExt)
   map2.setMinZoom(3);
   L.maptilerLayer({apiKey: mapTilerKey, style: "dataviz-light"}).addTo(map2)
+  // L.tileLayer(osmTile, { maxZoom: 20, attribution: osmAttrib}).addTo(map2);
+  // L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png', {
+  //   maxZoom: 20,
+  //   attribution: '&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>', 
+  // }).addTo(map2);
   let countyGroup = L.featureGroup().addTo(map2);
   let countyJson = {"type":"FeatureCollection", "features": []}
   countyData.forEach(el => {
@@ -328,7 +332,6 @@ function onEachFeature(feature, layer) {
 function mapInfo(props){
   if(props){
     let group = getGroup(props.tot)
-    console.log('arrow'+group);
     $(".arrow"+group).css("visibility",'visible')
   }
   $("#mapInfoTitle").text(props ? '' : 'Map info')

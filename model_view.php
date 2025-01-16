@@ -14,11 +14,10 @@
       require("assets/header.php"); 
       require("assets/loadingDiv.html"); 
     ?>
-    <main class="<?php echo $mainClass; ?>">
-      <input type="hidden" name="modelId" value="<?php echo $_GET['item']; ?>">
-      <input type="hidden" name="activeUsr" value="<?php echo $_SESSION['id']; ?>">
-      <input type="hidden" name="role" value="<?php echo $_SESSION['role']; ?>">
-
+    <input type="hidden" name="modelId" value="<?php echo $_GET['item']; ?>">
+    <input type="hidden" name="activeUsr" value="<?php echo $_SESSION['id']; ?>">
+    <input type="hidden" name="role" value="<?php echo $_SESSION['role']; ?>">
+    <main class="animated mainSection">
       <div id="mainContent">
         <?php require('assets/canvas.html'); ?>
       </div> 

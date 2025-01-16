@@ -18,4 +18,7 @@ function addMedia($obj){
   return $res;
 }
 
+function editImage($obj){return json_encode($obj->editImage($_POST));}
+function deleteImg($obj){return json_encode($obj->deleteImg($_POST));}
+
 ?>

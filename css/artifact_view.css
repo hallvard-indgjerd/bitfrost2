@@ -17,20 +17,40 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
 #institutionLogo{display: inline-block; width: 35%; vertical-align: top;}
 #institutionInfo{display: inline-block; width: 64%; vertical-align: top; padding-left:20px;}
 
-#imgDiv, #videoPane{
-  width:100%;
-  display: flex;
-  align-items: start;
-  flex-direction: row;
-  justify-content: start;
-}
-.imgCard{ width:250px; height:auto;}
-.imgCard:nth-child(even), #videoPane .embed-responsive:nth-child(even){margin-left: 5px; margin-right: 5px;}
+#imgDiv, #videoDiv{width:100%; column-count: 2; column-gap: 10px;}
+.imgCard, .embed-responsive{width: 100%; height: auto; break-inside: avoid; position: relative;}
+/* .imgCard:nth-child(even), #videoDiv .embed-responsive:nth-child(even){margin-left: 5px; margin-right: 5px;} */
 
-#videoPane .embed-responsive{width:49%;}
-#videoPane iframe{width:100%;display: block;}
+#videoDiv iframe{width:100%;display: block;}
 
 #map{z-index:500;}
+
+#fullScreenImg{
+  position:fixed;
+  top: 0;
+  left: 0; 
+  width: 100vw; 
+  height: 100vh; 
+  background-color: rgba(0,0,0,.3); 
+  z-index: 2000;
+
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#fullScreenContent{
+  position:relative;
+  width: 90%;
+  height:90%;
+  background-color: #fff;
+  border-radius: var(--bs-border-radius);
+  border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+}
+#fullScreenHeader,#fullScreenFooter{padding: 10px;}
+#fullScreenHeader{text-align: end;}
+#fullScreenBody{height:calc(100% - 100px);}
+#fullScreenBody,#fullScreenFooter{display: flex; flex-direction: row; justify-content: center;}
 
 @media (min-width: 368px) {}
 
@@ -47,7 +67,7 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   .accordionArtifact{height:550px; padding-right:5px; overflow-x: hidden; overflow-y: auto;}
   .accordionArtifact .accordion-button{padding:10px;}
   .accordionArtifact .accordion-body{padding:0;}
-  .accordionArtifact span{font-size: 12px;}
+  .accordionArtifact span, .accordionArtifact table{font-size: 12px;}
   .accordionArtifact::-webkit-scrollbar { width: 5px;}
   .accordionArtifact::-webkit-scrollbar-track { background: #f1f1f1; }
   .accordionArtifact::-webkit-scrollbar-thumb { background: #888; }
@@ -59,7 +79,7 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   #geographic{top:560px; left:0; width:100%;}
   #map{position:relative;width:100%; height:300px !important;}
   #media{top:950px;left:0;width:50%;}
-  .imgCard{ width:calc((100% / 3) - 10px); height:auto; font-size: 13px;}
+  .imgCard{height:auto; font-size: 13px;}
   #stats{
     right:0; 
     top:950px; 
@@ -90,7 +110,7 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   .accordionArtifact{height:380px; padding-right:5px; overflow-x: hidden; overflow-y: auto;}
   .accordionArtifact .accordion-button{padding:10px;}
   .accordionArtifact .accordion-body{padding:0;}
-  .accordionArtifact span{font-size: 12px;}
+  .accordionArtifact span, .accordionArtifact table{font-size: 12px;}
   .accordionArtifact::-webkit-scrollbar { width: 5px;}
   .accordionArtifact::-webkit-scrollbar-track { background: #f1f1f1; }
   .accordionArtifact::-webkit-scrollbar-thumb { background: #888; }
@@ -124,6 +144,8 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   #stats > #lineChart{height:150px;}
   #stats > #columnChart{height:250px; margin:5px 0;}
   #stats > #mapChart{height:300px;}
+
+  #imgDiv, #videoDiv{width:100%; column-count: 3; column-gap: 10px;}
 }
 
 @media (min-width: 1400px) {
@@ -133,7 +155,7 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   .artifact-primary{top:0;width: 30%;}
   .artifact-full{top:870px; width: 50%;}
   .accordionArtifact{height:500px; padding-right:5px; overflow-x: hidden; overflow-y: auto;}
-  .accordionArtifact span{font-size: 14px;}
+  .accordionArtifact span, .accordionArtifact table{font-size: 14px;}
   .accordionArtifact::-webkit-scrollbar { width: 5px;}
   .accordionArtifact::-webkit-scrollbar-track { background: #f1f1f1; }
   .accordionArtifact::-webkit-scrollbar-thumb { background: #888; }
@@ -163,4 +185,6 @@ z-index: 20; display: flex; flex-direction: row; align-content: center; justify-
   #stats > #lineChart{height:150px;}
   #stats > #columnChart{height:250px; margin:5px 0;}
   #stats > #mapChart{height:300px;}
+
+  #imgDiv, #videoDiv{width:100%; column-count: 3; column-gap: 10px;}
 }

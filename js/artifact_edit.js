@@ -9,8 +9,7 @@ function getArtifact(){
   ajaxSettings.data={trigger:'getArtifact', id:artifact};
   $.ajax(ajaxSettings)
   .done(function(data) {
-    console.log(data);
-    getTimeline(data.artifact.timeline,setIndex)
+    timelineEditPage({timeline:data.artifact.timeline, chrono:data.crono, years:{start:data.artifact.start, end:data.artifact.end }})
     $("#pageTitle").text(data.artifact.name)
     $("#name").val(data.artifact.name)
     $("#status").val(data.artifact.status_id)

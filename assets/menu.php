@@ -20,15 +20,11 @@
         <span class="mdi mdi-bank"></span>
         institution
       </a>
-      <a href='persons_add.php?user=false' class='animated'>
+      <a href='person.php' class='animated'>
         <span class="mdi mdi-book-account"></span>
         person
       </a>
       <span class="titleSection">admin</span>
-      <a href='persons_add.php?user=true' class='animated'>
-        <span class="mdi mdi-account-group"></span>
-        user
-      </a>
       <a href='#' class='animated'>
         <span class="mdi mdi-format-list-bulleted-square"></span>
         vocabulary

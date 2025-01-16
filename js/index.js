@@ -27,7 +27,6 @@ currentPageActiveLink('index.php');
 getFilterList();
 chronoFilter();
 buildGallery(gallery);
-buildCollection()
 buildStat();
 artifactByCounty()
 
@@ -76,13 +75,11 @@ $("#createFromFiltered").on('click', function(){
   $(this).hide()
 })
 $("#resetCollection").on('click', function(){
-  collected = [];
   $(".removeItemBtn").hide()
   $(".addItemBtn").show()
   buildCollection()
   checkActiveFilter()
 })
-$("#viewCollection > span").text('('+collected.length+')')
 
 $("#toggleMenu").on('click',resizeDOM);
 
@@ -155,7 +152,8 @@ function getFilter(){
   if (chrono.length > 0) {
     let span = chrono.val().split("|");
     filter.push("artifact.start >= "+span[0]+" and artifact.start < "+span[1])
-    filter2.push({"artifact.start": ">= "+span[0], "artifact.start":"< "+span[1]})
+    filter2.push({"artifact.start": ">= "+span[0]})
+    filter2.push({"artifact.start":"< "+span[1]})
   }
   if(byDescription.val()){
     filter.push("(artifact.description like '%"+byDescription.val()+"%' or artifact.name like '%"+byDescription.val()+"%')")
