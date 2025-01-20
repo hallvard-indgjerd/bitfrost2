@@ -1,6 +1,5 @@
 name: bitfrost2
-  
-  
+   
 services:
 # Web application service in PHP for the bitfrost 2.0 portal 
   app:
@@ -47,7 +46,7 @@ services:
           path: ./webhook/package.json
     volumes:
       - ./:/app/project_root/:Z
-        #      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - ${WEBHOOK_PORT:-3000}:3000
         #    extra_hosts:
