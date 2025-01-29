@@ -2,3 +2,5 @@ api/config/
 api/vendor/
 archive/
 .env
+*.crt
+*.key
